@@ -341,10 +341,10 @@ class NextSafar_WP_Pages_Wrapper {
         // اضافه کردن query parameter برای تشخیص iframe
         $iframe_url = add_query_arg( 'nextsafar_iframe', '1', $url );
 
-        require NEXTSAFAR_ADMIN_PATH . 'admin/layout/sidebar.php';
+        require NEXTSAFAR_ADMIN_PATH . 'inc/admin/layout/sidebar.php';
         ?>
         <div class="nextsafar-main">
-            <?php require NEXTSAFAR_ADMIN_PATH . 'admin/layout/header.php'; ?>
+            <?php require NEXTSAFAR_ADMIN_PATH . 'inc/admin/layout/header.php'; ?>
 
             <div class="nextsafar-iframe-wrapper">
                 <iframe
@@ -356,7 +356,7 @@ class NextSafar_WP_Pages_Wrapper {
             </div>
         </div>
         <?php
-        require NEXTSAFAR_ADMIN_PATH . 'admin/layout/footer.php';
+        require NEXTSAFAR_ADMIN_PATH . 'inc/admin/layout/footer.php';
     }
 
     /**

@@ -25,25 +25,16 @@ class Core {
         add_action('init', [__CLASS__, 'register_taxonomies']);
         add_action('add_meta_boxes', [__CLASS__, 'register_metaboxes']);
 
-        add_action('after_setup_theme', [__CLASS__, 'register_thumbnail_support'], 20);
-
-        add_action('rest_api_init', [__CLASS__, 'register_featured_image_field']);
-        
         // News System Menus
         add_action('admin_menu', [__CLASS__, 'register_news_menus'], 20);
 
         // Initialize News AJAX handlers
         \NextSafar\Admin\News\NewsAjaxHandler::init();
-        
-        // Initialize featured meta for multiple post types
+
+        // Initialize featured hotel meta
         MetaBoxes\HotelFeaturedMeta::init();
 
-        \NextSafar\Admin\WP_Pages_Wrapper::get_instance()->init();
-        \NextSafar\Admin\Role_Access_Page::init();
-
-        // ═══════════════════════════════════════════════════
         // MetaBox Hooks Registration
-        // ═══════════════════════════════════════════════════
         MetaBoxes\GeoMetaBox::register_hooks();
         MetaBoxes\HotelMetaBox::register_hooks();
         MetaBoxes\GalleryMetaBox::register_hooks();
@@ -58,44 +49,27 @@ class Core {
         MetaBoxes\HospitalMetaBox::register_hooks();
         MetaBoxes\VisaMetaBox::register_hooks();
         MetaBoxes\TravelGuideMetaBox::register_hooks();
-        MetaBoxes\TravelNewsMetaBox::register_hooks();
 
-        // ═══════════════════════════════════════════════════
-        // Tourism System — Shared taxonomy across all post types
-        // ═══════════════════════════════════════════════════
+        // Tourism System
         Taxonomies\TourismMeta::init();
 
-        // Initialize Post Sync (sidebar metabox for manual API sync)
-        \NextSafar\Admin\PostSync::init();
-
-        // Initialize Assets System
-        \NextSafar_Assets::init();
-
-        // ═══════════════════════════════════════════════════
         // Admin Panel Initialization
-        // ═══════════════════════════════════════════════════
         if (is_admin()) {
             Taxonomies\TermImages::init();
-            
-            // Initialize Post Generator AJAX handlers
             Admin\PostGenerator\AjaxHandler::init();
         }
 
-        // ═══════════════════════════════════════════════════
         // Admin Menu Registration
-        // ═══════════════════════════════════════════════════
         add_action('admin_menu', [__CLASS__, 'register_admin_menus']);
-        
-        // ساخت/به‌روزرسانی جداول فقط یک‌بار per schema version — نه در هر بارگذاری ادمین
-        add_action('admin_init', function () {
-            $schema_version = '1.0.0'; // با هر تغییر در schema این را بالا ببر
-            if (get_option('nextsafar_news_db_version') === $schema_version) {
-                return;
-            }
+
+        // Create database tables
+        add_action('admin_init', function() {
             \NextSafar\Database\NewsTables::createAll();
             \NextSafar\Database\NewsTables::seedDefaultSources();
-            update_option('nextsafar_news_db_version', $schema_version);
-        }, 5);
+        });
+
+        // ❌ حذف شده - Admin System در NextSafar_Core container init می‌شود
+        // نیازی به init مجدد WP_Pages_Wrapper و Role_Access نیست
     }
 
     /**
@@ -230,8 +204,6 @@ class Core {
      * @return void
      */
     public static function register_taxonomies(): void {
-        // ═══ Per-post-type Category & Tag ═══
-        
         // Hotel
         Taxonomies\HotelCategory::register();
         Taxonomies\HotelTag::register();
@@ -256,18 +228,21 @@ class Core {
         Taxonomies\VisaCategory::register();
         Taxonomies\VisaTag::register();
         
-        // TravelGuide (راهنمای سفر)
-        Taxonomies\TravelGuideCategory::register();
-        Taxonomies\TravelGuideTag::register();
+        // ✅ اضافه شده - Travel Guide
+        if (class_exists('NextSafar\Taxonomies\TravelGuideCategory')) {
+            Taxonomies\TravelGuideCategory::register();
+        }
+        if (class_exists('NextSafar\Taxonomies\TravelGuideTag')) {
+            Taxonomies\TravelGuideTag::register();
+        }
         
-        // TravelNews (اخبار گردشگری)
-        Taxonomies\TravelNewsCategory::register();
-        Taxonomies\TravelNewsTag::register();
-
-        // ═══ ✅ Shared Taxonomy — شهرهای توریستی ═══
-        // This taxonomy appears on ALL post types (hotel, restaurant, etc.)
-        // Supports hierarchical structure: Country → City
-        Taxonomies\Tourism::register();
+        // ✅ اضافه شده - Travel News
+        if (class_exists('NextSafar\Taxonomies\TravelNewsCategory')) {
+            Taxonomies\TravelNewsCategory::register();
+        }
+        if (class_exists('NextSafar\Taxonomies\TravelNewsTag')) {
+            Taxonomies\TravelNewsTag::register();
+        }
     }
 
     /**

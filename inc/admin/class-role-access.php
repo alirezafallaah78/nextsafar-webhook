@@ -52,7 +52,7 @@ class NextSafar_Role_Access {
         if ( ! current_user_can( 'manage_options' ) ) {
             wp_die( 'شما اجازه دسترسی به این صفحه را ندارید.', 'خطای دسترسی', array( 'response' => 403 ) );
         }
-        require NEXTSAFAR_ADMIN_PATH . 'admin/pages/role-access.php';
+        require NEXTSAFAR_ADMIN_PATH . 'views/admin/pages/role-access.php';
     }
 
     /* =========================================================

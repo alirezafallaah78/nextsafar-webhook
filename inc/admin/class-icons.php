@@ -8,7 +8,7 @@ class NextSafar_Icons {
     /**
      * مسیر پایه آیکون‌ها
      */
-    private static $icons_path = 'assets/icons/';
+    private static $icons_path = 'assets/admin/icons/';
 
     /**
      * 🚀 کش داخلی برای SVGهای پردازش‌شده

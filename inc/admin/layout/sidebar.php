@@ -112,7 +112,7 @@ function nextsafar_render_submenu( $submenus ) {
 <aside class="nextsafar-sidebar">
     <div class="nextsafar-logo">
         <div class="nextsafar-logo-mark">
-            <img src="<?php echo esc_url( NEXTSAFAR_URL . 'assets/img/favicon.png' ); ?>" alt="سفربعدی ایرانیان">
+            <img src="<?php echo esc_url( NEXTSAFAR_URL . 'assets/admin/img/favicon.png' ); ?>" alt="سفربعدی ایرانیان">
         </div>
         <div class="nextsafar-logo-text"><strong>سفر بعدی ایرانیان</strong></div>
     </div>
@@ -308,21 +308,24 @@ function nextsafar_render_submenu( $submenus ) {
         <?php if ( $ns_section_appearance ) : ?>
         <div class="nextsafar-nav-section">
             <span class="nextsafar-nav-title">APPEARANCE</span>
+            
             <?php if ( $ns_can_themes ) : $is_themes_active = H::is( array( 'themes.php', 'theme-editor.php', 'customize.php' ) ); ?>
-            <a href="<?php echo esc_url( H::url( 'themes.php' ) ); ?>"
-               class="nextsafar-nav-item <?php echo $is_themes_active ? 'active' : ''; ?>">
+            <a href="<?php echo esc_url( admin_url( 'themes.php' ) ); ?>"
+            class="nextsafar-nav-item <?php echo $is_themes_active ? 'active' : ''; ?>">
                 <span class="nextsafar-nav-icon"><?php H::icon( 'themes' ); ?></span><span>پوسته‌ها</span>
             </a>
             <?php endif; ?>
+            
             <?php if ( $ns_can_menus ) : $is_menus_active = H::is( array( 'nav-menus.php', 'customize.php' ) ); ?>
             <a href="<?php echo esc_url( admin_url( 'nav-menus.php' ) ); ?>"
-               class="nextsafar-nav-item <?php echo $is_menus_active ? 'active' : ''; ?>">
+            class="nextsafar-nav-item <?php echo $is_menus_active ? 'active' : ''; ?>">
                 <span class="nextsafar-nav-icon"><?php H::icon( 'menu' ); ?></span><span>فهرست‌ها</span>
             </a>
             <?php endif; ?>
+            
             <?php if ( $ns_can_widgets ) : $is_widgets_active = H::is( 'widgets.php' ); ?>
-            <a href="<?php echo esc_url( H::url( 'widgets.php' ) ); ?>"
-               class="nextsafar-nav-item <?php echo $is_widgets_active ? 'active' : ''; ?>">
+            <a href="<?php echo esc_url( admin_url( 'widgets.php' ) ); ?>"
+            class="nextsafar-nav-item <?php echo $is_widgets_active ? 'active' : ''; ?>">
                 <span class="nextsafar-nav-icon"><?php H::icon( 'widgets' ); ?></span><span>ابزارک‌ها</span>
             </a>
             <?php endif; ?>

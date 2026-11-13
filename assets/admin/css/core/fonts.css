@@ -6,7 +6,7 @@
 /* Regular - 400 */
 @font-face {
   font-family: "IRANSansX";
-  src: url("../fonts/IRANSansXFaNum-Regular.woff2") format("woff2");
+  src: url("../../fonts/IRANSansXFaNum-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -21,7 +21,7 @@
 /* Medium - 500 */
 @font-face {
   font-family: "IRANSansX";
-  src: url("../fonts/IRANSansXFaNum-Medium.woff2") format("woff2");
+  src: url("../../fonts/IRANSansXFaNum-Medium.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -32,7 +32,7 @@
 /* Bold - 700 */
 @font-face {
   font-family: "IRANSansX";
-  src: url("../fonts/IRANSansXFaNum-Bold.woff2") format("woff2");
+  src: url("../../fonts/IRANSansXFaNum-Bold.woff2") format("woff2");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -43,7 +43,7 @@
 /* SemiBold - 600 (اگر موجود است، در غیر این صورت Medium استفاده می‌شود) */
 @font-face {
   font-family: "IRANSansX";
-  src: url("../fonts/IRANSansXFaNum-Medium.woff2") format("woff2");
+  src: url("../../fonts/IRANSansXFaNum-Medium.woff2") format("woff2");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -54,7 +54,7 @@
 /* Light - 300 (اگر موجود است، در غیر این صورت Regular استفاده می‌شود) */
 @font-face {
   font-family: "IRANSansX";
-  src: url("../fonts/IRANSansXFaNum-Regular.woff2") format("woff2");
+  src: url("../../fonts/IRANSansXFaNum-Regular.woff2") format("woff2");
   font-weight: 300;
   font-style: normal;
   font-display: swap;

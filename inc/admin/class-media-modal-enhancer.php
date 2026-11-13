@@ -36,7 +36,7 @@ class NextSafar_Media_Modal_Enhancer {
 
         wp_enqueue_style(
             'nextsafar-media',
-            NEXTSAFAR_URL . 'assets/css/media.css',
+            NEXTSAFAR_URL . 'assets/admin/css/media.css',
             array(),
             NEXTSAFAR_ADMIN_VERSION
         );
@@ -45,7 +45,7 @@ class NextSafar_Media_Modal_Enhancer {
         if ( ! wp_script_is( 'nextsafar-admin', 'enqueued' ) ) {
             wp_enqueue_script(
                 'nextsafar-admin',
-                NEXTSAFAR_URL . 'assets/js/admin.js',
+                NEXTSAFAR_URL . 'assets/admin/js/admin.js',
                 array( 'jquery' ),
                 NEXTSAFAR_ADMIN_VERSION,
                 true
@@ -68,7 +68,7 @@ class NextSafar_Media_Modal_Enhancer {
 
         wp_enqueue_script(
             'nextsafar-media-modal-enhancer',
-            NEXTSAFAR_URL . 'assets/js/media-modal-enhancer.js',
+            NEXTSAFAR_URL . 'assets/admin/js/media-modal-enhancer.js',
             array( 'jquery', 'media-editor', 'media-views', 'wp-util', 'nextsafar-admin' ),
             NEXTSAFAR_ADMIN_VERSION,
             true

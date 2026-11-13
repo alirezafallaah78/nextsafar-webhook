@@ -41,14 +41,14 @@ class NextSafar_Login {
         
         wp_enqueue_style(
             'nextsafar-login-css',
-            $base_url . 'assets/css/login.css',
+            $base_url . 'assets/admin/css/login.css',
             array(),
             '1.0.2' // نسخه را تغییر دهید تا کش مرورگر پاک شود
         );
 
         wp_enqueue_script(
             'nextsafar-login-js',
-            $base_url . 'assets/js/login.js',
+            $base_url . 'assets/admin/js/login.js',
             array(),
             '1.0.1',
             true
@@ -66,7 +66,7 @@ class NextSafar_Login {
      */
     public function render_custom_logo() {
         $logo_url = defined( 'NEXTSAFAR_URL' )
-            ? NEXTSAFAR_URL . 'assets/img/favicon.png'
+            ? NEXTSAFAR_URL . 'assets/admin/img/favicon.png'
             : includes_url( 'images/w-logo-blue.png' );
         ?>
         <style type="text/css">

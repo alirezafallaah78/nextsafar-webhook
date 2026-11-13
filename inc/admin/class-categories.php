@@ -30,7 +30,7 @@ class NextSafar_Categories {
     }
 
     public function render_categories_page() {
-        require NEXTSAFAR_ADMIN_PATH . 'admin/pages/categories.php';
+        require NEXTSAFAR_ADMIN_PATH . 'views/admin/pages/categories.php';
     }
 
     /* =========================================================

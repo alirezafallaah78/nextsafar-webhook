@@ -19,14 +19,27 @@ if (!defined('ABSPATH')) exit;
 // Plugin Constants
 // ═══════════════════════════════════════════════════════════
 
-define('NEXTSAFAR_VERSION', '2.0.0');
-define('NEXTSAFAR_PATH', plugin_dir_path(__FILE__));
-define('NEXTSAFAR_URL', plugin_dir_url(__FILE__));
+// ✅ کد صحیح (بدون تکرار):
+if (!defined('NEXTSAFAR_VERSION')) {
+    define('NEXTSAFAR_VERSION', '2.0.0');
+}
+if (!defined('NEXTSAFAR_PATH')) {
+    define('NEXTSAFAR_PATH', plugin_dir_path(__FILE__));
+}
+if (!defined('NEXTSAFAR_URL')) {
+    define('NEXTSAFAR_URL', plugin_dir_url(__FILE__));
+}
 
 // Admin Constants (برای سازگاری با کلاس‌های admin)
-define('NEXTSAFAR_ADMIN_VERSION', '2.0.0');
-define('NEXTSAFAR_ADMIN_PATH', NEXTSAFAR_PATH);
-define('NEXTSAFAR_URL', NEXTSAFAR_URL);
+if (!defined('NEXTSAFAR_ADMIN_VERSION')) {
+    define('NEXTSAFAR_ADMIN_VERSION', '2.0.0');
+}
+if (!defined('NEXTSAFAR_ADMIN_PATH')) {
+    define('NEXTSAFAR_ADMIN_PATH', NEXTSAFAR_PATH);
+}
+if (!defined('NEXTSAFAR_ADMIN_URL')) {
+    define('NEXTSAFAR_ADMIN_URL', NEXTSAFAR_URL);
+}
 
 // ═══════════════════════════════════════════════════════════
 // 1. AUTOLOADER
@@ -84,6 +97,30 @@ require_once NEXTSAFAR_PATH . 'inc/posttypes/hospital.php';
 require_once NEXTSAFAR_PATH . 'inc/posttypes/visa.php';
 require_once NEXTSAFAR_PATH . 'inc/posttypes/travelguide.php';
 require_once NEXTSAFAR_PATH . 'inc/posttypes/travelnews.php';
+
+// ═══════════════════════════════════════════════════════════
+// TAXONOMIES - Custom taxonomies
+// ═══════════════════════════════════════════════════════════
+
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/hotel-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/hotel-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/airport-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/airport-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/destination-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/destination-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/restaurant-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/restaurant-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/hospital-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/hospital-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/visa-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/visa-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/travelguide-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/travelguide-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/travelnews-category.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/travelnews-tag.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/tourism.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/tourism-meta.php';
+require_once NEXTSAFAR_PATH . 'inc/taxonomies/term-images.php';
 
 // ═══════════════════════════════════════════════════════════
 // 5. METABOXES
@@ -174,12 +211,6 @@ require_once NEXTSAFAR_PATH . 'inc/admin/news/class-manual-sync-page.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/news/class-filter-page.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/news/class-settings-page.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/news/class-news-ajax-handler.php';
-
-// ═══════════════════════════════════════════════════════════
-// 13. LAYOUT
-// ═══════════════════════════════════════════════════════════
-
-require_once NEXTSAFAR_PATH . 'inc/admin/class-layout.php';
 
 // ═══════════════════════════════════════════════════════════
 // 14. CORE

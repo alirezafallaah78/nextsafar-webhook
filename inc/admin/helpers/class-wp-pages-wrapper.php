@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 if ( ! defined( 'ABSPATH' ) ) {
     exit;
@@ -15,28 +15,28 @@ class NextSafar_WP_Pages_Wrapper {
      * Force WordPress admin styles in iframe
      */
     public function force_admin_styles_in_iframe() {
-        // ÙÙ‚Ø· Ø¯Ø± iframe
+        // فقط در iframe
         if ( ! isset( $_GET['nextsafar_iframe'] ) ) {
             return;
         }
 
-        // âœ… Ø§ÙØ²ÙˆØ¯Ù† body class Ø¨Ø±Ø§ÛŒ iframe
+        // ✅ افزودن body class برای iframe
         add_filter( 'admin_body_class', function( $classes ) {
             return $classes . ' nextsafar-iframe-page';
         } );
 
-        // Ø§Ø·Ù…ÛŒÙ†Ø§Ù† Ø§Ø² Ù„ÙˆØ¯ Ø´Ø¯Ù† Ø§Ø³ØªØ§ÛŒÙ„â€ŒÙ‡Ø§ÛŒ Ø¶Ø±ÙˆØ±ÛŒ ÙˆØ±Ø¯Ù¾Ø±Ø³
+        // اطمینان از لود شدن استایل‌های ضروری وردپرس
         wp_enqueue_style( 'wp-admin' );
         wp_enqueue_style( 'dashicons' );
         wp_enqueue_style( 'buttons' );
         wp_enqueue_style( 'forms' );
         wp_enqueue_style( 'common' );
-        // âŒ Ø­Ø°Ù admin-menu Ú†ÙˆÙ† Ø¨Ø§ CSS Ù…Ø®ÙÛŒâ€ŒØ³Ø§Ø²ÛŒ ØªØ¯Ø§Ø®Ù„ Ø¯Ø§Ø±Ø¯
+        // ❌ حذف admin-menu چون با CSS مخفی‌سازی تداخل دارد
         // wp_enqueue_style( 'admin-menu' );
         wp_enqueue_style( 'list-tables' );
         wp_enqueue_style( 'edit' );
 
-        // Script Ù‡Ø§ÛŒ Ø¶Ø±ÙˆØ±ÛŒ
+        // Script های ضروری
         wp_enqueue_script( 'jquery' );
         wp_enqueue_script( 'common' );
         wp_enqueue_script( 'wp-a11y' );
@@ -44,7 +44,7 @@ class NextSafar_WP_Pages_Wrapper {
     }
 
     public function register_wrapper_pages() {
-        // ÛŒÚ© wrapper generic Ø¨Ø±Ø§ÛŒ Ù‡Ù…Ù‡ ØµÙØ­Ø§Øª ÙˆØ±Ø¯Ù¾Ø±Ø³
+        // یک wrapper generic برای همه صفحات وردپرس
         add_submenu_page(
             'nextsafar-admin',
             'WordPress Page',
@@ -56,16 +56,16 @@ class NextSafar_WP_Pages_Wrapper {
     }
 
     public function render_generic_wrapper() {
-        // Debug Ø¨Ø±Ø§ÛŒ Ø§Ø¯Ù…ÛŒÙ† (Ø§Ø®ØªÛŒØ§Ø±ÛŒ - Ù…ÛŒâ€ŒØªÙˆØ§Ù†ÛŒØ¯ Ø­Ø°Ù Ú©Ù†ÛŒØ¯)
+        // Debug برای ادمین (اختیاری - می‌توانید حذف کنید)
         if ( current_user_can( 'manage_options' ) && isset( $_GET['debug'] ) ) {
             $target = isset( $_GET['target'] ) ? sanitize_text_field( wp_unslash( $_GET['target'] ) ) : '';
             $is_simple_slug = preg_match( '/^[a-z0-9_\-]+$/', $target );
             
             echo '<div style="position:fixed;top:10px;left:10px;background:#111;color:#fff;padding:15px;z-index:99999;font-family:monospace;font-size:11px;border-radius:8px;border:2px solid #43abff;max-width:500px;">';
-            echo '<strong style="color:#43abff;">ðŸ” Debug:</strong><br>';
+            echo '<strong style="color:#43abff;">🔍 Debug:</strong><br>';
             echo 'Target: <span style="color:#ffeb3b;">' . esc_html( $target ) . '</span><br>';
             echo 'Is Simple Slug: <span style="color:' . ($is_simple_slug ? 'lime' : 'red') . ';">';
-            echo $is_simple_slug ? 'YES âœ“' : 'NO';
+            echo $is_simple_slug ? 'YES ✓' : 'NO';
             echo '</span><br>';
             
             if ( $is_simple_slug ) {
@@ -87,19 +87,19 @@ class NextSafar_WP_Pages_Wrapper {
             wp_die( 'Access denied to this page.', 'Error', array( 'response' => 403 ) );
         }
 
-        // Parse query parameters Ø§Ø¶Ø§ÙÛŒ
+        // Parse query parameters اضافی
         $extra_params = array();
         if ( isset( $_GET['extra'] ) ) {
             parse_str( sanitize_text_field( wp_unslash( $_GET['extra'] ) ), $extra_params );
         }
 
-        // â­ Ø³Ø§Ø®Øª URL Ù†Ù‡Ø§ÛŒÛŒ - ØªØ´Ø®ÛŒØµ slug Ø³Ø§Ø¯Ù‡
+        // ⭐ ساخت URL نهایی - تشخیص slug ساده
         if ( preg_match( '/^[a-z0-9_\-]+$/', $target ) ) {
-            // slug Ø³Ø§Ø¯Ù‡ (Ù…Ø«Ù„ tour-manager) - ØªØ¨Ø¯ÛŒÙ„ Ø¨Ù‡ admin.php?page=xxx
+            // slug ساده (مثل tour-manager) - تبدیل به admin.php?page=xxx
             $url = admin_url( 'admin.php' );
             $url = add_query_arg( 'page', $target, $url );
         } else {
-            // ÙØ§ÛŒÙ„ PHP (Ù…Ø«Ù„ edit-comments.php) ÛŒØ§ URL Ú©Ø§Ù…Ù„
+            // فایل PHP (مثل edit-comments.php) یا URL کامل
             $url = admin_url( $target );
         }
 
@@ -111,21 +111,21 @@ class NextSafar_WP_Pages_Wrapper {
     }
 
     /**
-     * Ø¨Ø±Ø±Ø³ÛŒ Ù…Ø¬Ø§Ø² Ø¨ÙˆØ¯Ù† target page - Ù†Ø³Ø®Ù‡ Ú©Ø§Ù…Ù„ Ùˆ Ø§ÛŒÙ…Ù†
-     * Ù¾Ø´ØªÛŒØ¨Ø§Ù†ÛŒ Ø§Ø²: slug Ø³Ø§Ø¯Ù‡ØŒ admin.phpØŒ edit.phpØŒ core files
+     * بررسی مجاز بودن target page - نسخه کامل و ایمن
+     * پشتیبانی از: slug ساده، admin.php، edit.php، core files
      */
     private function is_allowed_target( $target ) {
-        // Û°. Ø¨Ø±Ø±Ø³ÛŒâ€ŒÙ‡Ø§ÛŒ Ø§ÙˆÙ„ÛŒÙ‡ Ø§Ù…Ù†ÛŒØªÛŒ
+        // ۰. بررسی‌های اولیه امنیتی
         if ( empty( $target ) || ! is_string( $target ) ) {
             return false;
         }
 
-        // Ø¨Ø±Ø±Ø³ÛŒ Ø·ÙˆÙ„ ØºÛŒØ±Ù…Ø¹Ù…ÙˆÙ„
+        // بررسی طول غیرمعمول
         if ( strlen( $target ) > 500 ) {
             return false;
         }
 
-        // Ø¬Ù„ÙˆÚ¯ÛŒØ±ÛŒ Ø§Ø² Ú©Ø§Ø±Ø§Ú©ØªØ±Ù‡Ø§ÛŒ Ø®Ø·Ø±Ù†Ø§Ú© Ùˆ Ù¾Ø±ÙˆØªÚ©Ù„â€ŒÙ‡Ø§ÛŒ Ù…Ø®Ø±Ø¨
+        // جلوگیری از کاراکترهای خطرناک و پروتکل‌های مخرب
         $dangerous_patterns = array(
             '..',
             "\0",
@@ -152,18 +152,18 @@ class NextSafar_WP_Pages_Wrapper {
             }
         }
 
-        // Ø¨Ø±Ø±Ø³ÛŒ Ú©Ø§Ø±Ø§Ú©ØªØ±Ù‡Ø§ÛŒ Ù…Ø¬Ø§Ø² (Ù†Ø³Ø®Ù‡ Ø¨Ù‡Ø¨ÙˆØ¯ ÛŒØ§ÙØªÙ‡)
-        // Ø§Ø¬Ø§Ø²Ù‡: Ø­Ø±ÙˆÙØŒ Ø§Ø¹Ø¯Ø§Ø¯ØŒ _ - . = ? & % + @ / : # ~
+        // بررسی کاراکترهای مجاز (نسخه بهبود یافته)
+        // اجازه: حروف، اعداد، _ - . = ? & % + @ / : # ~
         if ( ! preg_match( '/^[a-zA-Z0-9_\-.=?&%+@\/:#~]+$/', $target ) ) {
             return false;
         }
 
-        // â­ Û±. Ø¨Ø±Ø±Ø³ÛŒ slug Ù‡Ø§ÛŒ Ø³Ø§Ø¯Ù‡ (Ù…Ø«Ù„ tour-manager, visa_exchange_rates)
+        // ⭐ ۱. بررسی slug های ساده (مثل tour-manager, visa_exchange_rates)
         if ( preg_match( '/^[a-z0-9_-]+$/', $target ) ) {
             return $this->user_can_access_page( $target );
         }
 
-        // â­ Û². Ø¨Ø±Ø±Ø³ÛŒ admin.php?page=xxx ÛŒØ§ admin.php Ø¨Ø§ query string
+        // ⭐ ۲. بررسی admin.php?page=xxx یا admin.php با query string
         if ( strpos( $target, 'admin.php' ) === 0 ) {
             $query = parse_url( $target, PHP_URL_QUERY );
             if ( ! empty( $query ) ) {
@@ -175,7 +175,7 @@ class NextSafar_WP_Pages_Wrapper {
             return current_user_can( 'manage_options' );
         }
 
-        // â­ Û³. Ø¨Ø±Ø±Ø³ÛŒ edit.php Ø¨Ø§ post_type (Ø¨Ø±Ø§ÛŒ CPT Ù‡Ø§)
+        // ⭐ ۳. بررسی edit.php با post_type (برای CPT ها)
         if ( strpos( $target, 'edit.php' ) === 0 ) {
             $query = parse_url( $target, PHP_URL_QUERY );
             if ( ! empty( $query ) ) {
@@ -191,7 +191,7 @@ class NextSafar_WP_Pages_Wrapper {
             return current_user_can( 'edit_posts' );
         }
 
-        // â­ Û´. Ø¨Ø±Ø±Ø³ÛŒ post-new.php
+        // ⭐ ۴. بررسی post-new.php
         if ( strpos( $target, 'post-new.php' ) === 0 ) {
             $query = parse_url( $target, PHP_URL_QUERY );
             if ( ! empty( $query ) ) {
@@ -206,50 +206,50 @@ class NextSafar_WP_Pages_Wrapper {
             return current_user_can( 'edit_posts' );
         }
 
-        // â­ Ûµ. Ø¨Ø±Ø±Ø³ÛŒ post.php Ø¨Ø§ Ø¯Ø³ØªØ±Ø³ÛŒ Ø¯Ù‚ÛŒÙ‚ Ø¨Ù‡ Ù¾Ø³Øª
+        // ⭐ ۵. بررسی post.php با دسترسی دقیق به پست
         if ( strpos( $target, 'post.php' ) === 0 ) {
             $query = parse_url( $target, PHP_URL_QUERY );
             if ( ! empty( $query ) ) {
                 parse_str( $query, $params );
                 if ( isset( $params['post'] ) ) {
                     $post_id = absint( $params['post'] );
-                    // Ø¨Ø±Ø±Ø³ÛŒ Ø¯Ø³ØªØ±Ø³ÛŒ Ø¨Ù‡ Ù‡Ù…ÛŒÙ† Ù¾Ø³Øª Ø®Ø§Øµ
+                    // بررسی دسترسی به همین پست خاص
                     return current_user_can( 'edit_post', $post_id );
                 }
             }
             return current_user_can( 'edit_posts' );
         }
 
-        // â­ Û¶. Ø¨Ø±Ø±Ø³ÛŒ edit-tags.php Ùˆ term.php
+        // ⭐ ۶. بررسی edit-tags.php و term.php
         if ( strpos( $target, 'edit-tags.php' ) === 0 || strpos( $target, 'term.php' ) === 0 ) {
             return current_user_can( 'manage_categories' );
         }
 
-        // â­ Û·. Ø¨Ø±Ø±Ø³ÛŒ comment.php
+        // ⭐ ۷. بررسی comment.php
         if ( strpos( $target, 'comment.php' ) === 0 ) {
             return current_user_can( 'moderate_comments' );
         }
 
-        // â­ Û¸. Ø¨Ø±Ø±Ø³ÛŒ ØµÙØ­Ø§Øª Ú©Ø§Ø±Ø¨Ø±Ø§Ù†
+        // ⭐ ۸. بررسی صفحات کاربران
         if ( strpos( $target, 'user-edit.php' ) === 0 || strpos( $target, 'user-new.php' ) === 0 ) {
             return current_user_can( 'edit_users' );
         }
 
         if ( strpos( $target, 'profile.php' ) === 0 ) {
-            return is_user_logged_in(); // Ù‡Ù…Ù‡ Ú©Ø§Ø±Ø¨Ø±Ø§Ù† Ù„Ø§Ú¯ÛŒÙ† Ø´Ø¯Ù‡
+            return is_user_logged_in(); // همه کاربران لاگین شده
         }
 
-        // â­ Û¹. Ø¨Ø±Ø±Ø³ÛŒ ÙˆÛŒØ±Ø§ÛŒØ´Ú¯Ø±Ù‡Ø§ (Ø®Ø·Ø±Ù†Ø§Ú© - ÙÙ‚Ø· Ø§Ø¯Ù…ÛŒÙ†)
+        // ⭐ ۹. بررسی ویرایشگرها (خطرناک - فقط ادمین)
         if ( strpos( $target, 'plugin-editor.php' ) === 0 || strpos( $target, 'theme-editor.php' ) === 0 ) {
             return current_user_can( 'manage_options' );
         }
 
-        // â­ Û±Û°. Ø¨Ø±Ø±Ø³ÛŒ ØµÙØ­Ø§Øª ØªÙ†Ø¸ÛŒÙ…Ø§Øª (ÙÙ‚Ø· Ø§Ø¯Ù…ÛŒÙ†)
+        // ⭐ ۱۰. بررسی صفحات تنظیمات (فقط ادمین)
         if ( strpos( $target, 'options-' ) === 0 ) {
             return current_user_can( 'manage_options' );
         }
 
-        // â­ Û±Û±. Whitelist ÙØ§ÛŒÙ„â€ŒÙ‡Ø§ÛŒ core ÙˆØ±Ø¯Ù¾Ø±Ø³
+        // ⭐ ۱۱. Whitelist فایل‌های core وردپرس
         $core_pages = array(
             'edit-comments.php',
             'users.php',
@@ -260,15 +260,15 @@ class NextSafar_WP_Pages_Wrapper {
             'upload.php', 'media-new.php', 'media.php',
         );
 
-        // Ø§Ø³ØªØ®Ø±Ø§Ø¬ Ù†Ø§Ù… ÙØ§ÛŒÙ„ (Ø¨Ø¯ÙˆÙ† query string)
+        // استخراج نام فایل (بدون query string)
         $target_file = strtok( $target, '?' );
         
         if ( in_array( $target_file, $core_pages, true ) ) {
             return true;
         }
 
-        // â­ Û±Û². Ø¨Ø±Ø±Ø³ÛŒ ÙØ§ÛŒÙ„â€ŒÙ‡Ø§ÛŒ Ù…ÙˆØ¬ÙˆØ¯ Ø¯Ø± wp-admin (Ø¨Ø§ Ù…Ø­Ø§ÙØ¸Øª Ú©Ø§Ù…Ù„)
-        // ÙÙ‚Ø· Ø§Ø¬Ø§Ø²Ù‡ Ø¯Ø³ØªØ±Ø³ÛŒ Ø¨Ù‡ ÙØ§ÛŒÙ„â€ŒÙ‡Ø§ÛŒ Ù…Ø³ØªÙ‚ÛŒÙ… Ø¯Ø§Ø®Ù„ wp-admin
+        // ⭐ ۱۲. بررسی فایل‌های موجود در wp-admin (با محافظت کامل)
+        // فقط اجازه دسترسی به فایل‌های مستقیم داخل wp-admin
         if ( ! preg_match( '/^[a-z0-9_-]+\.php$/i', $target_file ) ) {
             return false;
         }
@@ -280,7 +280,7 @@ class NextSafar_WP_Pages_Wrapper {
             return false;
         }
 
-        // Ø§Ø·Ù…ÛŒÙ†Ø§Ù† Ø§Ø² Ø§ÛŒÙ†Ú©Ù‡ ÙØ§ÛŒÙ„ ÙˆØ§Ù‚Ø¹Ø§Ù‹ Ø¯Ø§Ø®Ù„ wp-admin Ø§Ø³Øª (Ø¬Ù„ÙˆÚ¯ÛŒØ±ÛŒ Ø§Ø² path traversal)
+        // اطمینان از اینکه فایل واقعاً داخل wp-admin است (جلوگیری از path traversal)
         $wp_admin_path = realpath( ABSPATH . 'wp-admin' );
         if ( strpos( $real_path, $wp_admin_path ) !== 0 ) {
             return false;
@@ -290,12 +290,12 @@ class NextSafar_WP_Pages_Wrapper {
     }
 
     /**
-     * Ø¨Ø±Ø±Ø³ÛŒ Ø¯Ø³ØªØ±Ø³ÛŒ Ú©Ø§Ø±Ø¨Ø± Ø¨Ù‡ ÛŒÚ© page slug
+     * بررسی دسترسی کاربر به یک page slug
      */
     private function user_can_access_page( $page ) {
         global $submenu;
         
-        // Û±. Ø¨Ø±Ø±Ø³ÛŒ Ø¯Ø± Ù‡Ù…Ù‡ submenu Ù‡Ø§
+        // ۱. بررسی در همه submenu ها
         foreach ( $submenu as $parent => $items ) {
             foreach ( $items as $item ) {
                 if ( isset( $item[2] ) && $item[2] === $page ) {
@@ -305,7 +305,7 @@ class NextSafar_WP_Pages_Wrapper {
             }
         }
         
-        // Û². Ø¨Ø±Ø±Ø³ÛŒ Ø¯Ø± top-level menu
+        // ۲. بررسی در top-level menu
         global $menu;
         foreach ( $menu as $menu_item ) {
             if ( isset( $menu_item[2] ) && $menu_item[2] === $page ) {
@@ -314,14 +314,14 @@ class NextSafar_WP_Pages_Wrapper {
             }
         }
         
-        // Û³. Ø§Ú¯Ø± page Ø¯Ø± Ù…Ù†ÙˆÙ‡Ø§ Ø«Ø¨Øª Ù†Ø´Ø¯Ù‡ØŒ Ø¨Ø±Ø±Ø³ÛŒ ÙˆØ¬ÙˆØ¯ hook
+        // ۳. اگر page در منوها ثبت نشده، بررسی وجود hook
         $hook_name = get_plugin_page_hookname( $page, '' );
         if ( has_action( $hook_name ) !== false ) {
-            // Page Ø¯Ø§Ø±Ø§ÛŒ hook Ø§Ø³ØªØŒ Ø§Ø¬Ø§Ø²Ù‡ Ø¨Ø¯Ù‡ ÙˆØ±Ø¯Ù¾Ø±Ø³ Ø®ÙˆØ¯Ø´ Ø¨Ø±Ø±Ø³ÛŒ Ú©Ù†Ø¯
+            // Page دارای hook است، اجازه بده وردپرس خودش بررسی کند
             return true;
         }
         
-        // Û´. Ø¨Ø±Ø±Ø³ÛŒ Ø¨Ø§ parent Ù‡Ø§ÛŒ Ù…Ø®ØªÙ„Ù
+        // ۴. بررسی با parent های مختلف
         foreach ( $submenu as $parent => $items ) {
             $hook_name = get_plugin_page_hookname( $page, $parent );
             if ( has_action( $hook_name ) !== false ) {
@@ -329,8 +329,8 @@ class NextSafar_WP_Pages_Wrapper {
             }
         }
         
-        // Ûµ. Ø§Ú¯Ø± Ù‡ÛŒÚ†â€ŒÚ©Ø¯Ø§Ù… Ú©Ø§Ø± Ù†Ú©Ø±Ø¯ØŒ Ø§Ø¬Ø§Ø²Ù‡ Ø¨Ø¯Ù‡ Ùˆ Ø¨Ú¯Ø°Ø§Ø± ÙˆØ±Ø¯Ù¾Ø±Ø³ Ø®ÙˆØ¯Ø´ Ø¨Ø±Ø±Ø³ÛŒ Ú©Ù†Ø¯
-        // (ÙˆØ±Ø¯Ù¾Ø±Ø³ Ø¯Ø± ØµÙˆØ±Øª Ø¹Ø¯Ù… Ø¯Ø³ØªØ±Ø³ÛŒ Ø§Ø±ÙˆØ± Ù…ÛŒâ€ŒØ¯Ù‡Ø¯)
+        // ۵. اگر هیچ‌کدام کار نکرد، اجازه بده و بگذار وردپرس خودش بررسی کند
+        // (وردپرس در صورت عدم دسترسی ارور می‌دهد)
         return true;
     }
 
@@ -338,13 +338,13 @@ class NextSafar_WP_Pages_Wrapper {
      * Render iframe wrapper
      */
     private function render_iframe_wrapper( $url, $title ) {
-        // اضافه کردن query parameter برای تشخیص iframe
+        // ????? ???? query parameter ???? ????? iframe
         $iframe_url = add_query_arg( 'nextsafar_iframe', '1', $url );
 
-        require NEXTSAFAR_PATH . 'inc/admin/layout/sidebar.php';  // ✅ صحیح
+        require NEXTSAFAR_PATH . 'inc/inc/admin/layout/sidebar.php';  // ? ????
         ?>
         <div class="nextsafar-main">
-            <?php require NEXTSAFAR_PATH . 'inc/admin/layout/header.php'; ?>  // ✅ صحیح
+            <?php require NEXTSAFAR_PATH . 'inc/inc/admin/layout/header.php'; ?>  // ? ????
 
             <div class="nextsafar-iframe-wrapper">
                 <iframe
@@ -356,11 +356,11 @@ class NextSafar_WP_Pages_Wrapper {
             </div>
         </div>
         <?php
-        require NEXTSAFAR_PATH . 'inc/admin/layout/footer.php';  // ✅ صحیح
+        require NEXTSAFAR_PATH . 'inc/inc/admin/layout/footer.php';  // ? ????
     }
 
     /**
-     * Helper: Ø³Ø§Ø®Øª wrapper URL Ø¨Ø±Ø§ÛŒ Ù‡Ø± target
+     * Helper: ساخت wrapper URL برای هر target
      */
     public static function build_wrapper_url( $target_page, $extra_params = array() ) {
         $base_url = admin_url( 'admin.php?page=nextsafar-wp-wrapper' );

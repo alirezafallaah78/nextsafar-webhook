@@ -16,29 +16,24 @@ class PostGeneratorPage
         wp_enqueue_style(
             'nextsafar-terminal',
             NEXTSAFAR_URL . 'assets/admin/css/pages/terminal.css',
-            ['nextsafar-components'],
+            array('nextsafar-components'),
             NEXTSAFAR_VERSION
         );
 
         wp_enqueue_script(
             'nextsafar-post-generator',
             NEXTSAFAR_URL . 'assets/admin/js/pages/post-generator.js',
-            ['jquery', 'nextsafar-utils'],
+            array('jquery', 'nextsafar-utils'),
             NEXTSAFAR_VERSION,
             true
         );
 
-        $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? 'localhost';
-        $ajax_url = $protocol . '://' . $host . '/wp-admin/admin-ajax.php';
-
-        wp_localize_script('nextsafar-post-generator', 'nextsafarPG', [
-            'ajaxUrl' => $ajax_url,
+        wp_localize_script('nextsafar-post-generator', 'nextsafarPG', array(
+            'ajaxUrl' => admin_url('admin-ajax.php'),
             'nonce'   => $nonce,
-        ]);
+        ));
 
-        \NextSafar\Admin\Layout::render(function() {
-            include NEXTSAFAR_PATH . 'views/admin/post-generator/page-main.php';
-        }, 'تولید پست هوشمند');
+        // ✅ مستقیم view را render کن - بدون Layout wrapper
+        include NEXTSAFAR_PATH . 'views/admin/post-generator/page-main.php';
     }
 }

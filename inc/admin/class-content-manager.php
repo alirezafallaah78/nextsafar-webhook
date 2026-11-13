@@ -145,7 +145,7 @@ class NextSafar_Content_Manager {
             wp_die( 'Invalid content type.' );
         }
         $config = $this->post_type_config[ $post_type ];
-        $view_file = NEXTSAFAR_ADMIN_PATH . 'admin/pages/' . $config['view_file'];
+        $view_file = NEXTSAFAR_ADMIN_PATH . 'views/admin/pages/' . $config['view_file'];
         
         // 🚀 تزریق داده‌ها به View
         $data = $this->get_list_data( $post_type );
@@ -180,7 +180,7 @@ class NextSafar_Content_Manager {
         // 🚀 تزریق داده‌ها به View
         $data = $this->get_list_data( $post_type );
         
-        $view_file = NEXTSAFAR_ADMIN_PATH . 'admin/pages/cpt.php';
+        $view_file = NEXTSAFAR_ADMIN_PATH . 'views/admin/pages/cpt.php';
         if ( ! file_exists( $view_file ) ) {
             wp_die( 'CPT view file not found.', 'خطای فایل', array( 'response' => 500 ) );
         }

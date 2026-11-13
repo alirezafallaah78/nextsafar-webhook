@@ -11,46 +11,28 @@ class SettingsPage
             wp_die('دسترسی غیرمجاز');
         }
 
-        $message = '';
-        $messageType = '';
-
-        if (isset($_POST['save_news_settings']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_news_settings')) {
-            $result = self::saveSettings($_POST);
-            $message = $result['message'];
-            $messageType = $result['type'];
+        if (isset($_POST['save_api_keys']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_settings')) {
+            self::saveSettings();
         }
 
-        if (isset($_POST['save_api_keys']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_news_settings')) {
-            $result = self::saveApiKeys($_POST);
-            $message = $result['message'];
-            $messageType = $result['type'];
-        }
-
-        // ✅ اصلاح: مسیر صحیح
         wp_enqueue_style(
-            'nextsafar-news-admin',
-            NEXTSAFAR_URL . 'assets/admin/css/pages/news-admin.css',
-            [],
+            'nextsafar-pg-settings',
+            NEXTSAFAR_URL . 'assets/admin/css/pages/pg-settings.css',
+            array('nextsafar-components'),
             NEXTSAFAR_VERSION
         );
 
         wp_enqueue_script(
-            'nextsafar-news-admin',
-            NEXTSAFAR_URL . 'assets/admin/js/pages/news-admin.js',
-            ['jquery'],
+            'nextsafar-pg-settings',
+            NEXTSAFAR_URL . 'assets/admin/js/pages/pg-settings.js',
+            array('jquery', 'nextsafar-utils'),
             NEXTSAFAR_VERSION,
             true
         );
 
-        wp_localize_script('nextsafar-news-admin', 'nextsafarNews', [
-            'ajaxUrl' => \NextSafar\Core::get_ajax_url(),
-            'nonce' => wp_create_nonce('nextsafar_news_admin'),
-        ]);
-
+        // ✅ مستقیم view را render کن - بدون Layout wrapper
         $settings = self::getSettings();
-        $geminiModels = GeminiClient::getModelsList();
-
-        include NEXTSAFAR_PATH . 'views/news/settings.php';
+        include NEXTSAFAR_PATH . 'views/admin/post-generator/page-settings.php';
     }
 
     protected static function saveSettings(): void
@@ -64,10 +46,10 @@ class SettingsPage
 
     public static function getSettings(): array
     {
-        return [
+        return array(
             'serpapi_key'     => get_option('nextsafar_serpapi_key', ''),
             'searchapi_key'   => get_option('nextsafar_searchapi_key', ''),
             'active_provider' => get_option('nextsafar_active_provider', 'searchapi'),
-        ];
+        );
     }
 }
