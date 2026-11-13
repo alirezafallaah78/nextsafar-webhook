@@ -564,43 +564,60 @@ iframe html body.comment-php .wrap { padding: var(--ns-space-5) !important; }
 }
 
 /* =========================================================
-📝 Fix for Post Editor Pages (post.php, post-new.php)
-اطمینان از نمایش sidebar و topbar در صفحه editor
+📝 Post Editor Page Fix
 ========================================================= */
-
-/* Force show NextSafar sidebar and topbar on editor pages */
-body.post-php #nextsafar-injected-sidebar,
-body.post-new-php #nextsafar-injected-sidebar,
-body.post-php #nextsafar-injected-topbar,
-body.post-new-php #nextsafar-injected-topbar {
-    display: block !important;
-    visibility: visible !important;
+body.nextsafar-editor-page #wpbody {
+    margin-right: 256px !important;
 }
 
-/* Ensure proper spacing for editor content */
-body.post-php #wpbody-content,
-body.post-new-php #wpbody-content {
-    padding-top: 70px !important; /* Space for topbar */
-    padding-right: 260px !important; /* Space for sidebar */
+body.nextsafar-editor-page #wpbody-content {
+    margin-right: 0 !important;
+    padding-top: 70px !important;
 }
 
+body.nextsafar-editor-page #wpcontent {
+    margin-right: 0 !important;
+}
+
+/* سایدبار inject شده */
+body.nextsafar-editor-page #nextsafar-injected-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 99999 !important;
+}
+
+body.nextsafar-editor-page #nextsafar-injected-topbar {
+    position: fixed !important;
+    top: 10px !important;
+    left: 30px !important;
+    right: 280px !important;
+    height: var(--ns-topbar-height, 60px) !important;
+    z-index: 999 !important;
+}
+
+body.nextsafar-editor-page #nextsafar-injected-topbar .nextsafar-topbar {
+    margin-inline: 0 !important;
+}
+
+/* Responsive */
 @media (max-width: 900px) {
-    body.post-php #wpbody-content,
-    body.post-new-php #wpbody-content {
-        padding-right: 0 !important;
+    body.nextsafar-editor-page #wpbody {
+        margin-right: 0 !important;
     }
-}
-
-/* Fix for Block Editor (Gutenberg) */
-body.post-php .block-editor-page,
-body.post-new-php .block-editor-page {
-    margin-right: 256px;
-    margin-top: 60px;
-}
-
-@media (max-width: 900px) {
-    body.post-php .block-editor-page,
-    body.post-new-php .block-editor-page {
-        margin-right: 0;
+    
+    body.nextsafar-editor-page #nextsafar-injected-topbar {
+        right: 0 !important;
+        left: 0 !important;
+    }
+    
+    body.nextsafar-editor-page #nextsafar-injected-sidebar {
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+    }
+    
+    body.nextsafar-editor-page #nextsafar-injected-sidebar.open {
+        transform: translateX(0);
     }
 }

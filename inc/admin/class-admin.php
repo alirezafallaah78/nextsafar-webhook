@@ -55,41 +55,68 @@ class NextSafar_Admin {
         return isset($_GET['nextsafar_iframe']);
     }
 
-    private function is_nextsafar_page() {
-        // اولویت ۱: بررسی $_GET['page']
-        if (isset($_GET['page'])) {
-            $page = sanitize_key($_GET['page']);
-            if (strpos($page, 'nextsafar') !== false) {
-                return true;
-            }
-        }
-        
-        // اولویت ۲: بررسی post_type برای CPT pages
-        if (isset($_GET['post_type'])) {
-            $post_type = sanitize_key($_GET['post_type']);
-            $nextsafar_post_types = array(
-                'hotel', 'airport', 'destination', 'restaurant',
-                'hospital', 'visa', 'travelguide', 'travelnews',
-                'tour', 'booking'
-            );
-            if (in_array($post_type, $nextsafar_post_types, true)) {
-                return true;
-            }
-        }
-        
-        // اولویت ۳: بررسی screen
-        $screen = get_current_screen();
-        if ($screen && strpos($screen->id, 'nextsafar') !== false) {
+/**
+ * 🎯 تشخیص صفحات NextSafar
+ * نسخه بهبود یافته
+ */
+private function is_nextsafar_page() {
+    // اولویت ۱: بررسی $_GET['page']
+    if (isset($_GET['page'])) {
+        $page = sanitize_key($_GET['page']);
+        if (strpos($page, 'nextsafar') !== false) {
             return true;
         }
-        
-        return false;
     }
+    
+    // اولویت ۲: بررسی post_type برای CPT pages
+    if (isset($_GET['post_type'])) {
+        $post_type = sanitize_key($_GET['post_type']);
+        $nextsafar_post_types = array(
+            'hotel', 'airport', 'destination', 'restaurant',
+            'hospital', 'visa', 'travelguide', 'travelnews',
+            'tour', 'booking'
+        );
+        if (in_array($post_type, $nextsafar_post_types, true)) {
+            return true;
+        }
+    }
+    
+    // اولویت ۳: بررسی screen
+    $screen = get_current_screen();
+    if ($screen && strpos($screen->id, 'nextsafar') !== false) {
+        return true;
+    }
+    
+    return false;
+}
 
-    private function is_post_editor_page() {
-        global $pagenow;
-        return in_array($pagenow, array('post.php', 'post-new.php'), true);
+/**
+ * 🎯 تشخیص دقیق صفحات Post Editor (post.php, post-new.php)
+ * نسخه بهبود یافته - بدون وابستگی به $pagenow
+ */
+private function is_post_editor_page() {
+    // روش ۱: بررسی مستقیم از URL
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '';
+    $script_name = basename(parse_url($request_uri, PHP_URL_PATH));
+    
+    if (in_array($script_name, array('post.php', 'post-new.php'), true)) {
+        return true;
     }
+    
+    // روش ۲: بررسی از $_SERVER['PHP_SELF']
+    $php_self = isset($_SERVER['PHP_SELF']) ? basename($_SERVER['PHP_SELF']) : '';
+    if (in_array($php_self, array('post.php', 'post-new.php'), true)) {
+        return true;
+    }
+    
+    // روش ۳: fallback به global $pagenow
+    global $pagenow;
+    if (isset($pagenow) && in_array($pagenow, array('post.php', 'post-new.php'), true)) {
+        return true;
+    }
+    
+    return false;
+}
 
     /* =========================================================
      *  Admin Menu Registration
@@ -328,125 +355,122 @@ class NextSafar_Admin {
      *  Styles & JS Injection
      * ========================================================= */
 
-    public function inject_styles() {
-        // ✅ در iframe
-        if ($this->is_iframe()) {
-            $this->print_iframe_styles();
-            return;
-        }
-        
-        // ✅ در صفحات NextSafar (خودشان استایل دارند)
-        if ($this->is_nextsafar_page()) {
-            $this->print_nextsafar_page_styles();
-            return;
-        }
-        
-        // ✅ در بقیه صفحات وردپرس (مثل edit-comments.php)
-        $this->print_wp_page_styles();
+public function inject_styles() {
+    // ✅ در iframe
+    if ($this->is_iframe()) {
+        $this->print_iframe_styles();
+        return;
     }
+    
+    // ✅ در صفحات NextSafar (خودشان استایل دارند) - اما NOT post editor
+    if ($this->is_nextsafar_page() && !$this->is_post_editor_page()) {
+        $this->print_nextsafar_page_styles();
+        return;
+    }
+    
+    // ✅ در بقیه صفحات وردپرس (مثل edit-comments.php و post.php)
+    $this->print_wp_page_styles();
+}
 
-    public function inject_sidebar_and_topbar_js() {
-        // در iframe اجرا نشود
-        if ($this->is_iframe()) return;
-        
-        // فقط در صفحات ادمین اجرا شود
-        if (!is_admin()) return;
-        
-        // ✅ صفحات NextSafar خودشان سایدبار دارند
-        // اما nav-menus.php، themes.php و بقیه صفحات native وردپرس نیاز به inject دارند
-        if ($this->is_nextsafar_page()) return;
-
-        // مسیر فایل‌های layout
-        $sidebar_path = NEXTSAFAR_PATH . 'inc/admin/layout/sidebar.php';
-        $topbar_path  = NEXTSAFAR_PATH . 'inc/admin/layout/header.php';
-
+public function inject_sidebar_and_topbar_js() {
+    // در iframe اجرا نشود
+    if ($this->is_iframe()) return;
+    
+    // فقط در صفحات ادمین اجرا شود
+    if (!is_admin()) return;
+    
+    // ✅ صفحات NextSafar خودشان سایدبار دارند
+    // اما post.php و post-new.php صفحات native وردپرس هستند و نیاز به inject دارند
+    if ($this->is_nextsafar_page() && !$this->is_post_editor_page()) {
+        return;
+    }
+    
+    // مسیر فایل‌های layout
+    $sidebar_path = NEXTSAFAR_PATH . 'inc/admin/layout/sidebar.php';
+    $topbar_path  = NEXTSAFAR_PATH . 'inc/admin/layout/header.php';
+    
+    if (!file_exists($sidebar_path) || !file_exists($topbar_path)) {
+        error_log('[NextSafar] Layout files not found');
+        return;
+    }
+    
+    // Capture sidebar HTML
+    ob_start();
+    try {
+        require $sidebar_path;
+        $sidebar_html = ob_get_clean();
+    } catch (Throwable $e) {
+        ob_end_clean();
         $sidebar_html = '';
-        $topbar_html  = '';
-
-        if (!file_exists($sidebar_path) && !file_exists($topbar_path)) {
-            error_log('[NextSafar] Layout files not found');
-            return;
-        }
-
-        // Capture sidebar
-        if (file_exists($sidebar_path)) {
-            ob_start();
-            try {
-                require $sidebar_path;
-                $sidebar_html = ob_get_clean();
-            } catch (Throwable $e) {
-                ob_end_clean();
-                $sidebar_html = '';
-            }
-        }
-
-        // Capture topbar
-        if (file_exists($topbar_path)) {
-            ob_start();
-            try {
-                require $topbar_path;
-                $topbar_html = ob_get_clean();
-            } catch (Throwable $e) {
-                ob_end_clean();
-                $topbar_html = '';
-            }
-        }
-
-        if (empty($sidebar_html) && empty($topbar_html)) {
-            return;
-        }
-
-        ?>
-        <script id="nextsafar-inject-ui">
-        (function() {
-            <?php if (!empty($sidebar_html)): ?>
-            var sidebarHtml = <?php echo wp_json_encode($sidebar_html); ?>;
-            if (sidebarHtml) {
-                var sidebarDiv = document.createElement('div');
-                sidebarDiv.id = 'nextsafar-injected-sidebar';
-                sidebarDiv.innerHTML = sidebarHtml;
-                document.body.insertBefore(sidebarDiv, document.body.firstChild);
-            }
-            <?php endif; ?>
-
-            <?php if (!empty($topbar_html)): ?>
-            var topbarHtml = <?php echo wp_json_encode($topbar_html); ?>;
-            if (topbarHtml) {
-                var topbarDiv = document.createElement('div');
-                topbarDiv.id = 'nextsafar-injected-topbar';
-                topbarDiv.innerHTML = topbarHtml;
-                document.body.insertBefore(topbarDiv, document.body.firstChild);
-            }
-            <?php endif; ?>
-
-            // ✅ فعال کردن submenu بعد از inject
-            if (typeof initNextsafarSubmenu === 'function') {
-                initNextsafarSubmenu();
-            }
-            
-            // ✅ فعال‌سازی JavaScript‌های سایدبار
-            var navItems = document.querySelectorAll('#nextsafar-injected-sidebar .nextsafar-nav-parent');
-            navItems.forEach(function(item) {
-                item.addEventListener('mouseenter', function() {
-                    var submenu = this.querySelector('.nextsafar-submenu');
-                    if (submenu) {
-                        submenu.style.maxHeight = '500px';
-                        submenu.classList.add('open');
-                    }
-                });
-                
-                item.addEventListener('mouseleave', function() {
-                    var submenu = this.querySelector('.nextsafar-submenu');
-                    if (submenu && !this.classList.contains('has-active-child')) {
-                        submenu.style.maxHeight = '0';
-                        submenu.classList.remove('open');
-                    }
-                });
-            });
-        })();
-        </script>
-        <?php
+        error_log('[NextSafar] Sidebar error: ' . $e->getMessage());
     }
+    
+    // Capture topbar HTML
+    ob_start();
+    try {
+        require $topbar_path;
+        $topbar_html = ob_get_clean();
+    } catch (Throwable $e) {
+        ob_end_clean();
+        $topbar_html = '';
+        error_log('[NextSafar] Topbar error: ' . $e->getMessage());
+    }
+    
+    if (empty($sidebar_html) && empty($topbar_html)) {
+        return;
+    }
+    
+    ?>
+    <script id="nextsafar-inject-ui">
+    (function() {
+        'use strict';
+        
+        // جلوگیری از inject مجدد
+        if (document.getElementById('nextsafar-injected-sidebar')) {
+            return;
+        }
+        
+        <?php if (!empty($sidebar_html)): ?>
+        var sidebarDiv = document.createElement('div');
+        sidebarDiv.id = 'nextsafar-injected-sidebar';
+        sidebarDiv.innerHTML = <?php echo wp_json_encode($sidebar_html); ?>;
+        document.body.insertBefore(sidebarDiv, document.body.firstChild);
+        <?php endif; ?>
+        
+        <?php if (!empty($topbar_html)): ?>
+        var topbarDiv = document.createElement('div');
+        topbarDiv.id = 'nextsafar-injected-topbar';
+        topbarDiv.innerHTML = <?php echo wp_json_encode($topbar_html); ?>;
+        document.body.insertBefore(topbarDiv, document.body.firstChild);
+        <?php endif; ?>
+        
+        // فعال‌سازی submenu ها
+        if (typeof initNextsafarSubmenu === 'function') {
+            initNextsafarSubmenu();
+        }
+        
+        // فعال‌سازی hover
+        var navItems = document.querySelectorAll('#nextsafar-injected-sidebar .nextsafar-nav-parent');
+        navItems.forEach(function(item) {
+            item.addEventListener('mouseenter', function() {
+                var submenu = this.querySelector('.nextsafar-submenu');
+                if (submenu) {
+                    submenu.style.maxHeight = '500px';
+                    submenu.classList.add('open');
+                }
+            });
+            item.addEventListener('mouseleave', function() {
+                var submenu = this.querySelector('.nextsafar-submenu');
+                if (submenu && !this.classList.contains('has-active-child')) {
+                    submenu.style.maxHeight = '0';
+                    submenu.classList.remove('open');
+                }
+            });
+        });
+    })();
+    </script>
+    <?php
+}
 
     private function print_iframe_styles() {
         ?>
@@ -512,108 +536,198 @@ class NextSafar_Admin {
         <?php
     }
 
-    private function print_wp_page_styles() {
-        ?>
-        <style>
-            html { margin-top: 0 !important; }
-            #wpadminbar { display: none !important; }
-            #adminmenumain, #adminmenuback, #adminmenuwrap { display: none !important; }
-
-            body:not(.iframe) #wpcontent {
-                margin-left: 0 !important;
-                margin-right: 260px !important;
-                padding: 0 !important;
-            }
-            body:not(.iframe) #wpbody {
-                margin: 0 !important;
-                padding: 0 !important;
-                padding-top: 82px !important;
-            }
-            #wpbody-content { margin: 0 !important; padding: 0 !important; padding-bottom: 40px !important; }
-            #wpfooter { display: none !important; }
-
-            body:not(.iframe) .wrap {
-                margin: 10px 30px !important;
-                padding: 0 !important;
-                background: #f5f7fb;
-                min-height: calc(100vh - 140px);
-            }
-
-            h1.wp-heading-inline, .wrap h1 {
-                color: #111827 !important;
-                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-                font-weight: 500 !important;
-                margin-top: 0 !important;
-                padding-top: 0 !important;
-            }
-
-            #screen-meta-links, #screen-meta, #contextual-help-link-wrap,
-            #contextual-help-wrap, #contextual-help-link {
-                display: none !important;
-                visibility: hidden !important;
-            }
-
-            .wp-list-table {
-                border-radius: 8px !important;
-                overflow: hidden !important;
-                box-shadow: 0 1px 2px rgba(0,0,0,0.04) !important;
-                border: 1px solid #e5e7eb !important;
-            }
-            .button-primary {
-                background: #43abff !important;
-                border-color: #43abff !important;
-                border-radius: 8px !important;
-            }
-            .button-primary:hover { background: #3384c6 !important; border-color: #3384c6 !important; }
-            a { color: #43abff; }
-            a:hover { color: #3384c6 !important; }
-            #collapse-button { display: none !important; }
-
-            #nextsafar-injected-sidebar {
-                position: fixed;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                z-index: 99999;
-            }
-
-            #nextsafar-injected-topbar {
-                position: absolute !important;
-                top: 10px !important;
-                left: 30px !important;
-                right: 290px !important;
-                height: var(--ns-topbar-height, 62px) !important;
-                z-index: 999 !important;
-            }
-
-            #nextsafar-injected-topbar .nextsafar-topbar {
-                margin-inline: 0 !important;
-            }
-
-            .wp-core-ui .notice.is-dismissible {
-                padding-right: 270px !important;
-            }
-
-            body.edit-tags-php #wpbody,
-            body.term-php #wpbody,
-            body.post-new-php #wpbody,
-            body.post-php #wpbody,
-            body.edit-comments-php #wpbody {
-                padding-top: 82px !important;
-            }
-
-            @media (max-width: 900px) {
-                body:not(.iframe) #wpcontent { margin-right: 0 !important; }
-                #nextsafar-injected-topbar { right: 0; left: 0; top: 0; }
-                #nextsafar-injected-sidebar {
-                    transform: translateX(100%);
-                    transition: transform 0.25s ease;
-                }
-                #nextsafar-injected-sidebar.open { transform: translateX(0); }
-            }
-        </style>
-        <?php
+private function print_wp_page_styles() {
+    $is_post_editor = $this->is_post_editor_page();
+    ?>
+    <style id="nextsafar-wp-page-styles">
+    /* ═══ Reset Base ═══ */
+    html { margin-top: 0 !important; }
+    #wpadminbar { display: none !important; }
+    #adminmenumain, #adminmenuback, #adminmenuwrap { display: none !important; }
+    #wpfooter { display: none !important; }
+    #screen-meta-links, #screen-meta, #contextual-help-link-wrap,
+    #contextual-help-wrap, #contextual-help-link, #collapse-button {
+        display: none !important;
+        visibility: hidden !important;
     }
+    
+    /* ═══ Main Layout ═══ */
+    body:not(.iframe) #wpcontent {
+        margin-left: 0 !important;
+        margin-right: var(--ns-sidebar-width, 256px) !important;
+        padding: 0 !important;
+    }
+    
+    body:not(.iframe) #wpbody-content {
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-bottom: 40px !important;
+    }
+    
+    <?php if ($is_post_editor): ?>
+    /* ═══ Post Editor Special Layout ═══ */
+    body.post-php #wpbody,
+    body.post-new-php #wpbody {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    body.post-php #wpbody-content,
+    body.post-new-php #wpbody-content {
+        padding-top: calc(var(--ns-topbar-height, 60px) + 16px) !important;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
+    }
+    
+    /* Block Editor (Gutenberg) - Full Screen */
+    body.block-editor-page #wpbody,
+    body.block-editor-page #wpbody-content {
+        padding-top: 0 !important;
+        margin: 0 !important;
+    }
+    
+    body.block-editor-page .interface-interface-skeleton {
+        top: 0 !important;
+    }
+    
+    /* Classic Editor adjustments */
+    body.post-php #poststuff,
+    body.post-new-php #poststuff {
+        margin: 0 !important;
+        padding: 20px !important;
+    }
+    
+    body.post-php #post-body.columns-2,
+    body.post-new-php #post-body.columns-2 {
+        margin-right: 0 !important;
+    }
+    
+    body.post-php #postbox-container-1,
+    body.post-new-php #postbox-container-1 {
+        margin-right: 0 !important;
+    }
+    <?php else: ?>
+    /* ═══ Regular WP Pages ═══ */
+    body:not(.iframe) #wpbody {
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-top: calc(var(--ns-topbar-height, 60px) + 16px) !important;
+    }
+    <?php endif; ?>
+    
+    /* ═══ Wrap & Content ═══ */
+    body:not(.iframe) .wrap {
+        margin: 10px 30px !important;
+        padding: 0 !important;
+        background: var(--ns-bg-sec, #f8fafc);
+        min-height: calc(100vh - 140px);
+        border-radius: var(--ns-radius-lg, 16px);
+    }
+    
+    h1.wp-heading-inline, .wrap h1 {
+        color: var(--ns-text-strong, #0f172a) !important;
+        font-family: var(--ns-font-family, -apple-system, sans-serif) !important;
+        font-weight: 700 !important;
+        margin-top: 0 !important;
+        padding-top: 0 !important;
+    }
+    
+    /* ═══ Tables & Forms ═══ */
+    .wp-list-table {
+        border-radius: var(--ns-radius, 12px) !important;
+        overflow: hidden !important;
+        box-shadow: var(--ns-shadow-sm) !important;
+        border: 1px solid var(--ns-border, #e5e7eb) !important;
+    }
+    
+    .button-primary {
+        background: var(--ns-primary, #43abff) !important;
+        border-color: var(--ns-primary, #43abff) !important;
+        border-radius: var(--ns-radius-sm, 8px) !important;
+        box-shadow: 0 2px 8px rgba(67, 171, 255, 0.25) !important;
+        transition: all 0.2s ease !important;
+    }
+    
+    .button-primary:hover {
+        background: var(--ns-primary-dark, #3384c6) !important;
+        border-color: var(--ns-primary-dark, #3384c6) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(67, 171, 255, 0.35) !important;
+    }
+    
+    a { color: var(--ns-primary, #43abff); }
+    a:hover { color: var(--ns-primary-dark, #3384c6) !important; }
+    
+    /* ═══ Notices ═══ */
+    .wp-core-ui .notice.is-dismissible {
+        padding-right: calc(var(--ns-sidebar-width, 256px) + 20px) !important;
+    }
+    
+    /* ═══ Injected UI Positioning ═══ */
+    #nextsafar-injected-sidebar {
+        position: fixed !important;
+        top: 0 !important;
+        right: 0 !important;
+        bottom: 0 !important;
+        z-index: 99999 !important;
+    }
+    
+    #nextsafar-injected-topbar {
+        position: fixed !important;
+        top: 10px !important;
+        left: 30px !important;
+        right: calc(var(--ns-sidebar-width, 256px) + 20px) !important;
+        height: var(--ns-topbar-height, 60px) !important;
+        z-index: 999 !important;
+    }
+    
+    #nextsafar-injected-topbar .nextsafar-topbar {
+        margin-inline: 0 !important;
+    }
+    
+    /* ═══ Special Pages ═══ */
+    body.edit-tags-php #wpbody,
+    body.term-php #wpbody,
+    body.edit-comments-php #wpbody {
+        padding-top: calc(var(--ns-topbar-height, 60px) + 16px) !important;
+    }
+    
+    /* ═══ Responsive ═══ */
+    @media (max-width: 900px) {
+        body:not(.iframe) #wpcontent {
+            margin-right: 0 !important;
+        }
+        
+        #nextsafar-injected-topbar {
+            right: 10px !important;
+            left: 10px !important;
+            top: 10px !important;
+        }
+        
+        #nextsafar-injected-sidebar {
+            transform: translateX(100%);
+            transition: transform 0.25s ease;
+        }
+        
+        #nextsafar-injected-sidebar.open {
+            transform: translateX(0);
+        }
+        
+        body.post-php #wpbody-content,
+        body.post-new-php #wpbody-content {
+            padding-top: calc(var(--ns-topbar-height, 60px) + 10px) !important;
+        }
+    }
+    
+    @media (max-width: 600px) {
+        #nextsafar-injected-topbar {
+            right: 5px !important;
+            left: 5px !important;
+        }
+    }
+    </style>
+    <?php
+}
 
     /* =========================================================
      *  AJAX Handlers
