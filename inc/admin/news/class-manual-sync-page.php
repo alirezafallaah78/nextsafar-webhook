@@ -27,9 +27,10 @@ class ManualSyncPage
         wp_enqueue_style(
             'nextsafar-news-admin',
             NEXTSAFAR_URL . 'assets/admin/css/pages/news-admin.css',
-            ['nextsafar-components'],
+            [],
             NEXTSAFAR_VERSION
         );
+
         wp_enqueue_script(
             'nextsafar-news-admin',
             NEXTSAFAR_URL . 'assets/admin/js/pages/news-admin.js',
@@ -37,21 +38,34 @@ class ManualSyncPage
             NEXTSAFAR_VERSION,
             true
         );
+
         wp_localize_script('nextsafar-news-admin', 'nextsafarNews', [
             'ajaxUrl' => \NextSafar\Core::get_ajax_url(),
-            'nonce'   => wp_create_nonce('nextsafar_news_admin'),
+            'nonce' => wp_create_nonce('nextsafar_news_admin'),
         ]);
 
         \NextSafar\Admin\Layout::render(function() {
-            // لیست منابع
+            // ✅ اصلاح: تعریف متغیرهای مورد نیاز view
             $sources = \NextSafar\News\NewsSync::getSourcesStats();
             
-            // وضعیت منابع
+            $rssCount = 0;
+            $apiCount = 0;
+            foreach ($sources as $source => $data) {
+                $type = $data['type'] ?? '';
+                if ($type === 'rss') {
+                    $rssCount++;
+                } else {
+                    $apiCount++;
+                }
+            }
+            
+            $aiEnabled = get_option(\NextSafar\News\NewsSync::OPT_AI_ENABLED, '0') === '1';
+
             $source_status = [];
             foreach ($sources as $source => $data) {
                 $source_status[$source] = [
                     'enabled' => get_option("nextsafar_news_source_{$source}_enabled", '1') === '1',
-                    'total'   => $data['total'] ?? 0,
+                    'total' => $data['total'] ?? 0,
                 ];
             }
 

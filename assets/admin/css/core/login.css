@@ -1,0 +1,218 @@
+/* =========================================================
+🎯 NextSafar Custom Login Page Styles
+========================================================= */
+:root {
+  --ns-primary: #2563eb;
+  --ns-primary-hover: #1d4ed8;
+  --ns-surface: #ffffff;
+  --ns-bg: #f1f5f9;
+  --ns-text: #0f172a;
+  --ns-text-secondary: #475569;
+  --ns-border: #e2e8f0;
+  --ns-danger: #ef4444;
+  --ns-danger-bg: #fef2f2;
+  --ns-radius: 12px;
+  --ns-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+body.nextsafar-login-page {
+  background-color: var(--ns-surface);
+  font-family: var(--ns-font-family) !important;
+  direction: rtl;
+  color: var(--ns-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  margin: 0;
+}
+
+/* کانتینر اصلی فرم */
+#login {
+  width: 100%;
+  max-width: 420px;
+  padding: 20px;
+}
+
+/* کارت فرم ورود */
+.login form {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius);
+  padding: 32px 28px;
+  margin-top: 0;
+}
+
+/* حذف حاشیه و سایه پیش‌فرض زشت وردپرس */
+.login form .input,
+.login input[type="text"],
+.login input[type="password"],
+.login input[type="email"] {
+  background: #f8fafc;
+  border: 1px solid var(--ns-border);
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: var(--ns-text);
+  transition: all 0.2s ease;
+  height: auto;
+  line-height: 1.5;
+  box-shadow: none;
+}
+
+.login form .input:focus,
+.login input[type="text"]:focus,
+.login input[type="password"]:focus,
+.login input[type="email"]:focus {
+  background: #ffffff;
+  border-color: var(--ns-primary);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+  outline: none;
+}
+
+.login .wp-pwd input:focus,
+#user_pass:active {
+  background: var(--ns-bg) !important;
+}
+/* لیبل‌ها */
+.login label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ns-text-secondary);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* دکمه ورود */
+.login .button-primary,
+.login input[type="submit"] {
+  background: var(--ns-primary);
+  border: none;
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 14px;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-top: 16px;
+  height: auto;
+  line-height: 1.5;
+  text-shadow: none;
+  box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+}
+
+.login .button-primary:hover,
+.login input[type="submit"]:hover {
+  background: var(--ns-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 10px -1px rgba(37, 99, 235, 0.3);
+}
+
+.login .button-primary:active,
+.login input[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* چک‌باکس "مرا به خاطر بسپار" */
+.login .forgetmenot {
+  float: right;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.login .forgetmenot label {
+  font-weight: 500;
+  color: var(--ns-text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  margin: 0 !important;
+}
+
+.login .forgetmenot input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1px solid var(--ns-border);
+  cursor: pointer;
+}
+
+/* لینک فراموشی رمز عبور */
+.login #nav {
+  margin-top: 24px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.login #nav a {
+  color: var(--ns-primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s;
+}
+
+.login #nav a:hover {
+  color: var(--ns-primary-hover);
+  text-decoration: underline;
+}
+
+/* پیام‌های خطا (بازطراحی شده به جای باکس قرمز زشت وردپرس) */
+.login #login_error,
+.login .message,
+.login .success {
+  background: var(--ns-danger-bg);
+  border: 1px solid #fecaca;
+  border-right: 4px solid var(--ns-danger);
+  color: #991b1b;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.1);
+}
+
+.login .message,
+.login .success {
+  background: #f0fdf4;
+  border-color: #bbf7d0;
+  border-right-color: #22c55e;
+  color: #166534;
+}
+
+/* پنهان کردن لینک "بازگشت به سایت" در پایین اگر نیاز نیست */
+#backtoblog {
+  text-align: center;
+  margin-top: 20px;
+}
+#backtoblog a {
+  color: var(--ns-text-secondary);
+  text-decoration: none;
+  font-size: 13px;
+}
+#backtoblog a:hover {
+  color: var(--ns-primary);
+}
+
+/* ریسپانسیو برای موبایل */
+@media (max-width: 480px) {
+  #login {
+    padding: 16px;
+  }
+  .login form {
+    padding: 24px 20px;
+  }
+}
+.nextsafar-custom-footer {
+  bottom: 10px !important;
+  position: absolute;
+}
+.login .button.wp-hide-pw {
+  height: 3rem;
+}

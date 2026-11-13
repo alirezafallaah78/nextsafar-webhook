@@ -36,18 +36,18 @@ class NextSafar_Media_Modal_Enhancer {
 
         wp_enqueue_style(
             'nextsafar-media',
-            NEXTSAFAR_URL . 'assets/admin/' . 'assets/css/media.css',
+            NEXTSAFAR_URL . 'assets/css/media.css',
             array(),
-            NEXTSAFAR_VERSION
+            NEXTSAFAR_ADMIN_VERSION
         );
 
         // 🚀 مطمئن شویم admin.js لود شده (برای دسترسی به nextsafarAdmin.mediaDetailsNonce)
         if ( ! wp_script_is( 'nextsafar-admin', 'enqueued' ) ) {
             wp_enqueue_script(
                 'nextsafar-admin',
-                NEXTSAFAR_URL . 'assets/admin/' . 'assets/js/admin.js',
+                NEXTSAFAR_URL . 'assets/js/admin.js',
                 array( 'jquery' ),
-                NEXTSAFAR_VERSION,
+                NEXTSAFAR_ADMIN_VERSION,
                 true
             );
             
@@ -68,9 +68,9 @@ class NextSafar_Media_Modal_Enhancer {
 
         wp_enqueue_script(
             'nextsafar-media-modal-enhancer',
-            NEXTSAFAR_URL . 'assets/admin/' . 'assets/js/media-modal-enhancer.js',
+            NEXTSAFAR_URL . 'assets/js/media-modal-enhancer.js',
             array( 'jquery', 'media-editor', 'media-views', 'wp-util', 'nextsafar-admin' ),
-            NEXTSAFAR_VERSION,
+            NEXTSAFAR_ADMIN_VERSION,
             true
         );
 

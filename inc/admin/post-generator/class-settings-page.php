@@ -11,29 +11,46 @@ class SettingsPage
             wp_die('دسترسی غیرمجاز');
         }
 
-        if (isset($_POST['save_api_keys']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_settings')) {
-            self::saveSettings();
+        $message = '';
+        $messageType = '';
+
+        if (isset($_POST['save_news_settings']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_news_settings')) {
+            $result = self::saveSettings($_POST);
+            $message = $result['message'];
+            $messageType = $result['type'];
         }
 
+        if (isset($_POST['save_api_keys']) && wp_verify_nonce($_POST['_wpnonce'], 'nextsafar_news_settings')) {
+            $result = self::saveApiKeys($_POST);
+            $message = $result['message'];
+            $messageType = $result['type'];
+        }
+
+        // ✅ اصلاح: مسیر صحیح
         wp_enqueue_style(
-            'nextsafar-pg-settings',
-            NEXTSAFAR_URL . 'assets/admin/css/pages/pg-settings.css',
-            ['nextsafar-components'],
+            'nextsafar-news-admin',
+            NEXTSAFAR_URL . 'assets/admin/css/pages/news-admin.css',
+            [],
             NEXTSAFAR_VERSION
         );
 
         wp_enqueue_script(
-            'nextsafar-pg-settings',
-            NEXTSAFAR_URL . 'assets/admin/js/pages/pg-settings.js',
-            ['jquery', 'nextsafar-utils'],
+            'nextsafar-news-admin',
+            NEXTSAFAR_URL . 'assets/admin/js/pages/news-admin.js',
+            ['jquery'],
             NEXTSAFAR_VERSION,
             true
         );
 
-        \NextSafar\Admin\Layout::render(function() {
-            $settings = self::getSettings();
-            include NEXTSAFAR_PATH . 'views/admin/post-generator/page-settings.php';
-        }, 'تنظیمات API تولید پست');
+        wp_localize_script('nextsafar-news-admin', 'nextsafarNews', [
+            'ajaxUrl' => \NextSafar\Core::get_ajax_url(),
+            'nonce' => wp_create_nonce('nextsafar_news_admin'),
+        ]);
+
+        $settings = self::getSettings();
+        $geminiModels = GeminiClient::getModelsList();
+
+        include NEXTSAFAR_PATH . 'views/news/settings.php';
     }
 
     protected static function saveSettings(): void

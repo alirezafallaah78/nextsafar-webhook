@@ -170,7 +170,7 @@ public function set_page_title_for_hidden_pages() {
         add_menu_page(
             'NextSafar',
             'NextSafar',
-            'manage_options',
+            'edit_posts',
             'nextsafar-admin',
             array( $this, 'render_admin_page' ),
             'dashicons-admin-site',
@@ -181,7 +181,7 @@ public function set_page_title_for_hidden_pages() {
             null,
             'CPT Listing',
             'CPT Listing',
-            'manage_options',
+            'edit_posts',
             'nextsafar-cpt',
             array( $this, 'render_cpt_page' )
         );
@@ -190,7 +190,7 @@ public function set_page_title_for_hidden_pages() {
             null,
             'CPT Taxonomy',
             'CPT Taxonomy',
-            'manage_options',
+            'manage_categories',
             'nextsafar-cpt-taxonomy',
             array( $this, 'render_cpt_taxonomy_page' )
         );
@@ -199,7 +199,7 @@ public function set_page_title_for_hidden_pages() {
             null,
             'Post Editor',
             'Post Editor',
-            'manage_options',
+            'edit_posts',
             'nextsafar-post-editor',
             array( $this, 'render_post_editor_page' )
         );
@@ -214,7 +214,7 @@ public function set_page_title_for_hidden_pages() {
     }
 
     public function render_post_editor_page() {
-        $view_file = NEXTSAFAR_PATH . 'views/admin/pages/post-editor.php';
+        $view_file = NEXTSAFAR_ADMIN_PATH . 'admin/pages/post-editor.php';
         if ( file_exists( $view_file ) ) {
             require $view_file;
         } else {
@@ -223,7 +223,7 @@ public function set_page_title_for_hidden_pages() {
     }
 
     public function render_cpt_taxonomy_page() {
-        $view_file = NEXTSAFAR_PATH . 'views/admin/pages/cpt-taxonomy.php';
+        $view_file = NEXTSAFAR_ADMIN_PATH . 'admin/pages/cpt-taxonomy.php';
         if ( file_exists( $view_file ) ) {
             require $view_file;
         } else {
@@ -236,7 +236,7 @@ public function set_page_title_for_hidden_pages() {
             'nextsafar-admin',
             'Media',
             'Media',
-            'manage_options',
+            'upload_files',
             'nextsafar-media',
             array( $this, 'render_media_page' )
         );
@@ -264,18 +264,18 @@ public function set_page_title_for_hidden_pages() {
     }
 
     public function render_admin_page() {
-        if ( ! current_user_can( 'manage_options' ) ) { // نویسنده/ویرایشگر/مشارکت‌کننده هم edit_posts دارند
+        if ( ! current_user_can( 'edit_posts' ) ) { // نویسنده/ویرایشگر/مشارکت‌کننده هم edit_posts دارند
             wp_die( 'شما اجازه دسترسی به این صفحه را ندارید.', 'خطای دسترسی', array( 'response' => 403 ) );
         }
-        require NEXTSAFAR_PATH . 'views/admin/dashboard.php';
+        require NEXTSAFAR_ADMIN_PATH . 'admin/dashboard.php';
     }
 
     public function render_media_page() {
-        require NEXTSAFAR_PATH . 'views/admin/pages/media.php';
+        require NEXTSAFAR_ADMIN_PATH . 'admin/pages/media.php';
     }
 
     public function render_updates_page() {
-        require NEXTSAFAR_PATH . 'views/admin/pages/updates.php';
+        require NEXTSAFAR_ADMIN_PATH . 'admin/pages/updates.php';
     }
 
     /**
@@ -306,12 +306,12 @@ public function set_page_title_for_hidden_pages() {
 
         // Capture sidebar HTML
         ob_start();
-        require NEXTSAFAR_PATH . 'inc/admin/layout/sidebar.php';
+        require NEXTSAFAR_ADMIN_PATH . 'admin/layout/sidebar.php';
         $sidebar_html = ob_get_clean();
 
         // Capture topbar HTML
         ob_start();
-        require NEXTSAFAR_PATH . 'inc/admin/layout/header.php';
+        require NEXTSAFAR_ADMIN_PATH . 'admin/layout/header.php';
         $topbar_html = ob_get_clean();
 
         ?>
@@ -666,7 +666,7 @@ private function print_wp_page_styles() {
      * 🆕 AJAX: ذخیره Screen Option
      */
     public function ajax_save_screen_option() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'edit_posts' ) ) {
             wp_send_json_error( array( 'message' => 'Permission denied' ) );
         }
 
@@ -687,7 +687,7 @@ private function print_wp_page_styles() {
     }
     
     public function ajax_global_search() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'edit_posts' ) ) {
             wp_send_json_error( array( 'message' => 'Permission denied.' ), 403 );
         }
         
@@ -963,7 +963,7 @@ private function print_wp_page_styles() {
     }
 
     public function ajax_add_term() {
-        if ( ! current_user_can( 'manage_options' ) ) {
+        if ( ! current_user_can( 'manage_categories' ) ) {
             wp_send_json_error( array( 'message' => 'Permission denied.' ), 403 );
         }
 
@@ -1075,7 +1075,7 @@ private function print_wp_page_styles() {
  * 🆕 AJAX: گرفتن محتوای Screen Options
  */
 public function ajax_get_screen_options() {
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'edit_posts' ) ) {
         wp_send_json_error( array( 'message' => 'Permission denied' ) );
     }
 
@@ -1290,7 +1290,7 @@ private function get_screen_options_fallback() {
  * 🆕 AJAX: ذخیره تنظیمات ویجت‌های داشبورد
  */
 public function ajax_save_dashboard_widgets() {
-    if ( ! current_user_can( 'manage_options' ) ) {
+    if ( ! current_user_can( 'edit_posts' ) ) {
         wp_send_json_error( array( 'message' => 'Permission denied' ) );
     }
 

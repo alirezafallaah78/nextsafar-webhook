@@ -1,0 +1,2608 @@
+/* =========================================================
+🎨 NextSafar Post Editor Theme
+استایل یکپارچه برای post.php, post-new.php, edit-tags.php, term.php
+هماهنگ با پنل ادمین NextSafar
+========================================================= */
+
+/* =========================================================
+🎯 Variables (هم‌خوان با admin.css)
+========================================================= */
+:root {
+  --ns-primary: #43abff;
+  --ns-primary-dark: #3384c6;
+  --ns-primary-light: #b9e0ff;
+  --ns-primary-light-2: #e8f5fe;
+  --ns-primary-light-3: #f0f7ff;
+  --ns-bg: #f8f8f8;
+  --ns-surface: #ffffff;
+  --ns-border: #e5f0f9;
+  --ns-border-dark: #cfe2f3;
+  --ns-text: #0f172a;
+  --ns-text-secondary: #475569;
+  --ns-text-muted: #94a3b8;
+  --ns-success: #10b981;
+  --ns-success-bg: #ecfdf5;
+  --ns-success-text: #047857;
+  --ns-warning: #f59e0b;
+  --ns-warning-bg: #fffbeb;
+  --ns-danger: #dc2626;
+  --ns-danger-bg: #fef2f2;
+  --ns-info: #0ea5e9;
+  --ns-info-bg: #e0f2fe;
+  --ns-radius: 12px;
+  --ns-radius-sm: 8px;
+  --ns-radius-xs: 6px;
+  --ns-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --ns-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+  --ns-font-family:
+    "IRANSansX", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --ns-font-mono: "Consolas", "Monaco", "Courier New", monospace;
+}
+
+/* =========================================================
+🎯 Base Reset
+========================================================= */
+body.post-php,
+body.post-new-php,
+body.edit-tags-php,
+body.term-php {
+  background: var(--ns-bg) !important;
+  font-family: var(--ns-font-family) !important;
+  color: var(--ns-text) !important;
+  direction: rtl !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body.post-php #wpcontent,
+body.post-new-php #wpcontent,
+body.edit-tags-php #wpcontent,
+body.term-php #wpcontent {
+  padding-right: 0 !important;
+  padding-left: 0 !important;
+}
+
+/* =========================================================
+🎨 Editor Topbar (Sticky)
+========================================================= */
+body.post-php .editor-topbar,
+body.post-new-php .editor-topbar {
+  background: rgba(255, 255, 255, 0.95) !important;
+  padding: 12px 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  position: sticky !important;
+  top: 32px !important;
+  z-index: 99 !important;
+  backdrop-filter: blur(10px) !important;
+}
+
+body.post-php .editor-topbar a,
+body.post-new-php .editor-topbar a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 8px 14px !important;
+  border-radius: var(--ns-radius-sm) !important;
+  transition: all 0.2s ease !important;
+  font-size: 13px !important;
+  font-family: var(--ns-font-family) !important;
+}
+
+body.post-php .editor-topbar a:hover,
+body.post-new-php .editor-topbar a:hover {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+}
+
+body.post-php .editor-topbar h2,
+body.post-new-php .editor-topbar h2 {
+  font-family: var(--ns-font-family) !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  margin: 0 !important;
+  flex: 1 !important;
+}
+
+body.post-php .editor-topbar .editor-status,
+body.post-new-php .editor-topbar .editor-status {
+  font-size: 12px !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  background: var(--ns-success-bg) !important;
+  color: var(--ns-success) !important;
+  font-weight: 600 !important;
+}
+
+#nextsafar-injected-topbar {
+  border-bottom: none !important;
+}
+/* =========================================================
+📄 Page Header
+========================================================= */
+body.post-php .wrap,
+body.post-new-php .wrap,
+body.edit-tags-php .wrap,
+body.term-php .wrap {
+  margin: 20px !important;
+  padding: 0 !important;
+}
+
+body.post-php .wrap h1.wp-heading-inline,
+body.post-new-php .wrap h1.wp-heading-inline,
+body.edit-tags-php .wrap h1.wp-heading-inline,
+body.term-php .wrap h1.wp-heading-inline,
+.wrap h1 {
+  display: none !important;
+}
+
+body.post-php .wrap .page-title-action,
+body.post-new-php .wrap .page-title-action,
+body.edit-tags-php .wrap .page-title-action,
+body.term-php .wrap .page-title-action {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: var(--ns-radius-sm) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  margin-right: 12px !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+}
+
+body.post-php .wrap .page-title-action:hover,
+body.post-new-php .wrap .page-title-action:hover,
+body.edit-tags-php .wrap .page-title-action:hover,
+body.term-php .wrap .page-title-action:hover {
+  background: var(--ns-primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--ns-shadow-md) !important;
+}
+
+body.post-php hr.wp-header-end,
+body.post-new-php hr.wp-header-end,
+body.edit-tags-php hr.wp-header-end,
+body.term-php hr.wp-header-end,
+.wp-heading-inline {
+  display: none !important;
+}
+
+/* =========================================================
+📦 Post Body Layout (2 Rows + Sticky Sidebar)
+========================================================= */
+body.post-php #post-body,
+body.post-new-php #post-body {
+  background: transparent !important;
+  margin: 0 !important;
+}
+
+body.post-php #post-body.columns-2,
+body.post-new-php #post-body.columns-2 {
+  display: grid !important;
+  grid-template-columns: 1fr 320px !important;
+  grid-template-rows: auto auto !important;
+  gap: 24px !important;
+  margin: 0 !important;
+  align-items: start !important;
+}
+
+body.post-php #post-body-content,
+body.post-new-php #post-body-content {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+body.post-php #postbox-container-2,
+body.post-new-php #postbox-container-2 {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  float: none !important;
+}
+
+body.post-php #postbox-container-1,
+body.post-new-php #postbox-container-1 {
+  grid-column: 2 !important;
+  grid-row: 1 / span 2 !important;
+  width: 100% !important;
+  margin: 0 !important;
+  float: none !important;
+  align-self: start !important;
+}
+#poststuff #post-body.columns-2 #side-sortables {
+  width: 100% !important;
+}
+
+/* =========================================================
+🎯 Title Input
+========================================================= */
+body.post-php #title,
+body.post-new-php #title {
+  font-family: var(--ns-font-family) !important;
+  font-size: 28px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  padding: 8px 0 !important;
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  letter-spacing: -0.02em !important;
+  line-height: 1.3 !important;
+  height: auto !important;
+}
+
+body.post-php #titlediv #title,
+body.post-new-php #titlediv #title {
+  padding-inline: 10px !important;
+  font-family: var(--ns-font-family) !important;
+  font-size: 24px !important;
+  font-weight: 500 !important;
+  border: 2px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  background: var(--ns-surface) !important;
+  color: var(--ns-text) !important;
+  transition: all 0.2s ease !important;
+  margin-bottom: 6px !important;
+  min-height: 50px !important;
+}
+#edit-slug-buttons {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+body.post-php #titlediv #title:focus,
+body.post-new-php #titlediv #title:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.post-php #titlediv #title-prompt-text,
+body.post-new-php #titlediv #title-prompt-text {
+  font-family: var(--ns-font-family) !important;
+  color: var(--ns-text-secondary) !important;
+  font-size: 18px !important;
+}
+
+/* =========================================================
+🔗 Slug Box (Permalink)
+========================================================= */
+body.post-php #edit-slug-box,
+body.post-new-php #edit-slug-box {
+  font-family: var(--ns-font-family) !important;
+  color: var(--ns-text-secondary) !important;
+  font-size: 13px !important;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+body.post-php #editable-post-name,
+body.post-new-php #editable-post-name {
+  background: var(--ns-primary-light-3) !important;
+  color: var(--ns-primary-dark) !important;
+  padding: 2px 8px !important;
+  border-radius: 4px !important;
+  font-family: var(--ns-font-mono) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  direction: ltr !important;
+  display: inline-block !important;
+}
+
+body.post-php #sample-permalink,
+body.post-new-php #sample-permalink {
+  color: var(--ns-text-secondary) !important;
+  font-family: var(--ns-font-family) !important;
+  direction: ltr !important;
+  display: inline-block !important;
+  unicode-bidi: embed !important;
+}
+
+body.post-php #sample-permalink a,
+body.post-new-php #sample-permalink a {
+  color: var(--ns-text-secondary) !important;
+}
+
+/* =========================================================
+📝 Classic Editor (TinyMCE)
+========================================================= */
+body.post-php .wp-editor-wrap,
+body.post-new-php .wp-editor-wrap {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  overflow: hidden !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  z-index: 10 !important;
+}
+#post-status-info {
+  padding: 4px;
+  margin-top: 5px;
+  border-radius: 10px;
+  background: var(--ns-bg);
+}
+
+#wp-content-editor-tools {
+  background-color: var(--ns-surface) !important;
+  padding-inline: 20px !important;
+}
+
+.wp-editor-expand #wp-content-editor-tools {
+  border: none !important;
+}
+
+#wp-content-editor-container {
+  margin-top: 10px !important;
+}
+
+body.post-php .wp-editor-tabs,
+body.post-new-php .wp-editor-tabs {
+  border-bottom: none !important;
+  background: var(--ns-surface) !important;
+  gap: 8px !important;
+  display: flex !important;
+}
+
+/* 🎯 دکمه‌های Visual/Code - مثل دکمه افزودن رسانه */
+body.post-php .wp-switch-editor,
+body.post-new-php .wp-switch-editor {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-surface) !important;
+  color: var(--ns-primary-dark) !important;
+  border: 1px solid var(--ns-primary) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  height: auto !important;
+  min-height: 22px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  margin: 0 !important;
+}
+
+body.post-php .wp-switch-editor:hover,
+body.post-new-php .wp-switch-editor:hover {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border-color: var(--ns-primary) !important;
+}
+
+body.post-php .wp-switch-editor.switch-tmce.active,
+body.post-php .wp-switch-editor.switch-html.active,
+body.post-new-php .wp-switch-editor.switch-tmce.active,
+body.post-new-php .wp-switch-editor.switch-html.active {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border-color: var(--ns-primary-dark) !important;
+}
+
+body.post-php .wp-media-buttons .button,
+body.post-new-php .wp-media-buttons .button {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-surface) !important;
+  color: var(--ns-primary-dark) !important;
+  border: 1px solid var(--ns-primary) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  height: 36px !important;
+  min-height: 36x !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.post-php .wp-media-buttons .button:hover,
+body.post-new-php .wp-media-buttons .button:hover {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border-color: var(--ns-primary) !important;
+}
+
+/* TinyMCE Toolbar */
+body.post-php .mce-tinymce,
+body.post-new-php .mce-tinymce {
+  box-shadow: none !important;
+  border: none !important;
+}
+
+body.post-php .mce-toolbar .mce-btn,
+body.post-new-php .mce-toolbar .mce-btn {
+  border-radius: var(--ns-radius-xs) !important;
+  border: none !important;
+  background: transparent !important;
+  transition: all 0.15s ease !important;
+}
+
+body.post-php .mce-toolbar .mce-btn:hover,
+body.post-new-php .mce-toolbar .mce-btn:hover {
+  background: var(--ns-primary-light-2) !important;
+}
+
+body.post-php .mce-toolbar .mce-btn.mce-active,
+body.post-new-php .mce-toolbar .mce-btn.mce-active {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+}
+
+body.post-php .mce-toolbar .mce-btn button,
+body.post-new-php .mce-toolbar .mce-btn button {
+  color: var(--ns-text-secondary) !important;
+}
+
+body.post-php .mce-toolbar .mce-btn:hover button,
+body.post-new-php .mce-toolbar .mce-btn:hover button {
+  color: var(--ns-primary-dark) !important;
+}
+
+body.post-php .mce-toolbar .mce-btn.mce-active button,
+body.post-new-php .mce-toolbar .mce-btn.mce-active button {
+  color: #fff !important;
+}
+
+.mce-toolbar .mce-btn-group .mce-btn.mce-listbox {
+  border-radius: 6px;
+  padding: 2px;
+}
+
+/* QuickTags Toolbar */
+body.post-php .quicktags-toolbar,
+body.post-new-php .quicktags-toolbar {
+  border-bottom: 1px solid var(--ns-border) !important;
+  padding: 10px 14px !important;
+  gap: 4px !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+}
+
+body.post-php .quicktags-toolbar input.button,
+body.post-new-php .quicktags-toolbar input.button {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-xs) !important;
+  padding: 4px 10px !important;
+  font-family: var(--ns-font-family) !important;
+  font-size: 12px !important;
+  color: var(--ns-text) !important;
+  transition: all 0.15s ease !important;
+  height: auto !important;
+  min-height: 28px !important;
+}
+
+body.post-php .quicktags-toolbar input.button:hover,
+body.post-new-php .quicktags-toolbar input.button:hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+#ed_toolbar {
+  width: 100% !important;
+}
+
+#poststuff .inside #page_template,
+#poststuff .inside #parent_id {
+  width: 99% !important;
+  border-radius: 8px;
+  border-color: var(--ns-border) !important;
+}
+
+#wp-content-editor-container {
+  border: none !important;
+}
+.wp-editor-area {
+  margin: 0 !important;
+}
+/* =========================================================
+📦 Meta Boxes
+========================================================= */
+body.post-php .postbox,
+body.post-new-php .postbox {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  margin-bottom: 20px !important;
+  overflow: hidden !important;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+body.post-php .postbox:hover,
+body.post-new-php .postbox:hover {
+  border-color: var(--ns-primary-light) !important;
+  box-shadow: var(--ns-shadow-md) !important;
+}
+
+/* 🎯 هدر ساده سفید (بدون گرادیانت) */
+body.post-php .postbox-header,
+body.post-new-php .postbox-header {
+  background: var(--ns-surface) !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  padding: 0 20px !important;
+  min-height: 52px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+}
+
+body.post-php .postbox-header .hndle,
+body.post-new-php .postbox-header .hndle,
+body.post-php .postbox .hndle,
+body.post-new-php .postbox .hndle,
+body.post-php .postbox > h2,
+body.post-new-php .postbox > h2,
+body.post-php .postbox .postbox-title,
+body.post-new-php .postbox .postbox-title {
+  font-family: var(--ns-font-family) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  background: var(--ns-surface) !important;
+  padding: 14px 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  line-height: 1.4 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+body.post-php .postbox-header .toggle-indicator,
+body.post-new-php .postbox-header .toggle-indicator {
+  color: var(--ns-text-muted) !important;
+  transition: transform 0.2s ease !important;
+}
+
+body.post-php .postbox.closed .toggle-indicator,
+body.post-new-php .postbox.closed .toggle-indicator {
+  transform: rotate(180deg) !important;
+}
+
+body.post-php .postbox .inside,
+body.post-new-php .postbox .inside {
+  padding: 6px !important;
+  margin: 0 !important;
+  background: var(--ns-surface) !important;
+}
+
+body.post-php .postbox.closed .inside,
+body.post-new-php .postbox.closed .inside {
+  display: none !important;
+}
+
+/* =========================================================
+🎛 Form Inputs (Generic)
+========================================================= */
+body.post-php input[type="text"]:focus,
+body.post-php input[type="email"]:focus,
+body.post-php input[type="url"]:focus,
+body.post-php input[type="number"]:focus,
+body.post-php input[type="search"]:focus,
+body.post-php input[type="password"]:focus,
+body.post-php textarea:focus,
+body.post-php select:focus,
+body.post-new-php input[type="text"]:focus,
+body.post-new-php input[type="email"]:focus,
+body.post-new-php input[type="url"]:focus,
+body.post-new-php input[type="number"]:focus,
+body.post-new-php input[type="search"]:focus,
+body.post-new-php input[type="password"]:focus,
+body.post-new-php textarea:focus,
+body.post-new-php select:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.post-php textarea,
+body.post-new-php textarea {
+  min-height: 300px !important;
+  height: auto !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+}
+
+body.post-php label,
+body.post-new-php label {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  color: var(--ns-text) !important;
+  font-size: 13px !important;
+  margin-bottom: 6px !important;
+  display: block !important;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+body.post-new-php label:hover {
+  background: var(--ns-border) !important;
+  cursor: pointer !important;
+}
+.categorydiv div.tabs-panel,
+.customlinkdiv div.tabs-panel,
+.posttypediv div.tabs-panel,
+.taxonomydiv div.tabs-panel,
+.wp-tab-panel {
+  max-height: 350px !important;
+}
+/* =========================================================
+🎯 Custom Meta Box: htl-chbx (Hotel Style)
+========================================================= */
+body.post-php .htl-chbx,
+body.post-new-php .htl-chbx {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  margin-bottom: 16px !important;
+  overflow: hidden !important;
+}
+
+/* 🎯 هدر ساده سفید (بدون گرادیانت) */
+body.post-php .htl-hdr-bx-lbl,
+body.post-new-php .htl-hdr-bx-lbl {
+  background: var(--ns-surface) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  padding: 12px 18px !important;
+  font-size: 14px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+body.post-php .htl-chbx-df,
+body.post-new-php .htl-chbx-df {
+  padding: 16px !important;
+  background: #fff !important;
+}
+
+body.post-php .htl-ch-bx-sec,
+body.post-new-php .htl-ch-bx-sec {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)) !important;
+  gap: 10px !important;
+  margin-bottom: 12px !important;
+}
+
+body.post-php .htl-checkbx-bx,
+body.post-new-php .htl-checkbx-bx {
+  background: #f8fbff !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 10px 14px !important;
+  margin-bottom: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .htl-checkbx-bx:hover,
+body.post-new-php .htl-checkbx-bx:hover {
+  background: var(--ns-primary-light-3) !important;
+  border-color: var(--ns-primary) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+}
+
+body.post-php .htl-checkbx-bx .d-flex,
+body.post-new-php .htl-checkbx-bx .d-flex {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+
+body.post-php .htl-checkbx-bx input[type="checkbox"],
+body.post-new-php .htl-checkbx-bx input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  min-height: 18px !important;
+  accent-color: var(--ns-primary) !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+}
+
+body.post-php .htl-checkbx-bx label,
+body.post-new-php .htl-checkbx-bx label {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 13px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  flex: 1 !important;
+  user-select: none !important;
+}
+
+body.post-php .htl-checkbx-bx label[style*="color: #d9534f"],
+body.post-new-php .htl-checkbx-bx label[style*="color: #d9534f"] {
+  color: var(--ns-danger) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  margin-top: 6px !important;
+  padding-top: 6px !important;
+  border-top: 1px dashed var(--ns-border) !important;
+}
+
+/* =========================================================
+📤 Submit Box (Publish Meta Box)
+========================================================= */
+body.post-php #major-publishing-actions,
+body.post-new-php #major-publishing-actions {
+  background: var(--ns-surface) !important;
+  padding: 5px 20px 10px !important;
+  border-top: 1px solid var(--ns-border) !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+body.post-php #publishing-action,
+body.post-new-php #publishing-action {
+  width: 100% !important;
+}
+
+/* 🎯 دکمه Publish - Solid (بدون گرادیانت) */
+body.post-php #publish,
+body.post-new-php #publish {
+  width: 100% !important;
+  min-height: 44px !important;
+  background: var(--ns-primary) !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  color: #fff !important;
+  font-family: var(--ns-font-family) !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(67, 171, 255, 0.3) !important;
+  text-shadow: none !important;
+  padding: 0 20px !important;
+  line-height: 44px !important;
+}
+
+body.post-php #publish:hover,
+body.post-new-php #publish:hover {
+  background: var(--ns-primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(67, 171, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.post-php #save-post,
+body.post-new-php #save-post,
+#preview-action a,
+.wp-core-ui .button:where(:not(.button-link)),
+#add-location {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  color: var(--ns-text) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  align-content: center !important;
+}
+
+body.post-php #save-post:hover,
+body.post-new-php #save-post:hover,
+#preview-action a:hover,
+.wp-core-ui .button:where(:not(.button-link)):hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.post-php #delete-post,
+body.post-new-php #delete-post {
+  background: transparent !important;
+  border: 1px solid var(--ns-danger) !important;
+  color: var(--ns-danger) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 8px 14px !important;
+  height: auto !important;
+  text-decoration: none !important;
+}
+
+body.post-php #delete-post:hover,
+body.post-new-php #delete-post:hover {
+  background: var(--ns-danger) !important;
+  color: #fff !important;
+}
+
+/* Status & Visibility Options */
+body.post-php #submitdiv .misc-pub-curtime,
+body.post-new-php #submitdiv .misc-pub-curtime {
+  font-family: var(--ns-font-mono) !important;
+  font-size: 12px !important;
+  color: var(--ns-text-secondary) !important;
+}
+
+body.post-php #submitdiv #timestampdiv,
+body.post-new-php #submitdiv #timestampdiv {
+  background: var(--ns-bg) !important;
+  padding: 12px !important;
+  border-radius: var(--ns-radius-sm) !important;
+  border: 1px solid var(--ns-border) !important;
+  margin-top: 8px !important;
+}
+
+body.post-php #submitdiv .misc-pub-section strong,
+body.post-new-php #submitdiv .misc-pub-section strong {
+  color: var(--ns-text) !important;
+  font-weight: 500 !important;
+}
+
+body.post-php #submitdiv .misc-pub-section a,
+body.post-new-php #submitdiv .misc-pub-section a {
+  color: var(--ns-primary) !important;
+  font-weight: 600 !important;
+}
+
+body.post-php .misc-pub-section,
+body.post-new-php .misc-pub-section {
+  border-bottom: 1px solid var(--ns-border) !important;
+  padding: 12px 18px !important;
+  background: var(--ns-surface) !important;
+}
+
+body.post-php .misc-pub-section:last-child,
+body.post-new-php .misc-pub-section:last-child {
+  border-bottom: none !important;
+}
+
+#minor-publishing-actions {
+  padding: 12px 18px !important;
+  background: var(--ns-surface) !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  display: flex !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+}
+
+/* =========================================================
+🎨 Buttons (WordPress Core) - Solid بدون گرادیانت
+========================================================= */
+body.post-php .button-primary,
+body.post-new-php .button-primary {
+  background: var(--ns-primary) !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  color: #fff !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  min-height: 32px !important;
+  box-shadow: 0 2px 8px rgba(67, 171, 255, 0.3) !important;
+  text-shadow: none !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .button-primary:hover,
+body.post-new-php .button-primary:hover {
+  background: var(--ns-primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(67, 171, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+body.post-php .button-secondary,
+body.post-new-php .button-secondary,
+body.post-php .button {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  color: var(--ns-text) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  padding: 6px 16px !important;
+  min-height: 32px !important;
+  box-shadow: none !important;
+  text-shadow: none !important;
+  transition: all 0.15s ease !important;
+  display: inline-flex !important;
+  align-content: center;
+  align-items: center;
+  height: 32px !important;
+}
+
+body.post-php .button-secondary:hover,
+body.post-new-php .button-secondary:hover,
+body.post-php .button:hover,
+body.post-new-php .button:hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.post-php .button-link,
+body.post-new-php .button-link {
+  color: var(--ns-primary) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+}
+
+body.post-php .button-link:hover,
+body.post-new-php .button-link:hover {
+  color: var(--ns-primary-dark) !important;
+}
+
+/* =========================================================
+🎯 Category Checklist
+========================================================= */
+body.post-php .categorydiv,
+body.post-new-php .categorydiv,
+body.post-php .tagsdiv,
+body.post-new-php .tagsdiv {
+  background: var(--ns-surface) !important;
+}
+
+body.post-php .category-tabs li a,
+body.post-new-php .category-tabs li a {
+  font-family: var(--ns-font-family) !important;
+  color: var(--ns-text-secondary) !important;
+  padding: 10px 16px !important;
+  border-bottom: 2px solid transparent !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .category-tabs li.ui-state-active a,
+body.post-new-php .category-tabs li.ui-state-active a {
+  color: var(--ns-primary) !important;
+  border-bottom-color: var(--ns-primary) !important;
+}
+
+.wp-tab-active,
+ul.add-menu-item-tabs li.tabs,
+ul.category-tabs li.tabs {
+  border-color: var(--ns-border) !important;
+  border-bottom: none !important;
+  border-radius: var(--ns-radius-sm) var(--ns-radius-sm) 0 0 !important;
+}
+
+body.post-php #category-all,
+body.post-new-php #category-all,
+body.post-php #category-pop,
+body.post-new-php #category-pop,
+#tourism-all {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  padding: 12px !important;
+  border: 1px solid var(--ns-border) !important;
+}
+body.post-php #category-all,
+body.post-new-php #category-all,
+#tourism-all {
+  border-radius: var(--ns-radius-sm) 0 var(--ns-radius-sm) var(--ns-radius-sm) !important;
+}
+body.post-php #category-pop,
+body.post-new-php #category-pop,
+#tourism-pop {
+  border-radius: var(--ns-radius-sm) !important;
+}
+body.post-php #category-all li,
+body.post-new-php #category-all li {
+  margin-bottom: 2px !important;
+  padding: 6px 10px !important;
+  border-radius: var(--ns-radius-xs) !important;
+  transition: background 0.15s ease !important;
+}
+
+body.post-php #category-all label,
+body.post-new-php #category-all label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  font-weight: 500 !important;
+}
+
+body.post-php .category-add-toggle,
+body.post-new-php .category-add-toggle {
+  background: var(--ns-primary-light-3) !important;
+  border: 1px dashed var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+  border-radius: var(--ns-radius-xs) !important;
+  padding: 6px 12px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  transition: all 0.15s ease !important;
+}
+
+body.post-php .category-add-toggle:hover,
+body.post-new-php .category-add-toggle:hover {
+  background: var(--ns-primary-light-2) !important;
+}
+
+body.post-php .tagsdiv,
+body.post-new-php .tagsdiv {
+  padding: 8px !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+}
+
+body.post-php .tagchecklist,
+body.post-new-php .tagchecklist {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  margin-bottom: 10px !important;
+}
+
+body.post-php .tagchecklist span,
+body.post-new-php .tagchecklist span {
+  background: var(--ns-primary-light-2) !important;
+  color: var(--ns-primary-dark) !important;
+  padding: 4px 8px !important;
+  border-radius: var(--ns-radius-xs) !important;
+  font-size: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+body.post-php .tagchecklist .ntdelbutton,
+body.post-new-php .tagchecklist .ntdelbutton {
+  background: transparent !important;
+  border: none !important;
+  color: var(--ns-danger) !important;
+  cursor: pointer !important;
+  font-size: 12px !important;
+  width: 18px !important;
+  height: 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border-radius: 50% !important;
+  transition: all 0.15s ease !important;
+}
+
+body.post-php .tagchecklist .ntdelbutton:hover,
+body.post-new-php .tagchecklist .ntdelbutton:hover {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+}
+.wp-list-table #the-list tr td,
+.wp-list-table #the-list tr th {
+  border-block: solid 1px var(--ns-border);
+}
+#current-page-selector {
+  border-radius: 8px;
+}
+
+#category-add-toggle:hover,
+#link-post_tag:hover,
+#tourism-add-toggle:hover,
+.litespeed-learn-mor:hover {
+  color: var(--ns-primary-dark) !important;
+}
+
+#new-tag-post_tag {
+  padding-inline: 10px !important;
+  font-family: var(--ns-font-family) !important;
+  border: 2px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  background: var(--ns-surface) !important;
+  color: var(--ns-text) !important;
+  transition: all 0.2s ease !important;
+}
+/* =========================================================
+🖼 Featured Image (Thumbnail)
+========================================================= */
+body.post-php #postimagediv .inside,
+body.post-new-php #postimagediv .inside,
+#visa_bg_image_meta .inside,
+#visa_flag_image_meta .inside {
+  padding: 10px !important;
+  background: var(--ns-bg) !important;
+}
+body.post-new-php #postimagediv .inside .hide-if-no-js {
+  margin: 0 !important;
+}
+body.post-php #set-post-thumbnail,
+body.post-new-php #set-post-thumbnail,
+#visa_bg_image_meta .inside div #upload_visa_bg_image_btn,
+#visa_flag_image_meta .inside div #upload_visa_flag_image_btn {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  justify-content: center !important;
+  background: var(--ns-surface) !important;
+  border: 2px dashed var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  text-align: center !important;
+  color: var(--ns-text-secondary) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  height: auto;
+  min-height: 60px !important;
+}
+
+body.post-php #set-post-thumbnail:hover,
+body.post-new-php #set-post-thumbnail:hover,
+#visa_bg_image_meta .inside div #upload_visa_bg_image_btn:hover,
+#visa_flag_image_meta .inside div #upload_visa_flag_image_btn:hover {
+  border-color: var(--ns-primary) !important;
+  background: var(--ns-primary-light-3) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.post-php #set-post-thumbnail img,
+body.post-new-php #set-post-thumbnail img {
+  width: 100% !important;
+  height: auto !important;
+  border-radius: var(--ns-radius-sm) !important;
+  border: 1px solid var(--ns-border) !important;
+  display: block !important;
+}
+
+body.post-php #remove-post-thumbnail,
+body.post-new-php #remove-post-thumbnail {
+  color: var(--ns-danger) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+  font-size: 12px !important;
+  margin-top: 8px !important;
+  display: inline-block !important;
+  text-decoration: none !important;
+}
+
+body.post-php #remove-post-thumbnail:hover,
+body.post-new-php #remove-post-thumbnail:hover {
+  color: var(--ns-danger) !important;
+  text-decoration: underline !important;
+}
+
+/* =========================================================
+💡 Yoast SEO Integration
+========================================================= */
+body.post-php .yoast,
+body.post-new-php .yoast,
+.misc-pub-section span,
+.misc-pub-section a {
+  font-family: var(--ns-font-family) !important;
+}
+
+body.post-php .yoast .yst-traffic-light,
+body.post-new-php .yoast .yst-traffic-light {
+  border-radius: var(--ns-radius) !important;
+}
+
+body.post-php .yoast input[type="text"],
+body.post-php .yoast textarea,
+body.post-php .yoast select,
+body.post-new-php .yoast input[type="text"],
+body.post-new-php .yoast textarea,
+body.post-new-php .yoast select {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 10px 14px !important;
+  transition: all 0.2s ease !important;
+  min-height: 40px !important;
+}
+
+body.post-php .yoast input[type="text"]:focus,
+body.post-php .yoast textarea:focus,
+body.post-php .yoast select:focus,
+body.post-new-php .yoast input[type="text"]:focus,
+body.post-new-php .yoast textarea:focus,
+body.post-new-php .yoast select:focus {
+  border-color: var(--ns-primary) !important;
+  box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15) !important;
+  outline: none !important;
+}
+
+body.post-php .yoast .yoast-seo-score-icon,
+body.post-new-php .yoast .yoast-seo-score-icon {
+  border-radius: 50% !important;
+}
+
+body.post-php .wpseo-meta-section,
+body.post-new-php .wpseo-meta-section {
+  background: var(--ns-surface) !important;
+  border-radius: var(--ns-radius) !important;
+}
+
+.wpseo-meta-section,
+.wpseo-meta-section-react {
+  max-width: none !important;
+}
+
+body.post-php .wpseo-metabox-sidebar li,
+body.post-new-php .wpseo-metabox-sidebar li {
+  font-family: var(--ns-font-family) !important;
+}
+
+body.post-php .wpseo-metabox-sidebar li.wpseo-meta-tab-active a,
+body.post-new-php .wpseo-metabox-sidebar li.wpseo-meta-tab-active a {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border-radius: var(--ns-radius-sm) !important;
+}
+
+/* =========================================================
+🎨 ACF (Advanced Custom Fields) Integration
+========================================================= */
+body.post-php .acf-postbox,
+body.post-new-php .acf-postbox {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  margin-bottom: 20px !important;
+}
+
+/* 🎯 هدر ACF - سفید ساده */
+body.post-php .acf-postbox > .hndle,
+body.post-new-php .acf-postbox > .hndle {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-surface) !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  padding: 14px 18px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+}
+
+body.post-php .acf-fields,
+body.post-new-php .acf-fields {
+  padding: 0 !important;
+}
+
+body.post-php .acf-field,
+body.post-new-php .acf-field {
+  padding: 16px 18px !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  background: var(--ns-surface) !important;
+  transition: background 0.2s ease !important;
+}
+
+body.post-php .acf-field:hover,
+body.post-new-php .acf-field:hover {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.post-php .acf-field:last-child,
+body.post-new-php .acf-field:last-child {
+  border-bottom: none !important;
+}
+
+body.post-php .acf-label label,
+body.post-new-php .acf-label label {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 13px !important;
+  margin-bottom: 8px !important;
+}
+
+body.post-php .acf-input input[type="text"],
+body.post-php .acf-input input[type="email"],
+body.post-php .acf-input input[type="url"],
+body.post-php .acf-input input[type="number"],
+body.post-php .acf-input textarea,
+body.post-php .acf-input select,
+body.post-new-php .acf-input input[type="text"],
+body.post-new-php .acf-input input[type="email"],
+body.post-new-php .acf-input input[type="url"],
+body.post-new-php .acf-input input[type="number"],
+body.post-new-php .acf-input textarea,
+body.post-new-php .acf-input select {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 8px 12px !important;
+  height: 40px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .acf-input textarea,
+body.post-new-php .acf-input textarea {
+  min-height: 80px !important;
+  height: auto !important;
+  resize: vertical !important;
+  line-height: 1.5 !important;
+}
+
+body.post-php .acf-input input:focus,
+body.post-php .acf-input textarea:focus,
+body.post-php .acf-input select:focus,
+body.post-new-php .acf-input input:focus,
+body.post-new-php .acf-input textarea:focus,
+body.post-new-php .acf-input select:focus {
+  border-color: var(--ns-primary) !important;
+  box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15) !important;
+  outline: none !important;
+}
+
+body.post-php .acf-fields.-left > .acf-field > .acf-label,
+body.post-new-php .acf-fields.-left > .acf-field > .acf-label {
+  background: var(--ns-primary-light-3) !important;
+  border-left: 1px solid var(--ns-border) !important;
+}
+
+/* =========================================================
+🔔 Notices & Messages
+========================================================= */
+body.post-php .notice,
+body.post-new-php .notice {
+  border-radius: var(--ns-radius-sm) !important;
+  border-right-width: 4px !important;
+}
+
+/* =========================================================
+🎨 Links
+========================================================= */
+
+body.post-php a:hover,
+body.post-new-php a:hover,
+.nextsafar-nav-item:hover,
+.nextsafar-submenu a:hover {
+  color: var(--ns-surface) !important;
+}
+
+/* =========================================================
+🎯 NextSafar Custom Metaboxes (htl-databox)
+========================================================= */
+body.post-php .htl-databox,
+body.post-new-php .htl-databox {
+  background: var(--ns-surface) !important;
+  padding: 20px !important;
+  margin: 0 !important;
+  border-radius: 0 !important;
+}
+
+body.post-php .htl-form-row,
+body.post-new-php .htl-form-row {
+  display: grid !important;
+  grid-template-columns: 220px 1fr !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 14px 16px !important;
+  margin: 0 0 8px 0 !important;
+  background: #f8fbff !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .htl-form-row:hover,
+body.post-new-php .htl-form-row:hover {
+  background: var(--ns-primary-light-3) !important;
+  border-color: var(--ns-primary) !important;
+  transform: translateX(-2px) !important;
+  box-shadow: -3px 0 0 var(--ns-primary) !important;
+}
+
+body.post-php .htl-form-row:last-child,
+body.post-new-php .htl-form-row:last-child {
+  margin-bottom: 0 !important;
+}
+
+body.post-php .htl-form-row > label,
+body.post-new-php .htl-form-row > label {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 13px !important;
+  margin: 0 !important;
+  padding-right: 8px !important;
+  border-right: 3px solid var(--ns-primary) !important;
+  line-height: 1.4 !important;
+  display: flex !important;
+  align-items: center !important;
+}
+
+body.post-php .htl-form-row > label::before,
+body.post-new-php .htl-form-row > label::before {
+  content: "●" !important;
+  color: var(--ns-primary) !important;
+  font-size: 8px !important;
+  margin-left: 6px !important;
+  opacity: 0.6 !important;
+}
+
+body.post-php .htl-form-row > label:hover,
+body.post-new-php .htl-form-row > label:hover {
+  color: var(--ns-primary-dark) !important;
+  border-right-color: var(--ns-primary-dark) !important;
+}
+
+body.post-php .htl-dt-input,
+body.post-new-php .htl-dt-input {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: #fff !important;
+  transition: all 0.2s ease !important;
+  min-height: 42px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+}
+
+body.post-php .htl-dt-input:focus,
+body.post-new-php .htl-dt-input:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.post-php select.htl-dt-input,
+body.post-new-php select.htl-dt-input {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23666'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: left 12px center !important;
+  background-size: 20px !important;
+  padding-left: 36px !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  cursor: pointer !important;
+}
+
+body.post-php input[type="number"].htl-dt-input,
+body.post-new-php input[type="number"].htl-dt-input {
+  max-width: 200px !important;
+}
+
+body.post-php .htl-form-row-desc,
+body.post-new-php .htl-form-row-desc {
+  display: block !important;
+  padding: 16px !important;
+  margin: 0 0 12px 0 !important;
+  background: #f8fbff !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .htl-form-row-desc:hover,
+body.post-new-php .htl-form-row-desc:hover {
+  border-color: var(--ns-primary) !important;
+}
+
+body.post-php .htl-form-row-desc > label,
+body.post-new-php .htl-form-row-desc > label {
+  display: block !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 14px !important;
+  margin: 0 0 10px 0 !important;
+  padding: 8px 12px !important;
+  background: var(--ns-surface) !important;
+  border-right: 4px solid var(--ns-primary) !important;
+  border-radius: 0 var(--ns-radius-sm) var(--ns-radius-sm) 0 !important;
+}
+
+body.post-php .htl-form-row-desc > label:hover,
+body.post-new-php .htl-form-row-desc > label:hover {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.post-php .htl-form-row-desc textarea.widefat-desc,
+body.post-new-php .htl-form-row-desc textarea.widefat-desc {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 12px 14px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: #fff !important;
+  width: 100% !important;
+  min-height: 100px !important;
+  resize: vertical !important;
+  line-height: 1.7 !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  box-shadow: none !important;
+}
+
+body.post-php .htl-form-row-desc textarea.widefat-desc:focus,
+body.post-new-php .htl-form-row-desc textarea.widefat-desc:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.post-php .htl-databox-lng-desc,
+body.post-new-php .htl-databox-lng-desc {
+  margin-top: 20px !important;
+  padding-top: 20px !important;
+  border-top: 2px dashed var(--ns-border) !important;
+}
+
+/* =========================================================
+🕐 Working Hours (htl-form-tmwrk)
+========================================================= */
+body.post-php .htl-form-tmwrk,
+body.post-new-php .htl-form-tmwrk {
+  background: #fff !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  padding: 16px !important;
+  margin-top: 8px !important;
+}
+
+body.post-php .htl-form-tmwrk > div,
+body.post-new-php .htl-form-tmwrk > div {
+  display: grid !important;
+  grid-template-columns: 100px auto auto 1fr !important;
+  align-items: center !important;
+  gap: 12px !important;
+  padding: 12px 14px !important;
+  margin-bottom: 8px !important;
+  background: #f8fbff !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php .htl-form-tmwrk > div:last-child,
+body.post-new-php .htl-form-tmwrk > div:last-child {
+  margin-bottom: 0 !important;
+}
+
+body.post-php .htl-form-tmwrk > div:hover,
+body.post-new-php .htl-form-tmwrk > div:hover {
+  background: var(--ns-primary-light-3) !important;
+  border-color: var(--ns-primary) !important;
+}
+
+body.post-php .htl-form-tmwrk strong,
+body.post-new-php .htl-form-tmwrk strong {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-primary-dark) !important;
+  font-size: 13px !important;
+  padding: 6px 10px !important;
+  background: var(--ns-surface) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  border: 1px solid var(--ns-border) !important;
+  text-align: center !important;
+  min-width: 90px !important;
+  display: inline-block !important;
+}
+
+body.post-php .htl-form-tmwrk input[type="checkbox"],
+body.post-new-php .htl-form-tmwrk input[type="checkbox"] {
+  width: 18px !important;
+  height: 18px !important;
+  margin: 0 4px 0 6px !important;
+  accent-color: var(--ns-primary) !important;
+  cursor: pointer !important;
+  vertical-align: middle !important;
+}
+
+body.post-php .htl-form-tmwrk .worktime-checkbox-off,
+body.post-new-php .htl-form-tmwrk .worktime-checkbox-off {
+  accent-color: var(--ns-danger) !important;
+}
+
+body.post-php .htl-form-tmwrk .worktime-checkbox-24h,
+body.post-new-php .htl-form-tmwrk .worktime-checkbox-24h {
+  accent-color: var(--ns-success) !important;
+}
+
+body.post-php .htl-form-tmwrk input[type="time"],
+body.post-new-php .htl-form-tmwrk input[type="time"] {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 6px 10px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: #fff !important;
+  min-height: 36px !important;
+  width: 110px !important;
+  direction: ltr !important;
+  text-align: center !important;
+  transition: all 0.2s ease !important;
+  margin: 0 4px !important;
+}
+
+body.post-php .htl-form-tmwrk input[type="time"]:focus,
+body.post-new-php .htl-form-tmwrk input[type="time"]:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.post-php .htl-form-tmwrk input[type="time"]:disabled,
+body.post-new-php .htl-form-tmwrk input[type="time"]:disabled {
+  background: var(--ns-bg) !important;
+  color: var(--ns-text-secondary) !important;
+  opacity: 0.5 !important;
+  cursor: not-allowed !important;
+}
+
+body.post-php .htl-form-tmwrk > div > div,
+body.post-new-php .htl-form-tmwrk > div > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  color: var(--ns-text-secondary) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+/* =========================================================
+🖼 Gallery (htl-databox-gly)
+========================================================= */
+body.post-php .htl-databox-gly,
+body.post-new-php .htl-databox-gly {
+  background: #f8fbff !important;
+  padding: 20px !important;
+  border: 2px dashed var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius) !important;
+  text-align: center !important;
+}
+
+body.post-php .htl_gly_img,
+body.post-new-php .htl_gly_img {
+  display: block !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+/* 🎯 دکمه گالری - Solid (بدون گرادیانت) */
+body.post-php #posttype_gallery_button,
+body.post-new-php #posttype_gallery_button {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 10px 20px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 2px 8px rgba(67, 171, 255, 0.3) !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  display: inline-flex;
+  align-items: center;
+}
+
+body.post-php #posttype_gallery_button:hover,
+body.post-new-php #posttype_gallery_button:hover {
+  background: var(--ns-primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(67, 171, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+body.post-php #posttype_gallery_preview,
+body.post-new-php #posttype_gallery_preview {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)) !important;
+  gap: 12px !important;
+  margin-top: 16px !important;
+  text-align: left !important;
+}
+
+body.post-php #posttype_gallery_preview img,
+body.post-new-php #posttype_gallery_preview img {
+  width: 100% !important;
+  height: 130px !important;
+  object-fit: cover !important;
+  border-radius: var(--ns-radius-sm) !important;
+  border: 1px solid var(--ns-border) !important;
+  transition: all 0.2s ease !important;
+}
+
+body.post-php #posttype_gallery_preview img:hover,
+body.post-new-php #posttype_gallery_preview img:hover {
+  transform: scale(1.05) !important;
+  box-shadow: var(--ns-shadow-md) !important;
+  border-color: var(--ns-primary) !important;
+}
+#posttype_gallery_preview .gallery-image {
+  position: relative;
+}
+#posttype_gallery_preview .gallery-image .remove-image {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+  width: 30px;
+  height: 30px;
+  border: none;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#posttype_gallery_preview .gallery-image .remove-image:hover {
+  background: var(--ns-danger-bg);
+}
+/* =========================================================
+🎨 Section Headers (سفید ساده - بدون گرادیانت)
+========================================================= */
+body.post-php .htl-section-header,
+body.post-new-php .htl-section-header {
+  background: var(--ns-surface) !important;
+  color: var(--ns-text) !important;
+  padding: 12px 16px !important;
+  margin: 16px -20px !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  font-size: 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border-bottom: 2px solid var(--ns-primary) !important;
+}
+
+body.post-php .htl-section-header:first-child,
+body.post-new-php .htl-section-header:first-child {
+  margin-top: -20px !important;
+}
+
+/* =========================================================
+🔘 Add Item Button
+========================================================= */
+body.post-php .add-item.button,
+body.post-new-php .add-item.button,
+body.post-php .add-repeatable.button,
+body.post-new-php .add-repeatable.button,
+#add-location {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: 1px dashed var(--ns-primary-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+  margin-top: 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  height: 40px !important;
+  min-height: 40px !important;
+}
+
+body.post-php .add-item.button::before,
+body.post-new-php .add-item.button::before,
+body.post-php .add-repeatable.button::before,
+body.post-new-php .add-repeatable.button::before {
+  content: "+" !important;
+  font-size: 18px !important;
+  font-weight: 500 !important;
+}
+
+body.post-php .add-item.button:hover,
+body.post-new-php .add-item.button:hover,
+body.post-php .add-repeatable.button:hover,
+body.post-new-php .add-repeatable.button:hover {
+  background: var(--ns-primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+}
+
+/* =========================================================
+🏷 Taxonomy Pages (edit-tags.php, term.php) - بهبود یافته
+========================================================= */
+
+/* 🎯 Search Box */
+body.edit-tags-php .search-form,
+body.term-php .search-form {
+  margin-bottom: 20px !important;
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
+}
+
+body.edit-tags-php .search-form p.search-box,
+body.term-php .search-form p.search-box {
+  display: flex !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  flex: 1 !important;
+  max-width: 400px !important;
+}
+
+body.edit-tags-php .search-form input[type="search"],
+body.term-php .search-form input[type="search"] {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: var(--ns-surface) !important;
+  flex: 1 !important;
+  min-height: 40px !important;
+  transition: all 0.2s ease !important;
+}
+
+body.edit-tags-php .search-form input[type="search"]:focus,
+body.term-php .search-form input[type="search"]:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+/* 🎯 دکمه Search - Solid */
+body.edit-tags-php .search-form input[type="submit"],
+body.term-php .search-form input[type="submit"] {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 40px !important;
+}
+
+body.edit-tags-php .search-form input[type="submit"]:hover,
+body.term-php .search-form input[type="submit"]:hover {
+  background: var(--ns-primary-dark) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 🎯 Two Column Layout */
+body.edit-tags-php #col-container,
+body.term-php #col-container {
+  display: grid !important;
+  grid-template-columns: 350px 1fr !important;
+  gap: 24px !important;
+  margin: 0 !important;
+}
+
+body.edit-tags-php #col-left,
+body.term-php #col-left {
+  width: 100% !important;
+  float: none !important;
+}
+
+body.edit-tags-php #col-right,
+body.term-php #col-right {
+  width: 100% !important;
+  float: none !important;
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  overflow: hidden !important;
+  padding: 20px !important;
+}
+
+/* 🎯 Form Title - سفید ساده */
+body.edit-tags-php #col-left h2,
+body.term-php #col-left h2 {
+  font-family: var(--ns-font-family) !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  margin: 0 0 16px !important;
+  padding: 0 0 12px !important;
+  border-bottom: 2px solid var(--ns-primary) !important;
+  background: transparent !important;
+}
+
+/* 🎯 Form Fields */
+body.edit-tags-php .form-field,
+body.term-php .form-field {
+  margin-bottom: 16px !important;
+  padding: 0 !important;
+}
+
+body.edit-tags-php .form-field label,
+body.term-php .form-field label {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  margin-bottom: 8px !important;
+  display: block !important;
+  padding-right: 10px !important;
+  border-right: 3px solid var(--ns-primary) !important;
+}
+
+body.edit-tags-php .form-field input[type="text"],
+body.edit-tags-php .form-field textarea,
+body.edit-tags-php .form-field select,
+body.term-php .form-field input[type="text"],
+body.term-php .form-field textarea,
+body.term-php .form-field select {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 8px 12px !important;
+  font-size: 13px !important;
+  width: 100% !important;
+  background: #fff !important;
+  color: var(--ns-text) !important;
+  transition: all 0.2s ease !important;
+  min-height: 40px !important;
+}
+
+body.edit-tags-php .form-field textarea,
+body.term-php .form-field textarea {
+  min-height: 100px !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+}
+
+body.edit-tags-php .form-field input:focus,
+body.edit-tags-php .form-field textarea:focus,
+body.term-php .form-field input:focus,
+body.term-php .form-field textarea:focus {
+  border-color: var(--ns-primary) !important;
+  box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15) !important;
+  outline: none !important;
+}
+
+body.edit-tags-php .form-field p,
+body.term-php .form-field p {
+  font-size: 11px !important;
+  color: var(--ns-text-muted) !important;
+  margin-top: 4px !important;
+}
+
+/* 🎯 Submit Button - Solid */
+body.edit-tags-php .submit .button-primary,
+body.term-php .submit .button-primary {
+  background: var(--ns-primary) !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  color: #fff !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  height: 45px !important;
+  box-shadow: 0 2px 8px rgba(67, 171, 255, 0.3) !important;
+  transition: all 0.2s ease !important;
+  min-height: 45px !important;
+  width: 100% !important;
+  align-items: center;
+}
+
+body.edit-tags-php .submit .button-primary:hover,
+body.term-php .submit .button-primary:hover {
+  background: var(--ns-primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(67, 171, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* 🎯 Table بهبود یافته */
+body.edit-tags-php .wp-list-table,
+body.term-php .wp-list-table {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius) !important;
+  overflow: hidden !important;
+  box-shadow: var(--ns-shadow-sm) !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+
+body.edit-tags-php .wp-list-table thead,
+body.term-php .wp-list-table thead {
+  background: var(--ns-surface) !important;
+}
+
+body.edit-tags-php .wp-list-table thead th,
+body.term-php .wp-list-table thead th {
+  font-family: var(--ns-font-family) !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 13px !important;
+  padding: 14px 16px !important;
+  text-align: right !important;
+  border-bottom: none !important;
+  white-space: nowrap !important;
+  background: var(--ns-surface) !important;
+}
+
+body.edit-tags-php .wp-list-table thead th a,
+body.term-php .wp-list-table thead th a {
+  color: var(--ns-text) !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: color 0.2s ease !important;
+}
+
+body.edit-tags-php .wp-list-table thead th a:hover,
+body.term-php .wp-list-table thead th a:hover {
+  color: var(--ns-primary) !important;
+}
+
+body.edit-tags-php .wp-list-table thead th .sorting-indicators,
+body.term-php .wp-list-table thead th .sorting-indicators {
+  display: inline-flex !important;
+  flex-direction: column !important;
+  margin-right: 4px !important;
+}
+
+body.edit-tags-php .wp-list-table thead th .sorting-indicator,
+body.term-php .wp-list-table thead th .sorting-indicator {
+  width: 10px !important;
+  height: 6px !important;
+  opacity: 0.3 !important;
+}
+
+body.edit-tags-php .wp-list-table thead th.sorted .sorting-indicator,
+body.term-php .wp-list-table thead th.sorted .sorting-indicator {
+  opacity: 1 !important;
+}
+
+body.edit-tags-php .wp-list-table tbody tr,
+body.term-php .wp-list-table tbody tr {
+  background: var(--ns-surface) !important;
+  transition: all 0.15s ease !important;
+}
+
+body.edit-tags-php .wp-list-table tbody tr:hover,
+body.term-php .wp-list-table tbody tr:hover {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.edit-tags-php .wp-list-table tbody td,
+body.term-php .wp-list-table tbody td {
+  font-family: var(--ns-font-family) !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  vertical-align: middle !important;
+}
+.widefat tfoot td.check-column,
+.widefat thead td.check-column {
+  border: none !important;
+}
+
+body.edit-tags-php .wp-list-table tbody tr:last-child td,
+body.term-php .wp-list-table tbody tr:last-child td {
+  border-bottom: none !important;
+}
+
+body.edit-tags-php .wp-list-table tbody td.column-primary strong,
+body.term-php .wp-list-table tbody td.column-primary strong {
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  font-size: 14px !important;
+}
+
+body.edit-tags-php .wp-list-table tbody td.column-primary a,
+body.term-php .wp-list-table tbody td.column-primary a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+  font-weight: 500 !important;
+  transition: all 0.2s ease !important;
+}
+
+body.edit-tags-php .wp-list-table tbody td.column-primary a:hover,
+body.term-php .wp-list-table tbody td.column-primary a:hover {
+  color: var(--ns-primary-dark) !important;
+  text-decoration: underline !important;
+}
+
+body.edit-tags-php .wp-list-table tbody td code,
+body.term-php .wp-list-table tbody td code {
+  font-family: var(--ns-font-mono) !important;
+  background: var(--ns-primary-light-3) !important;
+  color: var(--ns-primary-dark) !important;
+  padding: 3px 8px !important;
+  border-radius: 4px !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  direction: ltr !important;
+  display: inline-block !important;
+}
+
+/* Row Actions */
+body.edit-tags-php .wp-list-table .row-actions,
+body.term-php .wp-list-table .row-actions {
+  margin-top: 6px !important;
+  padding: 0 !important;
+  font-size: 12px !important;
+  color: var(--ns-text-secondary) !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  transition: all 0.2s ease !important;
+}
+
+body.edit-tags-php .wp-list-table tr:hover .row-actions,
+body.term-php .wp-list-table tr:hover .row-actions {
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions span,
+body.term-php .wp-list-table .row-actions span {
+  margin-left: 8px !important;
+  padding-left: 8px !important;
+  border-left: 1px solid var(--ns-border) !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions span:last-child,
+body.term-php .wp-list-table .row-actions span:last-child {
+  border-left: none !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions a,
+body.term-php .wp-list-table .row-actions a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  padding: 4px 8px !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions a:hover,
+body.term-php .wp-list-table .row-actions a:hover {
+  background: var(--ns-primary-light-2) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions .delete a,
+body.term-php .wp-list-table .row-actions .delete a {
+  color: var(--ns-danger) !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions .delete a:hover,
+body.term-php .wp-list-table .row-actions .delete a:hover {
+  background: var(--ns-danger-bg) !important;
+  color: var(--ns-danger) !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions .view a,
+body.term-php .wp-list-table .row-actions .view a {
+  color: var(--ns-success) !important;
+}
+
+body.edit-tags-php .wp-list-table .row-actions .view a:hover,
+body.term-php .wp-list-table .row-actions .view a:hover {
+  background: var(--ns-success-bg) !important;
+  color: var(--ns-success) !important;
+}
+
+/* Column Count (تعداد پست‌ها) */
+body.edit-tags-php .wp-list-table .column-posts,
+body.term-php .wp-list-table .column-posts {
+  text-align: center !important;
+  font-weight: 500 !important;
+  color: var(--ns-primary) !important;
+}
+
+body.edit-tags-php .wp-list-table .column-posts a,
+body.term-php .wp-list-table .column-posts a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+  background: var(--ns-primary-light-3) !important;
+  padding: 4px 12px !important;
+  border-radius: 12px !important;
+  font-size: 12px !important;
+  transition: all 0.2s ease !important;
+  display: inline-block !important;
+}
+
+body.edit-tags-php .wp-list-table .column-posts a:hover,
+body.term-php .wp-list-table .column-posts a:hover {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  transform: scale(1.05) !important;
+}
+
+/* 🎯 Tablenav (Bulk Actions & Pagination) */
+body.edit-tags-php .tablenav,
+body.term-php .tablenav {
+  margin: 0 !important;
+  padding: 12px 16px !important;
+  background: var(--ns-surface) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  height: auto !important;
+}
+
+body.edit-tags-php .tablenav .tablenav-pages,
+body.term-php .tablenav .tablenav-pages {
+  margin: 0 !important;
+  float: none !important;
+}
+
+body.edit-tags-php .tablenav .tablenav-pages a,
+body.edit-tags-php .tablenav .tablenav-pages span,
+body.term-php .tablenav .tablenav-pages a,
+body.term-php .tablenav .tablenav-pages span {
+  font-family: var(--ns-font-family) !important;
+  font-size: 13px !important;
+  padding: 0 10px !important;
+  margin: 0 2px !important;
+  border-radius: var(--ns-radius-sm) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center;
+}
+
+body.edit-tags-php .tablenav .tablenav-pages a,
+body.term-php .tablenav .tablenav-pages a {
+  background: var(--ns-surface) !important;
+  color: var(--ns-text) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+}
+
+body.edit-tags-php .tablenav .tablenav-pages a:hover,
+body.term-php .tablenav .tablenav-pages a:hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.edit-tags-php .tablenav .tablenav-pages .current,
+body.term-php .tablenav .tablenav-pages .current {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: 1px solid var(--ns-primary) !important;
+  font-weight: 500 !important;
+}
+
+body.edit-tags-php .tablenav select,
+body.term-php .tablenav select {
+  font-family: var(--ns-font-family) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 6px 12px !important;
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: var(--ns-surface) !important;
+  min-height: 36px !important;
+  cursor: pointer !important;
+}
+
+body.edit-tags-php .tablenav input[type="submit"],
+body.term-php .tablenav input[type="submit"] {
+  font-family: var(--ns-font-family) !important;
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm) !important;
+  padding: 6px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 36px !important;
+}
+
+body.edit-tags-php .tablenav input[type="submit"]:hover,
+body.term-php .tablenav input[type="submit"]:hover {
+  background: var(--ns-primary-dark) !important;
+}
+
+/* ACF Fields in Taxonomy */
+body.edit-tags-php .acf-fields,
+body.term-php .acf-fields {
+  padding: 16px !important;
+  background: var(--ns-bg) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  margin-top: 16px !important;
+}
+
+/* Empty State */
+body.edit-tags-php .wp-list-table .no-items td,
+body.term-php .wp-list-table .no-items td {
+  text-align: center !important;
+  padding: 60px 20px !important;
+  color: var(--ns-text-secondary) !important;
+  font-size: 14px !important;
+}
+
+/* =========================================================
+🎯 Gutenberg (Block Editor)
+========================================================= */
+body.block-editor-page .block-editor-block-list__block,
+body.post-php .block-editor-block-list__block,
+body.post-new-php .block-editor-block-list__block {
+  font-family: var(--ns-font-family) !important;
+}
+
+body.block-editor-page .components-button.is-primary,
+body.post-php .components-button.is-primary,
+body.post-new-php .components-button.is-primary {
+  background: var(--ns-primary) !important;
+  border-radius: var(--ns-radius-sm) !important;
+  font-family: var(--ns-font-family) !important;
+  font-weight: 600 !important;
+}
+
+body.block-editor-page .components-button.is-primary:hover,
+body.post-php .components-button.is-primary:hover,
+body.post-new-php .components-button.is-primary:hover {
+  background: var(--ns-primary-dark) !important;
+}
+
+/* =========================================================
+📱 Responsive
+========================================================= */
+@media (max-width: 1200px) {
+  body.post-php #post-body.columns-2,
+  body.post-new-php #post-body.columns-2 {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: auto auto auto !important;
+    gap: 20px !important;
+  }
+
+  body.post-php #post-body-content,
+  body.post-new-php #post-body-content {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  body.post-php #postbox-container-1,
+  body.post-new-php #postbox-container-1 {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  body.post-php #postbox-container-2,
+  body.post-new-php #postbox-container-2 {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+  }
+
+  body.post-php #submitdiv,
+  body.post-new-php #submitdiv {
+    position: static !important;
+  }
+
+  body.edit-tags-php #col-container,
+  body.term-php #col-container {
+    grid-template-columns: 1fr !important;
+    gap: 20px !important;
+  }
+
+  body.edit-tags-php #col-right,
+  body.term-php #col-right {
+    order: -1 !important;
+  }
+}
+
+@media (max-width: 900px) {
+  body.post-php .htl-form-row,
+  body.post-new-php .htl-form-row {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  body.post-php .htl-form-row > label,
+  body.post-new-php .htl-form-row > label {
+    border-right: none !important;
+    border-bottom: 2px solid var(--ns-primary) !important;
+    padding: 6px 0 !important;
+    font-size: 13px !important;
+  }
+
+  body.post-php .htl-form-tmwrk > div,
+  body.post-new-php .htl-form-tmwrk > div {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+    padding: 10px !important;
+  }
+
+  body.post-php .htl-form-tmwrk strong,
+  body.post-new-php .htl-form-tmwrk strong {
+    width: 100% !important;
+    text-align: right !important;
+  }
+
+  body.post-php .htl-form-tmwrk input[type="time"],
+  body.post-new-php .htl-form-tmwrk input[type="time"] {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 782px) {
+  body.post-php .wrap,
+  body.post-new-php .wrap,
+  body.edit-tags-php .wrap,
+  body.term-php .wrap {
+    margin: 16px 12px !important;
+  }
+
+  body.post-php .wrap h1.wp-heading-inline,
+  body.post-new-php .wrap h1.wp-heading-inline,
+  body.edit-tags-php .wrap h1.wp-heading-inline,
+  body.term-php .wrap h1.wp-heading-inline {
+    display: none !important;
+  }
+
+  body.post-php #titlediv #title,
+  body.post-new-php #titlediv #title {
+    font-size: 20px !important;
+  }
+
+  body.post-php .htl-ch-bx-sec,
+  body.post-new-php .htl-ch-bx-sec {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.edit-tags-php .search-form,
+  body.term-php .search-form {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  body.edit-tags-php .search-form p.search-box,
+  body.term-php .search-form p.search-box {
+    max-width: none !important;
+  }
+
+  body.edit-tags-php .wp-list-table thead th,
+  body.edit-tags-php .wp-list-table tbody td,
+  body.term-php .wp-list-table thead th,
+  body.term-php .wp-list-table tbody td {
+    padding: 10px 12px !important;
+    font-size: 12px !important;
+  }
+
+  body.edit-tags-php .tablenav,
+  body.term-php .tablenav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  body.edit-tags-php .tablenav .tablenav-pages,
+  body.term-php .tablenav .tablenav-pages {
+    text-align: center !important;
+  }
+}
+
+@media (max-width: 600px) {
+  body.post-php .editor-topbar,
+  body.post-new-php .editor-topbar {
+    flex-wrap: wrap !important;
+    padding: 10px 14px !important;
+  }
+
+  body.post-php .editor-topbar h2,
+  body.post-new-php .editor-topbar h2 {
+    font-size: 14px !important;
+    order: -1 !important;
+    width: 100% !important;
+  }
+
+  body.post-php .htl-databox,
+  body.post-new-php .htl-databox {
+    padding: 12px !important;
+  }
+
+  body.post-php .htl-form-row,
+  body.post-new-php .htl-form-row {
+    padding: 10px 12px !important;
+  }
+
+  body.post-php .htl-form-tmwrk,
+  body.post-new-php .htl-form-tmwrk {
+    padding: 10px !important;
+  }
+
+  body.post-php #posttype_gallery_preview,
+  body.post-new-php #posttype_gallery_preview {
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)) !important;
+  }
+
+  /* Hide some columns on mobile */
+  body.edit-tags-php .wp-list-table .column-slug,
+  body.edit-tags-php .wp-list-table .column-description,
+  body.term-php .wp-list-table .column-slug,
+  body.term-php .wp-list-table .column-description {
+    display: none !important;
+  }
+}
+
+/* =========================================================
+🎭 Animations
+========================================================= */
+@keyframes nextsafarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+body.post-php .postbox,
+body.post-new-php .postbox,
+body.post-php .htl-chbx,
+body.post-new-php .htl-chbx,
+body.post-php .htl-form-row,
+body.post-new-php .htl-form-row,
+body.post-php .htl-form-row-desc,
+body.post-new-php .htl-form-row-desc,
+body.post-php .htl-form-tmwrk > div,
+body.post-new-php .htl-form-tmwrk > div {
+  animation: nextsafarSlideIn 0.3s ease-out !important;
+}
+
+body.post-php .htl-form-row:nth-child(1),
+body.post-new-php .htl-form-row:nth-child(1) {
+  animation-delay: 0.02s !important;
+}
+
+body.post-php .htl-form-row:nth-child(2),
+body.post-new-php .htl-form-row:nth-child(2) {
+  animation-delay: 0.04s !important;
+}
+
+body.post-php .htl-form-row:nth-child(3),
+body.post-new-php .htl-form-row:nth-child(3) {
+  animation-delay: 0.06s !important;
+}
+
+body.post-php .htl-form-row:nth-child(4),
+body.post-new-php .htl-form-row:nth-child(4) {
+  animation-delay: 0.08s !important;
+}
+
+body.post-php .htl-form-row:nth-child(5),
+body.post-new-php .htl-form-row:nth-child(5) {
+  animation-delay: 0.1s !important;
+}
+
+#edittag {
+  max-width: 80% !important;
+}

@@ -1,0 +1,1095 @@
+/* =========================================================
+🌐 NextSafar WP Pages Theme - نسخه نهایی و پایدار
+فقط روی محتوای داخلی .wrap تمرکز دارد
+layout اصلی (sidebar/topbar) توسط class-admin.php مدیریت می‌شود
+========================================================= */
+
+/* =========================================================
+🎯 ۱. Base Typography (فقط محتوای .wrap)
+========================================================= */
+body.wp-admin .wrap,
+body.wp-admin .wrap * {
+  font-family: var(
+    --ns-font-family,
+    "IRANSansX",
+    -apple-system,
+    sans-serif
+  ) !important;
+}
+
+body.wp-admin .wrap {
+  color: var(--ns-text) !important;
+  font-size: 14px !important;
+  line-height: 1.6 !important;
+  direction: rtl !important;
+  -webkit-font-smoothing: antialiased !important;
+  padding: 20px 24px !important;
+  margin: 0 !important;
+  background: var(--ns-surface) !important;
+  display: flex;
+  flex-direction: column;
+}
+#wpbody-content {
+  background: var(--ns-surface) !important;
+}
+#nextsafar-injected-topbar {
+  border: none !important;
+}
+#contextual-help-link-wrap,
+#screen-options-link-wrap {
+  margin: 0 !important;
+  display: none !important;
+}
+
+/* =========================================================
+📝 ۲. Page Headers & Actions
+========================================================= */
+.wp-heading-inline,
+#contextual-help-link {
+  display: none !important;
+}
+body.wp-admin .page-title-action,
+body.wp-admin .wrap .page-title-action {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: none !important;
+  padding: 8px 16px !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  margin-left: 0 !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: 0 2px 6px rgba(67, 171, 255, 0.2) !important;
+  cursor: pointer !important;
+  height: auto !important;
+  line-height: 1.4 !important;
+  width: fit-content;
+}
+
+body.wp-admin .page-title-action:hover {
+  background: var(--ns-primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 4px 10px rgba(67, 171, 255, 0.3) !important;
+  color: #fff !important;
+}
+
+/* =========================================================
+📑 ۳. Tabs (nav-tab-wrapper)
+========================================================= */
+body.wp-admin .nav-tab-wrapper,
+body.wp-admin .wrap .nav-tab-wrapper {
+  border-bottom: 2px solid var(--ns-border) !important;
+  margin: 0 0 20px 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 0 !important;
+  overflow-x: auto !important;
+}
+
+body.wp-admin .nav-tab-wrapper .nav-tab {
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  color: var(--ns-text-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 3px solid transparent !important;
+  padding: 10px 16px !important;
+  margin: 0 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  white-space: nowrap !important;
+  border-radius: 0 !important;
+}
+
+body.wp-admin .nav-tab-wrapper .nav-tab:hover {
+  color: var(--ns-primary) !important;
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .nav-tab-wrapper .nav-tab-active,
+body.wp-admin .nav-tab-wrapper .nav-tab.nav-tab-active {
+  color: var(--ns-primary) !important;
+  border-bottom-color: var(--ns-primary) !important;
+  background: transparent !important;
+}
+
+/* =========================================================
+🔍 ۴. Subsubsub (فیلترها - کامنت‌ها، پست‌ها و ...)
+========================================================= */
+body.wp-admin .subsubsub {
+  list-style: none !important;
+  margin: 0 0 16px 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+  font-size: 13px !important;
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  padding: 8px 12px !important;
+}
+
+body.wp-admin .subsubsub li {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+
+body.wp-admin .subsubsub li:last-child::after {
+  display: none !important;
+}
+
+body.wp-admin .subsubsub a {
+  color: var(--ns-text-muted) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  padding: 4px 10px !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  display: inline-block !important;
+}
+
+body.wp-admin .subsubsub a:hover {
+  color: var(--ns-primary) !important;
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .subsubsub a.current {
+  color: #fff !important;
+  background: var(--ns-primary) !important;
+  font-weight: 600 !important;
+  padding: 4px 12px !important;
+  margin-left: 5px !important;
+}
+
+body.wp-admin .subsubsub .count {
+  color: var(--ns-text-muted) !important;
+  font-weight: 400 !important;
+  font-size: 12px !important;
+}
+
+body.wp-admin .subsubsub a.current .count {
+  color: rgba(255, 255, 255, 0.9) !important;
+}
+
+/* =========================================================
+🔄 ۵. Tablenav (Pagination + Bulk Actions)
+========================================================= */
+body.wp-admin .tablenav {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  padding: 10px 14px !important;
+  margin: 12px 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-wrap: wrap !important;
+  gap: 12px !important;
+  height: auto !important;
+  min-height: 44px !important;
+  clear: none !important;
+  width: 100%;
+}
+
+body.wp-admin .tablenav .actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  flex-wrap: wrap !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+body.wp-admin .tablenav select {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 4px 10px !important;
+  font-size: 13px !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  background: #fff !important;
+  color: var(--ns-text) !important;
+  margin: 0 !important;
+}
+
+body.wp-admin .tablenav .button,
+body.wp-admin .tablenav input[type="submit"] {
+  min-height: 34px !important;
+  height: 34px !important;
+  padding: 4px 14px !important;
+  font-size: 13px !important;
+  margin: 0 !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages {
+  margin: 0 !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  float: none !important;
+}
+
+body.wp-admin .tablenav .displaying-num {
+  color: var(--ns-text-muted) !important;
+  font-size: 12px !important;
+  margin-left: 12px !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages a,
+body.wp-admin .tablenav .tablenav-pages span {
+  font-size: 13px !important;
+  padding: 5px 10px !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  text-decoration: none !important;
+  transition: all 0.2s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 32px !important;
+  height: 32px !important;
+  line-height: 1 !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages a {
+  background: var(--ns-surface) !important;
+  color: var(--ns-text) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages a:hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages .current,
+body.wp-admin .tablenav .tablenav-pages span.current {
+  background: var(--ns-primary) !important;
+  color: #fff !important;
+  border: 1px solid var(--ns-primary) !important;
+  font-weight: 600 !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages .dots,
+body.wp-admin .tablenav .tablenav-pages span.dots {
+  background: transparent !important;
+  border: none !important;
+  color: var(--ns-text-muted) !important;
+}
+
+body.wp-admin .tablenav .tablenav-pages .next-page,
+body.wp-admin .tablenav .tablenav-pages .prev-page,
+body.wp-admin .tablenav .tablenav-pages .first-page,
+body.wp-admin .tablenav .tablenav-pages .last-page {
+  font-weight: 600 !important;
+}
+
+/* =========================================================
+📋 ۶. Tables (wp-list-table)
+========================================================= */
+body.wp-admin .wp-list-table {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  overflow: hidden !important;
+  box-shadow: none !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+  table-layout: auto !important;
+  margin: 0 !important;
+}
+
+body.wp-admin .wp-list-table thead th,
+body.wp-admin .wp-list-table tfoot th {
+  border-bottom: 1px solid var(--ns-border) !important;
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text-muted) !important;
+  padding: 12px 14px !important;
+  text-align: right !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.02em !important;
+  line-height: 1.3 !important;
+}
+
+body.wp-admin .wp-list-table thead th a {
+  color: var(--ns-text-muted) !important;
+  text-decoration: none !important;
+}
+
+body.wp-admin .wp-list-table thead th a:hover {
+  color: var(--ns-primary) !important;
+}
+
+body.wp-admin .wp-list-table thead th.sorted .sorting-indicator {
+  display: inline-block !important;
+  margin-right: 4px !important;
+}
+
+body.wp-admin .wp-list-table tbody tr {
+  background: var(--ns-surface) !important;
+  transition: background 0.15s ease !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+}
+
+body.wp-admin .wp-list-table tbody tr:hover,
+body.wp-admin .wp-list-table tbody tr:focus-within {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .wp-list-table tbody tr:last-child {
+  border-bottom: none !important;
+}
+
+body.wp-admin .wp-list-table tbody tr.alternate {
+  background: var(--ns-surface) !important;
+}
+
+body.wp-admin .wp-list-table tbody tr.alternate:hover {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .wp-list-table td {
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  padding: 12px 14px !important;
+  vertical-align: middle !important;
+  line-height: 1.5 !important;
+}
+
+body.wp-admin .wp-list-table td.column-primary {
+  font-weight: 500 !important;
+}
+
+body.wp-admin .wp-list-table .row-title,
+body.wp-admin .wp-list-table .column-primary a.row-title,
+body.wp-admin .wp-list-table td strong a {
+  font-weight: 600 !important;
+  color: var(--ns-text) !important;
+  text-decoration: none !important;
+  transition: color 0.2s ease !important;
+}
+
+body.wp-admin .wp-list-table .row-title:hover,
+body.wp-admin .wp-list-table .column-primary a.row-title:hover,
+body.wp-admin .wp-list-table td strong a:hover {
+  color: var(--ns-primary) !important;
+}
+
+/* Row Actions */
+body.wp-admin .wp-list-table .row-actions {
+  font-size: 12px !important;
+  color: var(--ns-text-muted) !important;
+  margin-top: 4px !important;
+  padding: 0 !important;
+  visibility: visible !important;
+}
+
+body.wp-admin .wp-list-table tr:hover .row-actions {
+  visibility: visible !important;
+}
+
+body.wp-admin .wp-list-table .row-actions span {
+  display: inline-block !important;
+  margin-left: 4px !important;
+  padding: 0 !important;
+}
+
+body.wp-admin .wp-list-table .row-actions span::after {
+  content: " | " !important;
+  color: var(--ns-border-dark) !important;
+  margin: 0 4px !important;
+}
+
+body.wp-admin .wp-list-table .row-actions span:last-child::after {
+  display: none !important;
+}
+
+body.wp-admin .wp-list-table .row-actions a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+  padding: 2px 4px !important;
+  border-radius: 3px !important;
+}
+
+body.wp-admin .wp-list-table .row-actions a:hover {
+  color: var(--ns-primary-dark) !important;
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .wp-list-table .row-actions .delete a,
+body.wp-admin .wp-list-table .row-actions .trash a,
+body.wp-admin .wp-list-table .row-actions .spam a {
+  color: var(--ns-danger) !important;
+}
+
+body.wp-admin .wp-list-table .row-actions .delete a:hover,
+body.wp-admin .wp-list-table .row-actions .trash a:hover,
+body.wp-admin .wp-list-table .row-actions .spam a:hover {
+  background: var(--ns-danger-light) !important;
+}
+
+/* Status Indicators */
+body.wp-admin .wp-list-table .status-publish {
+  border-right: 3px solid var(--ns-success) !important;
+}
+
+body.wp-admin .wp-list-table .status-pending,
+body.wp-admin .wp-list-table .status-moderated {
+  border-right: 3px solid var(--ns-warning) !important;
+}
+
+body.wp-admin .wp-list-table .status-draft {
+  border-right: 3px solid var(--ns-text-muted) !important;
+}
+
+body.wp-admin .wp-list-table .status-spam,
+body.wp-admin .wp-list-table .status-trash {
+  border-right: 3px solid var(--ns-danger) !important;
+  opacity: 0.75 !important;
+}
+
+body.wp-admin .wp-list-table .status-spam:hover,
+body.wp-admin .wp-list-table .status-trash:hover {
+  opacity: 1 !important;
+}
+
+/* Avatar in tables */
+body.wp-admin .wp-list-table img.avatar {
+  border-radius: var(--ns-radius-sm) !important;
+  border: 2px solid var(--ns-border) !important;
+  vertical-align: middle !important;
+  float: none !important;
+  width: 40px;
+  height: 40px;
+}
+
+/* =========================================================
+📝 ۷. Forms & Inputs
+========================================================= */
+body.wp-admin .wrap input[type="text"],
+body.wp-admin .wrap input[type="password"],
+body.wp-admin .wrap input[type="email"],
+body.wp-admin .wrap input[type="url"],
+body.wp-admin .wrap input[type="number"],
+body.wp-admin .wrap input[type="search"],
+body.wp-admin .wrap input[type="tel"],
+body.wp-admin .wrap textarea,
+body.wp-admin .wrap select {
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  background: #fff !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  transition: all 0.2s ease !important;
+  min-height: 36px !important;
+  box-shadow: none !important;
+}
+
+body.wp-admin .wrap input[type="text"]:focus,
+body.wp-admin .wrap input[type="password"]:focus,
+body.wp-admin .wrap input[type="email"]:focus,
+body.wp-admin .wrap input[type="url"]:focus,
+body.wp-admin .wrap input[type="number"]:focus,
+body.wp-admin .wrap input[type="search"]:focus,
+body.wp-admin .wrap input[type="tel"]:focus,
+body.wp-admin .wrap textarea:focus,
+body.wp-admin .wrap select:focus {
+  border-color: var(--ns-primary) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 3px var(--ns-primary-light-3) !important;
+}
+
+body.wp-admin .wrap textarea {
+  min-height: 100px !important;
+  resize: vertical !important;
+  line-height: 1.6 !important;
+}
+
+body.wp-admin .wrap label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  display: inline-block !important;
+}
+
+body.wp-admin .wrap input[type="checkbox"],
+body.wp-admin .wrap input[type="radio"] {
+  accent-color: var(--ns-primary) !important;
+  cursor: pointer !important;
+  width: 16px !important;
+  height: 16px !important;
+  margin-left: 6px !important;
+  vertical-align: middle !important;
+}
+
+/* Form Table (Settings) */
+body.wp-admin .form-table {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  overflow: hidden !important;
+  margin: 16px 0 !important;
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+}
+
+body.wp-admin .form-table th {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  padding: 16px !important;
+  background: var(--ns-bg) !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  width: 240px !important;
+  text-align: right !important;
+  vertical-align: top !important;
+  line-height: 1.5 !important;
+}
+
+body.wp-admin .form-table td {
+  font-size: 13px !important;
+  color: var(--ns-text) !important;
+  padding: 16px !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  vertical-align: top !important;
+  line-height: 1.6 !important;
+}
+
+body.wp-admin .form-table tr:last-child th,
+body.wp-admin .form-table tr:last-child td {
+  border-bottom: none !important;
+}
+
+body.wp-admin .form-table p.description,
+body.wp-admin .form-table .description {
+  font-size: 12px !important;
+  color: var(--ns-text-muted) !important;
+  margin-top: 6px !important;
+  font-style: normal !important;
+  line-height: 1.5 !important;
+}
+
+body.wp-admin .form-table input.regular-text,
+body.wp-admin .form-table input.large-text,
+body.wp-admin .form-table textarea.large-text {
+  width: 100% !important;
+  max-width: 500px !important;
+}
+
+body.wp-admin .form-table code {
+  background: var(--ns-primary-light-3) !important;
+  color: var(--ns-primary-dark) !important;
+  padding: 2px 6px !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  direction: ltr !important;
+  display: inline-block !important;
+}
+
+/* =========================================================
+🔘 ۸. Buttons
+========================================================= */
+body.wp-admin .wrap .button,
+body.wp-admin .wrap .button-secondary,
+body.wp-admin .wrap input[type="submit"],
+body.wp-admin .wrap input[type="button"],
+body.wp-admin .wrap input[type="reset"] {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border-dark) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  color: var(--ns-text) !important;
+  padding: 7px 16px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 36px !important;
+  height: auto !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  text-decoration: none !important;
+  box-shadow: none !important;
+  line-height: 1.4 !important;
+  white-space: nowrap !important;
+}
+
+body.wp-admin .wrap .button:hover,
+body.wp-admin .wrap .button-secondary:hover,
+body.wp-admin .wrap input[type="submit"]:hover {
+  background: var(--ns-primary-light-2) !important;
+  border-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.wp-admin .wrap .button-primary,
+body.wp-admin .wrap .button.button-primary,
+body.wp-admin .wrap input[type="submit"].button-primary {
+  background: var(--ns-primary) !important;
+  border: none !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  color: #fff !important;
+  padding: 8px 18px !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  min-height: 36px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  text-decoration: none !important;
+  box-shadow: 0 2px 8px rgba(67, 171, 255, 0.3) !important;
+  line-height: 1.4 !important;
+  height: auto !important;
+}
+
+body.wp-admin .wrap .button-primary:hover {
+  background: var(--ns-primary-dark) !important;
+  box-shadow: 0 4px 12px rgba(67, 171, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+  color: #fff !important;
+}
+
+body.wp-admin .wrap .button-link-delete,
+body.wp-admin .wrap .submitdelete,
+body.wp-admin .wrap a.delete {
+  color: var(--ns-danger) !important;
+  background: transparent !important;
+  border-color: var(--ns-danger) !important;
+}
+
+body.wp-admin .wrap .button-link-delete:hover,
+body.wp-admin .wrap .submitdelete:hover,
+body.wp-admin .wrap a.delete:hover {
+  background: var(--ns-danger) !important;
+  color: #fff !important;
+}
+
+/* =========================================================
+🔔 ۹. Notices (پیام‌های سیستم)
+========================================================= */
+body.wp-admin .wrap .notice,
+body.wp-admin .wrap .updated,
+body.wp-admin .wrap .error {
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  padding: 12px 16px !important;
+  margin: 16px 0 !important;
+  font-size: 13px !important;
+  border: 1px solid !important;
+  border-right-width: 4px !important;
+  border-left-width: 1px !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  background: var(--ns-surface) !important;
+}
+
+body.wp-admin .wrap .notice-success,
+body.wp-admin .wrap .updated {
+  background: #f0fdf4 !important;
+  border-color: #86efac !important;
+  border-right-color: #16a34a !important;
+  color: #166534 !important;
+}
+
+body.wp-admin .wrap .notice-error,
+body.wp-admin .wrap .error {
+  background: #fef2f2 !important;
+  border-color: #fca5a5 !important;
+  border-right-color: #dc2626 !important;
+  color: #991b1b !important;
+}
+
+body.wp-admin .wrap .notice-warning {
+  background: #fffbeb !important;
+  border-color: #fcd34d !important;
+  border-right-color: #d97706 !important;
+  color: #92400e !important;
+}
+
+body.wp-admin .wrap .notice-info {
+  background: var(--ns-primary-light-3) !important;
+  border-color: #93c5fd !important;
+  border-right-color: var(--ns-primary) !important;
+  color: var(--ns-primary-dark) !important;
+}
+
+body.wp-admin .wrap .notice p {
+  margin: 4px 0 !important;
+  font-size: 13px !important;
+}
+
+/* =========================================================
+📦 ۱۰. Postbox & Cards
+========================================================= */
+body.wp-admin .postbox {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+}
+
+body.wp-admin .postbox-header {
+  background: var(--ns-surface) !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+  padding: 0 !important;
+  min-height: 44px !important;
+}
+
+body.wp-admin .postbox-header .hndle,
+body.wp-admin .postbox .hndle,
+body.wp-admin .postbox > h2 {
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: var(--ns-text) !important;
+  padding: 12px 16px !important;
+  margin: 0 !important;
+  border: none !important;
+  line-height: 1.4 !important;
+}
+
+body.wp-admin .postbox .inside {
+  padding: 16px !important;
+  margin: 0 !important;
+}
+
+body.wp-admin .card {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  padding: 20px !important;
+  max-width: 100% !important;
+  margin-bottom: 16px !important;
+}
+
+/* =========================================================
+💬 ۱۱. Comments Page
+========================================================= */
+body.edit-comments-php .wp-list-table .column-author,
+body.comment-php .wp-list-table .column-author {
+  white-space: nowrap !important;
+}
+
+body.edit-comments-php .wp-list-table .column-comment p {
+  margin: 0 !important;
+  line-height: 1.6 !important;
+}
+
+body.edit-comments-php .wp-list-table .column-response a,
+body.comment-php .wp-list-table .column-response a {
+  color: var(--ns-primary) !important;
+  text-decoration: none !important;
+}
+
+body.comment-php #replyrow #replycontent {
+  min-height: 150px !important;
+}
+
+body.comment-php #poststuff {
+  padding: 0 !important;
+  margin: 0 !important;
+}
+#comments-form {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: end !important;
+}
+/* =========================================================
+🎨 ۱۲. Themes Page
+========================================================= */
+body.themes-php .theme-browser .theme {
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  overflow: hidden !important;
+  transition: all 0.25s ease !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04) !important;
+  background: var(--ns-surface) !important;
+  width: 280px !important;
+  margin: 0 16px 24px 0 !important;
+}
+
+body.themes-php .theme-browser .theme:hover {
+  border-color: var(--ns-primary) !important;
+  box-shadow: 0 6px 16px rgba(67, 171, 255, 0.15) !important;
+  transform: translateY(-2px) !important;
+}
+
+body.themes-php .theme-browser .theme .theme-screenshot {
+  border-radius: var(--ns-radius, 8px) var(--ns-radius, 8px) 0 0 !important;
+  overflow: hidden !important;
+}
+
+body.themes-php .theme-browser .theme .theme-name {
+  font-weight: 600 !important;
+  color: var(--ns-text) !important;
+  padding: 12px !important;
+  background: var(--ns-surface) !important;
+}
+
+body.themes-php .theme-browser .theme .theme-actions {
+  background: var(--ns-bg) !important;
+  border-top: 1px solid var(--ns-border) !important;
+  padding: 10px 12px !important;
+  opacity: 1 !important;
+}
+
+body.themes-php .theme-browser .theme.active {
+  border-color: var(--ns-primary) !important;
+  box-shadow: 0 0 0 2px var(--ns-primary-light-3) !important;
+}
+
+/* =========================================================
+📋 ۱۳. Menus Page (nav-menus.php)
+========================================================= */
+body.nav-menus-php .menu-item-bar .menu-item-handle {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm, 6px) !important;
+  padding: 10px 12px !important;
+  transition: all 0.2s ease !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04) !important;
+}
+
+body.nav-menus-php .menu-item-bar .menu-item-handle:hover {
+  border-color: var(--ns-primary) !important;
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.nav-menus-php .menu-item-settings {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-top: none !important;
+  border-radius: 0 0 var(--ns-radius-sm, 6px) var(--ns-radius-sm, 6px) !important;
+  padding: 16px !important;
+}
+
+body.nav-menus-php .postbox,
+body.nav-menus-php .accordion-section {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  margin-bottom: 12px !important;
+}
+
+body.nav-menus-php .postbox h3,
+body.nav-menus-php .accordion-section h3 {
+  font-weight: 500 !important;
+  font-size: 13px !important;
+  padding: 12px 14px !important;
+  margin: 0 !important;
+  border-bottom: 1px solid var(--ns-border) !important;
+}
+
+/* =========================================================
+👤 ۱۴. Users Page
+========================================================= */
+body.users-php .wp-list-table .column-username {
+  white-space: nowrap !important;
+}
+
+body.users-php .wp-list-table .column-username strong a {
+  font-weight: 600 !important;
+  color: var(--ns-text) !important;
+  text-decoration: none !important;
+}
+
+body.users-php .wp-list-table .column-username strong a:hover {
+  color: var(--ns-primary) !important;
+}
+
+body.profile-php .form-table img.avatar {
+  border-radius: 50% !important;
+  border: 3px solid var(--ns-border) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* =========================================================
+⚙️ ۱۵. Settings Pages
+========================================================= */
+body.options-general-php .form-table input[type="text"],
+body.options-writing-php .form-table input[type="text"],
+body.options-reading-php .form-table input[type="text"],
+body.options-discussion-php .form-table input[type="text"],
+body.options-media-php .form-table input[type="text"],
+body.options-permalink-php .form-table input[type="text"],
+body.options-privacy-php .form-table input[type="text"] {
+  width: 100% !important;
+  max-width: 500px !important;
+}
+
+body.options-permalink-php .form-table input[type="text"] {
+  direction: ltr !important;
+  text-align: left !important;
+}
+
+/* =========================================================
+🔌 ۱۶. Plugins Page
+========================================================= */
+body.plugins-php .wp-list-table.plugins .plugin-title strong {
+  font-weight: 600 !important;
+}
+
+body.plugins-php .wp-list-table.plugins tr.active td,
+.plugins .active td,
+.plugins .active th {
+  background: none !important;
+}
+
+body.plugins-php .wp-list-table.plugins tr.active {
+  border-right: 3px solid var(--ns-success) !important;
+}
+
+body.plugins-php .wp-list-table.plugins tr.inactive {
+  opacity: 0.85 !important;
+}
+
+body.plugins-php .wp-list-table.plugins tr:hover {
+  background: var(--ns-primary-light-3) !important;
+}
+
+body.plugins-php .wp-list-table.plugins .update td {
+  background: #fffbeb !important;
+}
+
+/* =========================================================
+🛠️ ۱۷. Tools Page
+========================================================= */
+body.tools-php .card,
+body.import-php .card,
+body.export-php .card,
+body.site-health-php .card {
+  background: var(--ns-surface) !important;
+  border: 1px solid var(--ns-border) !important;
+  border-radius: var(--ns-radius, 8px) !important;
+  padding: 20px !important;
+  margin-bottom: 16px !important;
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+body.tools-php .card h2,
+body.import-php .card h2,
+body.export-php .card h2 {
+  font-weight: 500 !important;
+  margin-top: 0 !important;
+  margin-bottom: 12px !important;
+  color: var(--ns-text) !important;
+}
+
+/* =========================================================
+🌐 ۱۸. External Plugin Pages (Yoast, etc.)
+========================================================= */
+body.toplevel_page_wpseo_dashboard,
+body.toplevel_page_wpseo_page_settings,
+body.toplevel_page_wpseo_integrations,
+body.toplevel_page_wpseo_tools,
+body.toplevel_page_wpseo_licenses,
+body.toplevel_page_wpseo_page_academy,
+body.toplevel_page_wpseo_brand_insights {
+  background: var(--ns-bg) !important;
+}
+
+/* =========================================================
+📱 ۱۹. Responsive
+========================================================= */
+@media (max-width: 960px) {
+  body.wp-admin .wrap {
+    padding: 16px !important;
+  }
+
+  body.wp-admin .form-table th {
+    width: 100% !important;
+    display: block !important;
+    padding: 12px 16px 4px !important;
+  }
+
+  body.wp-admin .form-table td {
+    display: block !important;
+    padding: 4px 16px 12px !important;
+  }
+
+  body.wp-admin .wp-list-table {
+    display: block !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+@media (max-width: 782px) {
+  body.wp-admin .tablenav {
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+
+  body.wp-admin .tablenav .actions {
+    width: 100% !important;
+    justify-content: flex-start !important;
+  }
+
+  body.wp-admin .tablenav .tablenav-pages {
+    width: 100% !important;
+    justify-content: center !important;
+    margin-top: 8px !important;
+  }
+
+  body.wp-admin .nav-tab-wrapper {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+
+  body.wp-admin .nav-tab-wrapper .nav-tab {
+    white-space: nowrap !important;
+  }
+
+  body.wp-admin .subsubsub {
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body.wp-admin .wrap {
+    padding: 12px !important;
+  }
+
+  body.wp-admin .wrap h1 {
+    font-size: 18px !important;
+  }
+}
+
+.nextsafar-nav-item:hover,
+.nextsafar-submenu-item:hover {
+  color: var(--ns-surface) !important;
+}
+.wp-core-ui select {
+  border-radius: var(--ns-radius-sm);
+}
+#wpcontent,
+#wpfooter,
+.wp-toolbar {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: var(--ns-surface) !important;
+}

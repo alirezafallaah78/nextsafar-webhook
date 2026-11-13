@@ -39,26 +39,22 @@ class Activator {
      * Create custom user roles
      */
     private static function create_custom_roles(): void {
-        /* Remove old roles if they exist */
         remove_role('nextsafar_editor');
         remove_role('nextsafar_author');
 
-        /* Create editor role */
         add_role('nextsafar_editor', 'NextSafar Editor', [
             'read' => true,
             'edit_posts' => true,
             'edit_published_posts' => true,
             'publish_posts' => true,
             'upload_files' => true,
-            'edit_pages' => true,
+            'edit_pages' => true,  // ✅ فقط یکبار
             'edit_others_posts' => true,
-            'edit_pages' => true,
             'edit_published_pages' => true,
             'publish_pages' => true,
             'edit_others_pages' => true,
         ]);
 
-        /* Create author role */
         add_role('nextsafar_author', 'NextSafar Author', [
             'read' => true,
             'edit_posts' => true,

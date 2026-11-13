@@ -112,7 +112,7 @@ function nextsafar_render_submenu( $submenus ) {
 <aside class="nextsafar-sidebar">
     <div class="nextsafar-logo">
         <div class="nextsafar-logo-mark">
-            <img src="<?php echo esc_url( NEXTSAFAR_URL . 'assets/admin/img/favicon.png' ); ?>" alt="سفربعدی ایرانیان">
+            <img src="<?php echo esc_url( NEXTSAFAR_URL . 'assets/img/favicon.png' ); ?>" alt="سفربعدی ایرانیان">
         </div>
         <div class="nextsafar-logo-text"><strong>سفر بعدی ایرانیان</strong></div>
     </div>
@@ -469,6 +469,6 @@ function nextsafar_render_submenu( $submenus ) {
     </nav>
     <div class="nextsafar-sidebar-bottom">
         <div class="nextsafar-sidebar-divider"></div>
-        <div class="nextsafar-sidebar-version">NextSafar Admin v<?php echo NEXTSAFAR_VERSION; ?></div>
+        <div class="nextsafar-sidebar-version">NextSafar Admin v<?php echo NEXTSAFAR_ADMIN_VERSION; ?></div>
     </div>
 </aside>

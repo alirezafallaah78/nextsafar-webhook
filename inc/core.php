@@ -25,10 +25,8 @@ class Core {
         add_action('init', [__CLASS__, 'register_taxonomies']);
         add_action('add_meta_boxes', [__CLASS__, 'register_metaboxes']);
 
-        // ✅ تصویر شاخص: وردپرس علاوه بر support پست‌تایپ، به support قالب هم نیاز دارد
         add_action('after_setup_theme', [__CLASS__, 'register_thumbnail_support'], 20);
 
-        // ✅ فیلد REST تصویر شاخص (URL کامل) برای فرانت‌اند Next.js
         add_action('rest_api_init', [__CLASS__, 'register_featured_image_field']);
         
         // News System Menus
@@ -39,6 +37,9 @@ class Core {
         
         // Initialize featured meta for multiple post types
         MetaBoxes\HotelFeaturedMeta::init();
+
+        \NextSafar\Admin\WP_Pages_Wrapper::get_instance()->init();
+        \NextSafar\Admin\Role_Access_Page::init();
 
         // ═══════════════════════════════════════════════════
         // MetaBox Hooks Registration
@@ -110,35 +111,32 @@ class Core {
      * Register admin menus for Post Generator
      */
     public static function register_admin_menus(): void {
-        // Main menu: Post Generator
         add_menu_page(
             'تولید پست هوشمند',
             'تولید پست',
             'manage_options',
             'nextsafar-post-generator',
-            [Admin\PostGenerator\PostGeneratorPage::class, 'render'],
+            [\NextSafar\Admin\PostGenerator\PostGeneratorPage::class, 'render'],  // ✅
             'dashicons-upload',
             30
         );
 
-        // Submenu: Post Generator (same as main - replaces default)
         add_submenu_page(
             'nextsafar-post-generator',
             'تولید پست',
             'تولید پست',
             'manage_options',
             'nextsafar-post-generator',
-            [Admin\PostGenerator\PostGeneratorPage::class, 'render']
+            [\NextSafar\Admin\PostGenerator\PostGeneratorPage::class, 'render']  // ✅
         );
 
-        // Submenu: Settings
         add_submenu_page(
             'nextsafar-post-generator',
             'تنظیمات API',
             'تنظیمات',
             'manage_options',
             'nextsafar-pg-settings',
-            [Admin\PostGenerator\SettingsPage::class, 'render']
+            [\NextSafar\Admin\PostGenerator\SettingsPage::class, 'render']  // ✅
         );
     }
 

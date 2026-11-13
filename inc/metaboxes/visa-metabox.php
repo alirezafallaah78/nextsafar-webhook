@@ -110,33 +110,18 @@ class VisaMetaBox {
         if ($hook !== 'post.php' && $hook !== 'post-new.php') {
             return;
         }
-
-        $screen    = function_exists('get_current_screen') ? get_current_screen() : null;
+        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
         $post_type = $screen ? $screen->post_type : ($GLOBALS['post_type'] ?? '');
         if ($post_type !== 'visa') {
             return;
         }
-
         wp_enqueue_media();
 
-        // ✅ نسخه‌گذاری بر اساس زمان تغییر فایل → کش مرورگر بعد از آپدیت، فایل قدیمی را نشان نمی‌دهد
+        // ✅ مسیر صحیح
         $css_ver = @filemtime(NEXTSAFAR_PATH . 'assets/admin/css/metaboxes/visa.css') ?: NEXTSAFAR_VERSION;
-        $js_ver  = @filemtime(NEXTSAFAR_PATH . 'assets/admin/js/metaboxes/visa.js') ?: NEXTSAFAR_VERSION;
-
-        wp_enqueue_style(
-            'nextsafar-visa-admin',
-            NEXTSAFAR_URL . 'assets/admin/css/metaboxes/visa.css',
-            [],
-            NEXTSAFAR_VERSION
-        );
-
-        wp_enqueue_script(
-            'nextsafar-visa-admin',
-            NEXTSAFAR_URL . 'assets/admin/js/metaboxes/visa.js',
-            ['jquery'],
-            NEXTSAFAR_VERSION,
-            true
-        );
+        $js_ver = @filemtime(NEXTSAFAR_PATH . 'assets/admin/js/metaboxes/visa.js') ?: NEXTSAFAR_VERSION;
+        wp_enqueue_style('nextsafar-visa-admin', NEXTSAFAR_URL . 'assets/admin/css/metaboxes/visa.css', [], (string) $css_ver);
+        wp_enqueue_script('nextsafar-visa-admin', NEXTSAFAR_URL . 'assets/admin/js/metaboxes/visa.js', ['jquery'], (string) $js_ver, true);
     }
 
     /* ═══════════════════════════════════════════════════════
