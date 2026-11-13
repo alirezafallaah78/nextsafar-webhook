@@ -1,0 +1,1454 @@
+/* =========================================================
+🎯 NextSafar Dashboard Styles
+========================================================= */
+/* Welcome Header */
+.nextsafar-dashboard-welcome {
+  border-radius: var(--ns-radius);
+  padding: 8px 22px;
+  margin-bottom: 24px;
+  color: var(--ns-text);
+  border: 1px solid var(--ns-border);
+}
+
+.nextsafar-dashboard-welcome h1 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ns-text) !important;
+}
+
+.nextsafar-dashboard-welcome .welcome-date {
+  display: inline-flex;
+  gap: 6px;
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.95;
+  color: var(--ns-text);
+}
+
+.nextsafar-dashboard-welcome svg,
+#wpwrap svg {
+  fill: none !important;
+}
+
+.welcome-text {
+  display: flex;
+  align-content: center;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Main Grid Layout */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 24px;
+}
+
+/* Main Column */
+.dashboard-main-col {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* KPI Cards Grid */
+.kpi-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.kpi-card {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius);
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: all 0.2s ease;
+  box-shadow: var(--ns-shadow-sm);
+}
+
+.kpi-icon {
+  line-height: 1;
+  flex-shrink: 0;
+}
+
+.kpi-icon svg {
+  width: 50px;
+  height: 50px;
+}
+
+.kpi-content {
+  flex: 1;
+}
+
+.kpi-value {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--ns-text);
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.kpi-label {
+  font-size: 13px;
+  color: var(--ns-text-secondary);
+  font-weight: 500;
+}
+
+/* Widget Box */
+.widget-box {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius);
+  overflow: hidden;
+  box-shadow: var(--ns-shadow-sm);
+}
+
+.widget-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 14px;
+  border-bottom: 1px solid var(--ns-border);
+}
+
+.widget-header h3 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.widget-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  background: var(--ns-primary-light-2);
+  color: var(--ns-primary-dark);
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.widget-content {
+  padding: 14px;
+  min-height: 200px;
+}
+
+.widget-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 40px 20px;
+  color: var(--ns-text-muted);
+  font-size: 13px;
+}
+
+/* Charts Row */
+.charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 1366px) {
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+.widget-analytics .widget-content,
+.widget-yoast .widget-content {
+  min-height: 280px;
+}
+
+/* Yoast Widget Styles */
+.yoast-score-container {
+  text-align: center;
+  padding: 16px 0;
+}
+
+.yoast-score-circle {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 16px;
+  position: relative;
+}
+
+.yoast-score-circle svg {
+  transform: rotate(-90deg);
+}
+
+.yoast-score-value {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  font-weight: 500;
+}
+
+.yoast-score-good .yoast-score-value {
+  color: var(--ns-success);
+}
+.yoast-score-ok .yoast-score-value {
+  color: var(--ns-warning);
+}
+.yoast-score-bad .yoast-score-value {
+  color: var(--ns-danger);
+}
+
+.yoast-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.yoast-stat {
+  background: var(--ns-bg);
+  padding: 12px;
+  border-radius: var(--ns-radius-sm);
+  text-align: center;
+}
+
+.yoast-stat-value {
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--ns-text);
+  display: block;
+}
+
+.yoast-stat-label {
+  font-size: 11px;
+  color: var(--ns-text-secondary);
+  margin-top: 2px;
+}
+
+/* Info Cards Grid */
+.info-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.info-cards-grid .widget-content {
+  min-height: 260px;
+  max-height: 400px;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* List Items */
+.widget-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.widget-list-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px;
+  border-radius: var(--ns-radius-sm);
+  transition: background 0.15s ease;
+  border-bottom: 1px solid var(--ns-border);
+}
+
+.widget-list-item:last-child {
+  border-bottom: none;
+}
+
+.widget-list-item:hover {
+  background: var(--ns-primary-light-3);
+}
+
+.widget-list-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ns-primary-light-2);
+  border-radius: var(--ns-radius-xs);
+}
+
+.widget-list-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.widget-list-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.widget-list-meta {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+}
+
+.widget-list-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+.status-pending {
+  background: var(--ns-warning-bg);
+  color: var(--ns-warning-text);
+}
+
+.status-approved {
+  background: var(--ns-success-bg);
+  color: var(--ns-success-text);
+}
+
+.status-expiring {
+  background: var(--ns-danger-bg);
+  color: var(--ns-danger-text);
+}
+
+/* Empty State */
+.widget-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: var(--ns-text-muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+.widget-empty-icon {
+  font-size: 32px;
+  margin-bottom: 8px;
+  opacity: 0.5;
+}
+
+/* Side Column */
+.dashboard-side-col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Calendar Widget */
+.calendar-container {
+  padding: 8px;
+}
+
+.calendar-month-title {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.calendar-nav-btn {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius-xs);
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--ns-text-secondary);
+  transition: all 0.15s ease;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--ns-primary-light-2);
+  color: var(--ns-primary);
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-day-name {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ns-text-muted);
+  padding: 6px 0;
+}
+
+.calendar-day {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  border-radius: var(--ns-radius-xs);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  color: var(--ns-text);
+}
+
+.calendar-day:hover {
+  background: var(--ns-primary-light-3);
+}
+
+.calendar-day.today {
+  background: var(--ns-primary);
+  color: white;
+  font-weight: 500;
+}
+
+.calendar-day.other-month {
+  color: var(--ns-text-muted);
+  opacity: 0.4;
+}
+
+.calendar-day.holiday {
+  color: var(--ns-danger);
+  font-weight: 500;
+}
+
+.calendar-day.today.holiday {
+  color: white;
+  background: var(--ns-danger);
+}
+
+.calendar-dual-date {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.1;
+}
+
+.calendar-dual-date .gregorian {
+  font-size: 9px;
+  opacity: 0.7;
+}
+/* =========================================================
+📅 Calendar Header & Selectors (New Layout)
+========================================================= */
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.calendar-selectors .calendar-select {
+  border: solid 1px var(--ns-border) !important;
+  border-radius: var(--ns-radius-sm) !important;
+}
+.calendar-selectors {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.calendar-select {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius-xs);
+  padding: 6px 28px 6px 10px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+  cursor: pointer;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  appearance: none;
+  /* فلش سفارشی برای دراپ‌داون در حالت RTL */
+  background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23666%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+  background-repeat: no-repeat;
+  background-position: left 8px center;
+  background-size: 8px;
+}
+
+.calendar-select:hover,
+.calendar-select:focus {
+  border-color: var(--ns-primary);
+  background-color: var(--ns-primary-light-2);
+}
+
+.calendar-nav {
+  display: flex;
+  gap: 6px;
+}
+
+.calendar-nav-btn {
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: var(--ns-radius-xs);
+  width: 32px;
+  height: 100%;
+  cursor: pointer;
+  font-size: 16px;
+  color: var(--ns-text-secondary);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--ns-primary);
+  color: white;
+  border-color: var(--ns-primary);
+}
+
+/* =========================================================
+📅 Calendar Dual Date (Shamsi Main, Gregorian Small)
+========================================================= */
+.calendar-dual-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.2;
+  height: 36px !important;
+}
+
+.calendar-dual-date .shamsi {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.calendar-dual-date .gregorian {
+  font-size: 9px;
+  color: var(--ns-text);
+  margin-top: 2px;
+  direction: ltr;
+  font-weight: 500;
+}
+
+.calendar-day.today .calendar-dual-date .shamsi,
+.calendar-day.today .calendar-dual-date .gregorian {
+  color: white;
+}
+
+/* =========================================================
+🎯 Yoast Widget (Simple White & Blue Theme)
+========================================================= */
+.yoast-stats-container {
+  padding: 4px;
+}
+
+.yoast-overview-score {
+  text-align: center;
+  padding: 24px 16px;
+  border-radius: var(--ns-radius, 8px);
+  margin-bottom: 16px;
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+}
+
+.yoast-score-number {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 8px;
+  color: var(--ns-primary); /* آبی اصلی قالب */
+}
+
+.yoast-score-label {
+  font-size: 14px;
+  color: var(--ns-text-secondary);
+  font-weight: 500;
+}
+
+.yoast-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.yoast-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  background: var(--ns-surface);
+  border-radius: var(--ns-radius-sm);
+  border: 1px solid var(--ns-border);
+  transition: all 0.2s ease;
+}
+
+.yoast-stat-item:hover {
+  border-color: var(--ns-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+.yoast-stat-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ns-primary-light-2);
+  border-radius: var(--ns-radius-xs);
+  color: var(--ns-primary-dark);
+}
+
+.yoast-stat-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.yoast-stat-info strong {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ns-text);
+  line-height: 1.2;
+}
+
+.yoast-stat-info span {
+  font-size: 12px;
+  color: var(--ns-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yoast-progress-section {
+  background: var(--ns-surface);
+  padding: 16px;
+  border-radius: var(--ns-radius-sm);
+  border: 1px solid var(--ns-border);
+}
+
+.yoast-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 13px;
+}
+
+.yoast-progress-label span {
+  color: var(--ns-text-secondary);
+  font-weight: 500;
+}
+
+.yoast-progress-label strong {
+  color: var(--ns-primary);
+  font-weight: 500;
+}
+
+.yoast-progress-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--ns-border);
+  gap: 2px;
+}
+
+.yoast-progress-fill {
+  height: 100%;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* تم سفید-آبی برای نوار پیشرفت (حذف رنگ‌های تند) */
+.yoast-progress-good {
+  background: var(--ns-primary);
+}
+
+.yoast-progress-ok {
+  background: var(--ns-primary-light-2);
+}
+
+.yoast-progress-bad {
+  background: var(--ns-border);
+}
+/* Weather Widget */
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.weather-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 12px;
+  border-radius: var(--ns-radius-sm);
+  transition: background 0.15s ease;
+  border: solid 1px var(--ns-border);
+}
+
+.weather-item:hover {
+  background: var(--ns-primary-light-3);
+}
+
+.weather-city {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-icon {
+  font-size: 20px;
+}
+
+.weather-temp {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ns-primary-dark);
+}
+
+/* Admin Logins */
+.login-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--ns-border);
+}
+
+.login-item:last-child {
+  border-bottom: none;
+}
+
+.login-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.login-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.login-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+  margin-bottom: 2px;
+}
+
+.login-time {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+}
+
+/* Responsive */
+@media (max-width: 1400px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr 300px;
+  }
+  .kpi-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .info-cards-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 1100px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-side-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+}
+
+@media (max-width: 768px) {
+  .nextsafar-dashboard {
+    padding: 16px !important;
+  }
+  .kpi-cards-grid,
+  .info-cards-grid {
+    grid-template-columns: 1fr;
+  }
+  .charts-row {
+    grid-template-columns: 1fr;
+  }
+  .dashboard-side-col {
+    grid-template-columns: 1fr;
+  }
+}
+/* =========================================================
+📅 Calendar Holiday Highlight
+========================================================= */
+.calendar-day.holiday {
+  background: var(--ns-danger-bg);
+  color: var(--ns-danger-text);
+  font-weight: 500;
+  position: relative;
+}
+
+.calendar-day.holiday::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 10px;
+  height: 1px;
+  background: var(--ns-danger);
+  border-radius: 50%;
+}
+
+.calendar-day.today {
+  background: var(--ns-primary);
+  color: white;
+  font-weight: 500;
+}
+
+.calendar-day.today.holiday {
+  background: var(--ns-danger);
+  color: white;
+}
+
+.calendar-day.today.holiday::after {
+  background: white;
+}
+
+.calendar-day.friday {
+  color: var(--ns-danger);
+}
+
+.calendar-day.today.friday {
+  color: white;
+}
+
+/* =========================================================
+📋 Recent Bookings Styles
+========================================================= */
+.booking-item {
+  position: relative;
+}
+
+.booking-icon {
+  background: var(--ns-success-bg);
+}
+
+.booking-details {
+  display: flex;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.booking-detail {
+  font-size: 11px;
+  color: var(--ns-text-secondary);
+}
+
+.booking-reserve-id {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+  font-weight: 500;
+  flex-shrink: 0;
+}
+
+/* =========================================================
+📊 Analytics Tabs
+========================================================= */
+.widget-tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--ns-bg);
+  padding: 4px;
+  border-radius: var(--ns-radius-sm);
+}
+
+.widget-tab {
+  padding: 6px 14px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ns-text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.widget-tab:hover {
+  color: var(--ns-primary-dark);
+}
+
+.widget-tab.active {
+  background: var(--ns-surface);
+  color: var(--ns-primary-dark);
+  font-weight: 500;
+  box-shadow: var(--ns-shadow-sm);
+}
+
+.widget-tab-icon {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+}
+
+.widget-tab-icon:hover {
+  background: var(--ns-primary-light-2);
+}
+
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.api-notice {
+  background: var(--ns-warning-bg);
+  color: var(--ns-warning-text);
+  padding: 16px;
+  border-radius: var(--ns-radius-sm);
+  margin-bottom: 16px;
+  border: 1px solid var(--ns-border);
+}
+
+.api-notice p {
+  margin: 0 0 12px 0;
+  font-size: 13px;
+}
+
+.chart-stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.chart-stat {
+  padding: 12px;
+  background: var(--ns-bg);
+  border-radius: var(--ns-radius-sm);
+  text-align: center;
+}
+
+.stat-label {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+  margin-bottom: 4px;
+}
+
+.stat-value {
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+/* =========================================================
+🎯 Enhanced Yoast Widget
+========================================================= */
+.yoast-enhanced-widget {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.yoast-distribution-bar {
+  margin: 8px 0;
+}
+
+.dist-bar {
+  display: flex;
+  height: 8px;
+  border-radius: 4px;
+  overflow: hidden;
+  background: var(--ns-bg);
+}
+
+.dist-segment {
+  transition: width 0.5s ease;
+}
+
+.dist-segment.good {
+  background: var(--ns-success);
+}
+
+.dist-segment.ok {
+  background: var(--ns-warning);
+}
+
+.dist-segment.bad {
+  background: var(--ns-danger);
+}
+
+.dist-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.dist-label {
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.dist-label.good {
+  color: var(--ns-success-text);
+}
+
+.dist-label.ok {
+  color: var(--ns-warning-text);
+}
+
+.dist-label.bad {
+  color: var(--ns-danger-text);
+}
+
+.yoast-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.yoast-stat {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: var(--ns-bg);
+  border-radius: var(--ns-radius-sm);
+}
+
+.yoast-stat-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--ns-radius-xs);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.yoast-stat-icon.good {
+  background: var(--ns-success-bg);
+}
+
+.yoast-stat-icon.warn {
+  background: var(--ns-warning-bg);
+}
+
+.yoast-stat-icon.bad {
+  background: var(--ns-danger-bg);
+}
+
+.yoast-stat-icon.info {
+  background: var(--ns-primary-light-2);
+}
+
+.yoast-stat-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.yoast-stat-value {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.yoast-stat-label {
+  font-size: 10px;
+  color: var(--ns-text-muted);
+}
+
+.yoast-score-label {
+  text-align: center;
+  font-size: 13px;
+  color: var(--ns-text-secondary);
+  margin: 8px 0 0 0;
+}
+
+/* =========================================================
+📊 Weather Widget
+========================================================= */
+.weather-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.weather-city {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+}
+
+.weather-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.weather-icon {
+  font-size: 20px;
+}
+
+.weather-temp {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ns-primary-dark);
+}
+
+/* =========================================================
+🔐 Admin Logins
+========================================================= */
+.login-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  border-bottom: 1px solid var(--ns-border);
+}
+
+.login-item:last-child {
+  border-bottom: none;
+}
+
+.login-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.login-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.login-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ns-text);
+  margin-bottom: 2px;
+}
+
+.login-time {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+}
+/* =========================================================
+🎯 Yoast SEO Widget
+========================================================= */
+.yoast-stats-container {
+  padding: 4px;
+}
+
+.yoast-overview-score {
+  text-align: center;
+  padding: 20px 16px;
+  border-radius: var(--ns-radius, 8px);
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.yoast-overview-score.good {
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+}
+
+.yoast-overview-score.bad {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+}
+
+.yoast-score-number {
+  font-size: 48px;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.yoast-overview-score.good .yoast-score-number {
+  color: #059669;
+}
+.yoast-overview-score.ok .yoast-score-number {
+  color: var(--ns-primary);
+}
+.yoast-overview-score.bad .yoast-score-number {
+  color: #dc2626;
+}
+
+.yoast-score-label {
+  font-size: 13px;
+  color: var(--ns-text-secondary);
+  font-weight: 500;
+}
+
+.yoast-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.yoast-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px;
+  border-radius: var(--ns-radius-sm);
+  border: 1px solid var(--ns-border);
+  transition: all 0.2s ease;
+}
+
+.yoast-stat-item:hover {
+  border-color: var(--ns-primary);
+  transform: translateY(-1px);
+}
+
+.yoast-stat-icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.yoast-stat-info {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.yoast-stat-info strong {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ns-text);
+  line-height: 1.2;
+}
+
+.yoast-stat-info span {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.yoast-progress-section {
+  background: var(--ns-bg);
+  padding: 14px;
+  border-radius: var(--ns-radius-sm);
+  border: 1px solid var(--ns-border);
+}
+
+.yoast-progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  font-size: 13px;
+}
+
+.yoast-progress-label span {
+  color: var(--ns-text-secondary);
+  font-weight: 500;
+}
+
+.yoast-progress-label strong {
+  color: var(--ns-text);
+  font-weight: 500;
+}
+
+.yoast-progress-bar {
+  display: flex;
+  height: 10px;
+  border-radius: 5px;
+  overflow: hidden;
+  background: var(--ns-border);
+  gap: 2px;
+}
+
+.yoast-progress-fill {
+  height: 100%;
+  transition: width 0.5s ease;
+}
+
+.yoast-progress-good {
+  background: #10b981;
+}
+.yoast-progress-ok {
+  background: #f59e0b;
+}
+.yoast-progress-bad {
+  background: #ef4444;
+}
+
+@media (max-width: 600px) {
+  .yoast-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .weather-desc {
+    display: none;
+  }
+}
+/* =========================================================
+🎨 Google Search Console - Modern Chart Design
+========================================================= */
+
+.gsc-stats-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.gsc-stat-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: 10px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.gsc-stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  border-color: transparent;
+}
+
+.gsc-stat-indicator {
+  width: 4px;
+  height: 36px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.gsc-stat-clicks .gsc-stat-indicator {
+  background: linear-gradient(180deg, #4285f4 0%, #1a73e8 100%);
+}
+
+.gsc-stat-impressions .gsc-stat-indicator {
+  background: linear-gradient(180deg, #a142f4 0%, #9334e6 100%);
+}
+
+.gsc-indicator-ctr {
+  background: linear-gradient(180deg, #34a853 0%, #188038 100%) !important;
+}
+
+.gsc-indicator-position {
+  background: linear-gradient(180deg, #fbbc04 0%, #f9ab00 100%) !important;
+}
+
+.gsc-stat-content {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  flex: 1;
+}
+
+.gsc-stat-label {
+  font-size: 11px;
+  color: var(--ns-text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gsc-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--ns-text);
+  line-height: 1.2;
+  font-feature-settings: "tnum";
+  letter-spacing: -0.02em;
+}
+
+.gsc-stat-clicks .gsc-stat-value {
+  color: #4285f4;
+}
+.gsc-stat-impressions .gsc-stat-value {
+  color: #a142f4;
+}
+.gsc-stat-ctr .gsc-stat-value {
+  color: #34a853;
+}
+.gsc-stat-position .gsc-stat-value {
+  color: #f9ab00;
+}
+
+.gsc-chart-wrapper {
+  position: relative;
+  height: 320px;
+  background: var(--ns-surface);
+  border: 1px solid var(--ns-border);
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.gsc-chart-wrapper canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .gsc-stats-container {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .gsc-stats-container {
+    grid-template-columns: 1fr;
+  }
+
+  .gsc-chart-wrapper {
+    height: 280px;
+  }
+
+  .gsc-stat-value {
+    font-size: 18px;
+  }
+}

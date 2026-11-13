@@ -1,0 +1,8 @@
+﻿inc/secrets.local.php
+*.env
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.log
+debug.log

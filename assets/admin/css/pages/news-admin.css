@@ -1,0 +1,511 @@
+/* ═══════════════════════════════════════════════════════════
+   NextSafar News Admin - Modern Dashboard Styles
+   ═══════════════════════════════════════════════════════════ */
+
+.nextsafar-wrap {
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+.nextsafar-wrap h1 {
+    color: #1d2327;
+    font-size: 28px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.nextsafar-wrap > .description {
+    color: #646970;
+    font-size: 14px;
+    margin-bottom: 25px;
+}
+
+/* ═══ Cards ═══ */
+.ns-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+    border: 1px solid #e5e7eb;
+}
+
+.ns-card h2 {
+    margin-top: 0;
+    margin-bottom: 16px;
+    color: #1d2327;
+    font-size: 18px;
+    font-weight: 600;
+    padding-bottom: 12px;
+    border-bottom: 2px solid #f0f0f1;
+}
+
+.ns-card-warning {
+    border-left: 4px solid #dba617;
+}
+
+/* ═══ Dashboard Stats Grid ═══ */
+.ns-dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.ns-stat-card {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    transition: all 0.2s;
+}
+
+.ns-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.ns-stat-icon {
+    font-size: 32px;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+
+.ns-stat-primary .ns-stat-icon { background: #e7f3ff; }
+.ns-stat-success .ns-stat-icon { background: #e8f5e9; }
+.ns-stat-info .ns-stat-icon    { background: #e3f2fd; }
+.ns-stat-warning .ns-stat-icon { background: #fff8e1; }
+.ns-stat-danger .ns-stat-icon { background: #ffebee; }
+.ns-stat-purple .ns-stat-icon { background: #f3e5f5; }
+
+.ns-stat-value {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1;
+    margin-bottom: 4px;
+}
+
+.ns-stat-primary .ns-stat-value { color: #2271b1; }
+.ns-stat-success .ns-stat-value { color: #00a32a; }
+.ns-stat-info .ns-stat-value    { color: #2196f3; }
+.ns-stat-warning .ns-stat-value { color: #dba617; }
+.ns-stat-danger .ns-stat-value  { color: #d63638; }
+.ns-stat-purple .ns-stat-value  { color: #9c27b0; }
+
+.ns-stat-label {
+    color: #646970;
+    font-size: 13px;
+}
+
+/* ═══ Mini Stats ═══ */
+.ns-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin: 15px 0;
+}
+
+.ns-mini-stat {
+    text-align: center;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.ns-mini-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2271b1;
+}
+
+.ns-mini-label {
+    font-size: 12px;
+    color: #646970;
+    margin-top: 4px;
+}
+
+/* ═══ Badges ═══ */
+.ns-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: #f0f0f1;
+    color: #646970;
+    margin: 2px;
+}
+
+.ns-badge-success { background: #e8f5e9; color: #00a32a; }
+.ns-badge-danger  { background: #ffebee; color: #d63638; }
+.ns-badge-warning { background: #fff8e1; color: #dba617; }
+.ns-badge-info    { background: #e3f2fd; color: #2196f3; }
+
+/* ═══ AI Status ═══ */
+.ns-ai-status {
+    padding: 16px;
+    border-radius: 8px;
+}
+
+.ns-ai-active {
+    background: #e8f5e9;
+    border-left: 4px solid #00a32a;
+    padding: 16px;
+    border-radius: 4px;
+}
+
+.ns-ai-disabled {
+    background: #fff8e1;
+    border-left: 4px solid #dba617;
+    padding: 16px;
+    border-radius: 4px;
+}
+
+/* ═══ Terminal ═══ */
+.ns-terminal {
+    background: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    margin: 20px 0;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+}
+
+.ns-terminal-header {
+    background: #2d2d2d;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid #3d3d3d;
+}
+
+.ns-terminal-dots {
+    display: flex;
+    gap: 8px;
+    margin-right: 16px;
+}
+
+.ns-terminal-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.ns-terminal-dot.red    { background: #ff5f56; }
+.ns-terminal-dot.yellow { background: #ffbd2e; }
+.ns-terminal-dot.green  { background: #27c93f; }
+
+.ns-terminal-title {
+    color: #ccc;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.ns-terminal-body {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 20px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.ns-terminal-body::-webkit-scrollbar { width: 8px; }
+.ns-terminal-body::-webkit-scrollbar-track { background: #1e1e1e; }
+.ns-terminal-body::-webkit-scrollbar-thumb { background: #3d3d3d; border-radius: 4px; }
+
+.terminal-line {
+    margin-bottom: 4px;
+    word-wrap: break-word;
+}
+
+.terminal-line.info    { color: #9cdcfe; }
+.terminal-line.success { color: #4ec9b0; }
+.terminal-line.error   { color: #f48771; }
+.terminal-line.warning { color: #dcdcaa; }
+.terminal-line.process { color: #c586c0; }
+
+/* ═══ Progress Bar ═══ */
+.ns-progress-container {
+    background: #e0e0e0;
+    border-radius: 10px;
+    height: 20px;
+    margin: 20px 0;
+    overflow: hidden;
+}
+
+.ns-progress-bar {
+    background: linear-gradient(90deg, #4ec9b0 0%, #27c93f 100%);
+    height: 100%;
+    width: 0%;
+    transition: width 0.3s ease;
+    border-radius: 10px;
+}
+
+/* ═══ Keywords ═══ */
+.ns-keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 10px;
+    background: #f8f9fa;
+    border-radius: 6px;
+}
+
+.ns-keyword-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: #fff;
+    border-radius: 16px;
+    border: 1px solid #e5e7eb;
+}
+
+.ns-keyword-positive { border-color: #00a32a; }
+.ns-keyword-negative { border-color: #d63638; }
+
+.ns-keyword-text {
+    font-weight: 500;
+}
+
+.delete-keyword-btn {
+    padding: 2px 6px !important;
+    min-height: auto !important;
+    line-height: 1 !important;
+}
+
+.ns-add-keyword-form .ns-form-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.ns-input-small {
+    max-width: 80px !important;
+}
+
+/* ═══ Form Elements ═══ */
+.ns-form-row {
+    margin-bottom: 20px;
+}
+
+.ns-form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: #1d2327;
+}
+
+.ns-input,
+.ns-select {
+    width: 100%;
+    max-width: 500px;
+    padding: 8px 12px;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.ns-input:focus,
+.ns-select:focus {
+    outline: none;
+    border-color: #2271b1;
+    box-shadow: 0 0 0 1px #2271b1;
+}
+
+/* ═══ Toggle Switch ═══ */
+.ns-toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+}
+
+.ns-toggle-info {
+    flex: 1;
+}
+
+.ns-toggle-label {
+    font-weight: 600;
+    color: #1d2327;
+    margin-bottom: 4px;
+}
+
+.ns-toggle-desc {
+    color: #646970;
+    font-size: 13px;
+}
+
+.ns-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 30px;
+    flex-shrink: 0;
+}
+
+.ns-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ns-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 30px;
+}
+
+.ns-slider:before {
+    position: absolute;
+    content: "";
+    height: 22px;
+    width: 22px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.ns-switch input:checked + .ns-slider {
+    background-color: #00a32a;
+}
+
+.ns-switch input:checked + .ns-slider:before {
+    transform: translateX(30px);
+}
+
+/* ═══ Hours Grid ═══ */
+.ns-hours-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 6px;
+    margin-top: 15px;
+}
+
+.ns-hour-cell {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 4px;
+    background: #f8f9fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    user-select: none;
+}
+
+.ns-hour-cell input {
+    display: none;
+}
+
+.ns-hour-cell.checked {
+    background: #00a32a;
+    color: white;
+    border-color: #00a32a;
+    font-weight: 600;
+}
+
+.ns-hour-cell:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+/* ═══ Numbers Grid ═══ */
+.ns-numbers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 15px;
+}
+
+.ns-number-card {
+    text-align: center;
+    padding: 16px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+}
+
+.ns-number-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+}
+
+.ns-number-title {
+    font-size: 13px;
+    color: #646970;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.ns-number-input {
+    width: 100%;
+    max-width: 100px;
+    padding: 6px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    border: 1px solid #dcdcde;
+    border-radius: 4px;
+}
+
+/* ═══ Info Box ═══ */
+.ns-info-box {
+    padding: 12px 16px;
+    background: #e7f3ff;
+    border-left: 4px solid #2271b1;
+    border-radius: 4px;
+    margin-bottom: 15px;
+    color: #1e466f;
+}
+
+/* ═══ Submit Row ═══ */
+.ns-submit-row {
+    text-align: center;
+    padding: 20px 0;
+}
+
+.ns-submit-row .button-large {
+    padding: 12px 30px !important;
+    font-size: 15px !important;
+    height: auto !important;
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 782px) {
+    .ns-dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .ns-hours-grid {
+        grid-template-columns: repeat(6, 1fr);
+    }
+    
+    .ns-numbers-grid {
+        grid-template-columns: 1fr;
+    }
+}

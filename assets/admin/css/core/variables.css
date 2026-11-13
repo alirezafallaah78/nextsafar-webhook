@@ -1,0 +1,69 @@
+/* =========================================================
+🎨 NextSafar CSS Variables
+متغیرهای مشترک برای تمام فایل‌ها
+========================================================= */
+:root {
+  /* Primary Colors */
+  --ns-primary: #43abff;
+  --ns-primary-dark: #3384c6;
+  --ns-primary-light: #b9e0ff;
+  --ns-primary-light-2: #e8f5fe;
+  --ns-primary-light-3: #f0f7ff;
+
+  /* Background & Surface */
+  --ns-bg: #f8f8f8;
+  --ns-surface: #ffffff;
+
+  /* Borders */
+  --ns-border: #e5f0f9;
+  --ns-border-dark: #cfe2f3;
+
+  /* Text Colors */
+  --ns-text: #0f172a;
+  --ns-text-secondary: #475569;
+  --ns-text-muted: #94a3b8;
+
+  /* Sidebar */
+  --ns-sidebar-bg: #ffffff;
+  --ns-sidebar-text: #334155;
+  --ns-sidebar-muted: #94a3b8;
+  --ns-sidebar-hover: #f0f7ff;
+  --ns-sidebar-active-bg: #e8f5fe;
+  --ns-sidebar-active-text: #1e7bc7;
+  --ns-sidebar-border: #e5f0f9;
+
+  /* Status Colors */
+  --ns-success: #10b981;
+  --ns-success-bg: #ecfdf5;
+  --ns-success-text: #047857;
+
+  --ns-warning: #f59e0b;
+  --ns-warning-bg: #fffbeb;
+  --ns-warning-text: #b45309;
+
+  --ns-danger: #dc2626;
+  --ns-danger-bg: #fef2f2;
+  --ns-danger-text: #b91c1c;
+
+  /* Border Radius */
+  --ns-radius: 12px;
+  --ns-radius-sm: 8px;
+  --ns-radius-xs: 6px;
+
+  /* Layout */
+  --ns-sidebar-width: 260px;
+  --ns-topbar-height: 72px;
+
+  /* Shadows */
+  --ns-shadow-sm: 0 1px 2px rgba(67, 171, 255, 0.06);
+  --ns-shadow-md: 0 4px 16px rgba(67, 171, 255, 0.08);
+  --ns-shadow-lg: 0 8px 32px rgba(67, 171, 255, 0.12);
+  --ns-shadow-xl: 0 16px 48px rgba(67, 171, 255, 0.16);
+
+  /* Fonts */
+  --ns-font-family:
+    "IRANSansX", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --ns-font-mono:
+    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+}
