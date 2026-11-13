@@ -45,6 +45,21 @@ class NextSafar_Assets {
             NEXTSAFAR_VERSION
         );
 
+        // در کلاس assets/admin/core/assets.php
+        wp_enqueue_style(
+            'nextsafar-variables',
+            NEXTSAFAR_URL . 'assets/admin/css/core/variables.css',
+            [],
+            NEXTSAFAR_VERSION
+        );
+
+        wp_enqueue_style(
+            'nextsafar-metabox-base',
+            NEXTSAFAR_URL . 'assets/admin/css/core/metabox-base.css',
+            ['nextsafar-variables'],
+            NEXTSAFAR_VERSION
+        );
+
         // ✅ 3. Base
         wp_enqueue_style(
             'nextsafar-base',

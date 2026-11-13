@@ -1,69 +1,117 @@
 /* =========================================================
 🎨 NextSafar CSS Variables
-متغیرهای مشترک برای تمام فایل‌ها
+هماهنگ کامل با ادمین Next.js
 ========================================================= */
 :root {
-  /* Primary Colors */
-  --ns-primary: #43abff;
-  --ns-primary-dark: #3384c6;
-  --ns-primary-light: #b9e0ff;
-  --ns-primary-light-2: #e8f5fe;
-  --ns-primary-light-3: #f0f7ff;
+    /* ═══ Primary Colors ═══ */
+    --ns-primary: #43abff;
+    --ns-primary-dark: #3384c6;
+    --ns-primary-light: #b9e0ff;
+    --ns-primary-light-2: #e8f5fe;
+    --ns-primary-light-3: #f0f7ff;
+    --ns-primary-rgb: 67, 171, 255;
 
-  /* Background & Surface */
-  --ns-bg: #f8f8f8;
-  --ns-surface: #ffffff;
+    /* ═══ Background & Surface ═══ */
+    --ns-bg: #ffffff;
+    --ns-surface: #ffffff;
+    --ns-bg-sec: #f8fafc;
+    --ns-bg-muted: #f8fbff;
 
-  /* Borders */
-  --ns-border: #e5f0f9;
-  --ns-border-dark: #cfe2f3;
+    /* ═══ Borders ═══ */
+    --ns-border: #e5e7eb;
+    --ns-border-dark: #d1d5db;
+    --ns-divider: #edf2f7;
 
-  /* Text Colors */
-  --ns-text: #0f172a;
-  --ns-text-secondary: #475569;
-  --ns-text-muted: #94a3b8;
+    /* ═══ Text Colors ═══ */
+    --ns-text: #1f2937;
+    --ns-text-strong: #0f172a;
+    --ns-text-secondary: #475569;
+    --ns-text-muted: #6b7280;
+    --ns-text-subtle: #9ca3af;
 
-  /* Sidebar */
-  --ns-sidebar-bg: #ffffff;
-  --ns-sidebar-text: #334155;
-  --ns-sidebar-muted: #94a3b8;
-  --ns-sidebar-hover: #f0f7ff;
-  --ns-sidebar-active-bg: #e8f5fe;
-  --ns-sidebar-active-text: #1e7bc7;
-  --ns-sidebar-border: #e5f0f9;
+    /* ═══ Sidebar ═══ */
+    --ns-sidebar-bg: #ffffff;
+    --ns-sidebar-text: #334155;
+    --ns-sidebar-muted: #6b7280;
+    --ns-sidebar-hover: #f0f7ff;
+    --ns-sidebar-active-bg: var(--ns-primary);
+    --ns-sidebar-active-text: #ffffff;
+    --ns-sidebar-border: #e5e7eb;
 
-  /* Status Colors */
-  --ns-success: #10b981;
-  --ns-success-bg: #ecfdf5;
-  --ns-success-text: #047857;
+    /* ═══ Status Colors ═══ */
+    --ns-success: #10b981;
+    --ns-success-bg: #ecfdf5;
+    --ns-success-text: #047857;
+    --ns-warning: #f59e0b;
+    --ns-warning-bg: #fffbeb;
+    --ns-warning-text: #b45309;
+    --ns-danger: #dc2626;
+    --ns-danger-bg: #fef2f2;
+    --ns-danger-text: #b91c1c;
+    --ns-info: #0ea5b6;
+    --ns-info-bg: #f0f9ff;
+    --ns-info-text: #0369a1;
 
-  --ns-warning: #f59e0b;
-  --ns-warning-bg: #fffbeb;
-  --ns-warning-text: #b45309;
+    /* ═══ Border Radius ═══ */
+    --ns-radius: 12px;
+    --ns-radius-sm: 8px;
+    --ns-radius-xs: 6px;
+    --ns-radius-lg: 16px;
+    --ns-radius-xl: 20px;
+    --ns-radius-2xl: 24px;
 
-  --ns-danger: #dc2626;
-  --ns-danger-bg: #fef2f2;
-  --ns-danger-text: #b91c1c;
+    /* ═══ Layout ═══ */
+    --ns-sidebar-width: 256px;
+    --ns-topbar-height: 60px;
+    --ns-content-padding: 24px;
+    --ns-content-padding-mobile: 16px;
 
-  /* Border Radius */
-  --ns-radius: 12px;
-  --ns-radius-sm: 8px;
-  --ns-radius-xs: 6px;
+    /* ═══ Shadows ═══ */
+    --ns-shadow-xs: 0 1px 2px rgba(16, 24, 40, 0.04);
+    --ns-shadow-sm: 0 1px 3px rgba(16, 24, 40, 0.08), 0 1px 2px rgba(16, 24, 40, 0.04);
+    --ns-shadow-md: 0 4px 16px rgba(16, 24, 40, 0.08);
+    --ns-shadow-lg: 0 8px 32px rgba(16, 24, 40, 0.12);
+    --ns-shadow-xl: 0 16px 48px rgba(16, 24, 40, 0.16);
+    --ns-shadow-hover: 0 12px 24px rgba(16, 24, 40, 0.08), 0 4px 8px rgba(16, 24, 40, 0.04);
+    --ns-shadow-primary: 0 4px 12px rgba(67, 171, 255, 0.3);
+    --ns-shadow-primary-hover: 0 8px 20px rgba(67, 171, 255, 0.4);
 
-  /* Layout */
-  --ns-sidebar-width: 260px;
-  --ns-topbar-height: 72px;
+    /* ═══ Typography ═══ */
+    --ns-font: "IRANSansX", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --ns-font-mono: "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    
+    /* Font Sizes */
+    --ns-fs-xs: 10px;
+    --ns-fs-sm: 11px;
+    --ns-fs-base: 13px;
+    --ns-fs-md: 14px;
+    --ns-fs-lg: 15px;
+    --ns-fs-xl: 17px;
+    --ns-fs-2xl: 20px;
+    --ns-fs-3xl: 22px;
+    --ns-fs-4xl: 28px;
 
-  /* Shadows */
-  --ns-shadow-sm: 0 1px 2px rgba(67, 171, 255, 0.06);
-  --ns-shadow-md: 0 4px 16px rgba(67, 171, 255, 0.08);
-  --ns-shadow-lg: 0 8px 32px rgba(67, 171, 255, 0.12);
-  --ns-shadow-xl: 0 16px 48px rgba(67, 171, 255, 0.16);
+    /* ═══ Spacing ═══ */
+    --ns-space-1: 4px;
+    --ns-space-2: 8px;
+    --ns-space-3: 12px;
+    --ns-space-4: 16px;
+    --ns-space-5: 20px;
+    --ns-space-6: 24px;
+    --ns-space-8: 32px;
 
-  /* Fonts */
-  --ns-font-family:
-    "IRANSansX", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, sans-serif;
-  --ns-font-mono:
-    "SF Mono", Monaco, "Cascadia Code", "Roboto Mono", Consolas, monospace;
+    /* ═══ Transitions ═══ */
+    --ns-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --ns-ease-bounce: cubic-bezier(0.22, 1, 0.36, 1);
+    --ns-tr-fast: 0.15s var(--ns-ease);
+    --ns-tr: 0.2s var(--ns-ease);
+    --ns-tr-slow: 0.3s var(--ns-ease);
+
+    /* ═══ Scrollbar ═══ */
+    --scrollbar-w: 6px;
+    --scrollbar-w-thin: 4px;
+    --scrollbar-r: 10px;
+    --scrollbar-idle: rgba(148, 163, 184, 0.25);
+    --scrollbar-hover: rgba(67, 171, 255, 0.5);
+    --scrollbar-active: rgba(67, 171, 255, 0.6);
 }

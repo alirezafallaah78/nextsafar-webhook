@@ -12,17 +12,6 @@ $kpi_stats = NextSafar_Helpers::get_kpi_stats();
 <div class="nextsafar-main">
     <?php require NEXTSAFAR_PATH . 'inc/admin/layout/header.php'; ?>
     <main class="nextsafar-content nextsafar-dashboard">
-        <!-- Welcome Header -->
-        <div class="nextsafar-dashboard-welcome">
-            <div class="welcome-text">
-                <h1>سلام، <?php echo esc_html( $user_name ); ?></h1>
-                <p class="welcome-date">
-                    <?php NextSafar_Icons::display( 'calendar-days', 20 ); ?>
-                    <?php echo esc_html( NextSafar_Helpers::get_persian_date() ); ?>
-                </p>
-            </div>
-        </div>
-
         <!-- Main Grid -->
         <div class="dashboard-grid">
             <!-- Main Column (Right) -->
