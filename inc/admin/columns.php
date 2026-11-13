@@ -165,15 +165,15 @@ class Columns {
     private static function filter_stars() {
         $current = isset($_GET['stars_filter']) ? $_GET['stars_filter'] : '';
         ?>
-        <select class="alignleft actions">
-        <select name="stars_filter" name="stars_filter">
-            <option value="">همه ستاره‌ها</option>
-            <?php for ($i = 1; $i <= 5; $i++) : ?>
-                <option value="<?= $i; ?>" <?= selected($current, (string)$i, false); ?>>
-                    <?= $i; ?> ستاره
-                </option>
-            <?php endfor; ?>
-        </select>
+        <label>
+            <select name="stars_filter" class="alignleft actions">
+                <option value="">همه ستاره‌ها</option>
+                <?php for ($i = 1; $i <= 5; $i++) : ?>
+                    <option value="<?php echo $i; ?>" <?php selected($current, (string)$i, false); ?>>
+                        <?php echo $i; ?> ستاره
+                    </option>
+                <?php endfor; ?>
+            </select>
         </label>
         <?php
     }
