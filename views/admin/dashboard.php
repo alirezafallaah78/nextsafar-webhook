@@ -22,6 +22,11 @@ $ns_ins = function ( $method ) {
         echo '<div class="ns-empty">کلاس Dashboard Insights لود نشده — خط require فاز ۲ را اضافه کنید.</div>';
     }
 };
+$ns_on = function ( $id ) {
+    return class_exists( 'NextSafar_Dashboard_Content' )
+        ? NextSafar_Dashboard_Content::is_enabled( $id )
+        : true;
+};
 ?>
 <div class="nextsafar-main">
     <?php require NEXTSAFAR_PATH . 'inc/admin/layout/header.php'; ?>
@@ -175,9 +180,12 @@ $ns_ins = function ( $method ) {
 
         <div class="dashboard-grid">
             <div class="dashboard-main-col">
-                <?php $ns_cd( 'render_kpis' ); ?>
+                <?php if ( $ns_on( 'kpis' ) ) : ?>
+                    <?php $ns_cd( 'render_kpis' ); ?>
+                <?php endif; ?>
 
                 <div class="charts-row">
+                    <?php if ( $ns_on( 'gsc_chart' ) ) : ?>
                     <div class="widget-box widget-search-console">
                         <div class="widget-header">
                             <h3>عملکرد در نتایج جستجو</h3>
@@ -200,7 +208,9 @@ $ns_ins = function ( $method ) {
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
 
+                    <?php if ( $ns_on( 'yoast_seo' ) ) : ?>
                     <div class="widget-box widget-yoast">
                         <div class="widget-header">
                             <h3>وضعیت SEO سایت</h3>
@@ -210,20 +220,26 @@ $ns_ins = function ( $method ) {
                             <div class="widget-loading"><div class="nextsafar-spinner"></div><span>در حال بارگذاری...</span></div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="ns-content-row">
+                    <?php if ( $ns_on( 'pipeline' ) ) : ?>
                     <div class="widget-box" id="ns-pipeline">
                         <div class="widget-header"><h3>پایپلاین محتوا</h3><span class="widget-badge">تولید</span></div>
                         <div class="widget-content"><?php $ns_cd( 'render_pipeline' ); ?></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'seo_tasks' ) ) : ?>
                     <div class="widget-box" id="ns-seo-tasks">
                         <div class="widget-header"><h3>کارهای سئو</h3><span class="widget-badge">Yoast</span></div>
                         <div class="widget-content"><?php $ns_cd( 'render_seo_tasks' ); ?></div>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="ns-content-row">
+                    <?php if ( $ns_on( 'gsc_opportunities' ) ) : ?>
                     <div class="widget-box" id="ns-gsc-opportunities">
                         <div class="widget-header"><h3>فرصت‌های سئو</h3><span class="widget-badge">Search Console</span></div>
                         <div class="widget-content">
@@ -237,67 +253,90 @@ $ns_ins = function ( $method ) {
                             </div>
                         </div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'coverage' ) ) : ?>
                     <div class="widget-box" id="ns-coverage">
                         <div class="widget-header"><h3>پوشش مقاصد</h3><span class="widget-badge">محتوا</span></div>
                         <div class="widget-content"><?php $ns_ins( 'render_coverage' ); ?></div>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="ns-content-row">
+                    <?php if ( $ns_on( 'orphaned' ) ) : ?>
                     <div class="widget-box" id="ns-orphaned">
                         <div class="widget-header"><h3>محتوای یتیم</h3><span class="widget-badge">لینک داخلی</span></div>
                         <div class="widget-content"><?php $ns_ins( 'render_orphaned' ); ?></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'media' ) ) : ?>
                     <div class="widget-box" id="ns-media">
                         <div class="widget-header"><h3>سلامت رسانه</h3><span class="widget-badge">سئو / سرعت</span></div>
                         <div class="widget-content"><?php $ns_ins( 'render_media' ); ?></div>
                     </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="info-cards-grid">
+                    <?php if ( $ns_on( 'comments' ) ) : ?>
                     <div class="widget-box widget-comments">
                         <div class="widget-header"><h3>جدیدترین کامنت‌ها</h3></div>
                         <div class="widget-content" id="recent-comments">
                             <div class="widget-loading"><div class="nextsafar-spinner"></div></div>
                         </div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'news' ) ) : ?>
                     <div class="widget-box" id="ns-news">
                         <div class="widget-header"><h3>صف خبرها</h3><span class="widget-badge">News</span></div>
                         <div class="widget-content"><?php $ns_cd( 'render_news' ); ?></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'geo' ) ) : ?>
                     <div class="widget-box" id="ns-geo">
                         <div class="widget-header"><h3>کامل بودن داده هتل‌ها</h3><span class="widget-badge">Geo</span></div>
                         <div class="widget-content"><?php $ns_cd( 'render_geo' ); ?></div>
                     </div>
+                    <?php endif; ?>
+                    <?php if ( $ns_on( 'weather' ) ) : ?>
                     <div class="widget-box widget-weather">
                         <div class="widget-header"><h3>آب و هوای مقاصد</h3></div>
                         <div class="widget-content" id="weather-widget">
                             <div class="widget-loading"><div class="nextsafar-spinner"></div></div>
                         </div>
                     </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
             <div class="dashboard-side-col">
+                <?php if ( $ns_on( 'calendar' ) ) : ?>
                 <div class="widget-box widget-calendar">
                     <div class="widget-content" id="calendar-widget">
                         <div class="widget-loading"><div class="nextsafar-spinner"></div></div>
                     </div>
                 </div>
+                <?php endif; ?>
+                <?php if ( $ns_on( 'scheduled' ) ) : ?>
                 <div class="widget-box" id="ns-scheduled">
                     <div class="widget-header"><h3>انتشارهای زمان‌بندی‌شده</h3></div>
                     <div class="widget-content"><?php $ns_cd( 'render_scheduled' ); ?></div>
                 </div>
+                <?php endif; ?>
+                <?php if ( $ns_on( 'stale' ) ) : ?>
                 <div class="widget-box" id="ns-stale">
                     <div class="widget-header"><h3>محتوای کهنه</h3></div>
                     <div class="widget-content"><?php $ns_cd( 'render_stale' ); ?></div>
                 </div>
+                <?php endif; ?>
+                <?php if ( $ns_on( 'admin_logins' ) ) : ?>
                 <div class="widget-box widget-admin-logins">
                     <div class="widget-header"><h3>آخرین ورود ادمین‌ها</h3></div>
                     <div class="widget-content" id="admin-logins">
                         <div class="widget-loading"><div class="nextsafar-spinner"></div></div>
                     </div>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
     </main>

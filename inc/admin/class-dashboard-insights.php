@@ -307,9 +307,6 @@ class NextSafar_Dashboard_Insights {
         if ( ! current_user_can( 'edit_posts' ) ) {
             wp_send_json_error( 'Permission denied' );
         }
-        if ( false === strpos( $html, '🔌' ) ) {
-            set_transient( $key, $html, 30 * MINUTE_IN_SECONDS );
-        }
 
         $tab = isset( $_POST['tab'] ) ? sanitize_key( $_POST['tab'] ) : 'striking';
         if ( ! in_array( $tab, array( 'striking', 'lowctr', 'top' ), true ) ) {

@@ -157,43 +157,62 @@ public static function testApi(): void
     {
         self::checkPermission();
 
-        $keyword = sanitize_text_field(trim($_POST['keyword'] ?? ''));
-        $type = sanitize_text_field($_POST['type'] ?? 'positive');
-        $weight = (int) ($_POST['weight'] ?? ($type === 'negative' ? -20 : 10));
-        $category = sanitize_text_field($_POST['category'] ?? 'general');
+        $post = wp_unslash($_POST);
 
-        if (empty($keyword)) {
+        $keyword  = sanitize_text_field(trim((string) ($post['keyword'] ?? '')));
+        $type     = sanitize_key((string) ($post['type'] ?? 'positive'));
+        $category = sanitize_text_field((string) ($post['category'] ?? 'general'));
+        $weight   = (int) ($post['weight'] ?? 15);
+
+        if ($keyword === '') {
             wp_send_json_error(['message' => 'کلمه کلیدی نمی‌تواند خالی باشد']);
-            return;
         }
-
         if (!in_array($type, ['positive', 'negative'], true)) {
             wp_send_json_error(['message' => 'نوع نامعتبر']);
-            return;
+        }
+        if (mb_strlen($keyword) > 191) {
+            $keyword = mb_substr($keyword, 0, 191);
+        }
+        if ($category === '') {
+            $category = 'general';
+        }
+
+        // ✅ علامت وزن همیشه با نوع هماهنگ شود (باگ: کلمه منفی با وزن مثبت ذخیره می‌شد)
+        $weight = abs($weight);
+        if ($weight === 0) {
+            $weight = 15;
+        }
+        $weight = min(100, $weight);
+        if ($type === 'negative') {
+            $weight = -$weight;
         }
 
         if (NewsFilter::addKeyword($keyword, $type, $weight, $category)) {
-            wp_send_json_success(['message' => '✅ کلمه کلیدی اضافه شد']);
-        } else {
-            wp_send_json_error(['message' => 'خطا در افزودن']);
+            wp_send_json_success([
+                'message' => '✅ کلمه کلیدی اضافه شد',
+                'weight'  => $weight,
+            ]);
         }
+
+        wp_send_json_error([
+            'message' => 'افزودن ناموفق بود (ممکن است تکراری باشد یا جدول کلمات کلیدی ساخته نشده باشد).',
+        ]);
     }
 
     public static function deleteKeyword(): void
     {
         self::checkPermission();
 
-        $id = (int) ($_POST['id'] ?? 0);
+        $id = absint(wp_unslash($_POST['id'] ?? 0));
         if ($id <= 0) {
-            wp_send_json_error(['message' => 'ID نامعتبر']);
-            return;
+            wp_send_json_error(['message' => 'شناسه نامعتبر']);
         }
 
         if (NewsFilter::deleteKeyword($id)) {
             wp_send_json_success(['message' => '✅ کلمه کلیدی حذف شد']);
-        } else {
-            wp_send_json_error(['message' => 'خطا در حذف']);
         }
+
+        wp_send_json_error(['message' => 'حذف ناموفق بود']);
     }
 
     public static function getHistory(): void
@@ -221,7 +240,11 @@ public static function testApi(): void
     
     private static function checkPermission(): void
     {
-        check_ajax_referer('nextsafar_news_admin', 'nonce');
+        // ✅ به‌جای check_ajax_referer که -1 برمی‌گرداند، پاسخ JSON استاندارد بده
+        $nonce = isset($_REQUEST['nonce']) ? sanitize_text_field(wp_unslash($_REQUEST['nonce'])) : '';
+        if (!wp_verify_nonce($nonce, 'nextsafar_news_admin')) {
+            wp_send_json_error(['message' => 'نشست منقضی شده است؛ صفحه را رفرش کنید.']);
+        }
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
         }

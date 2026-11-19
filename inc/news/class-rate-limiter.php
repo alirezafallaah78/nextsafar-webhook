@@ -1,14 +1,11 @@
 <?php
 /**
- * RateLimiter — کنترل نرخ درخواست‌های API
+ * RateLimiter — کنترل نرخ درخواست‌ها بدون بلاک‌کردن درخواست وب
  *
- * از ارسال بیش از حد درخواست به API ها جلوگیری می‌کند تا از بلاک شدن
- * و مصرف بی‌رویه quota جلوگیری شود.
- *
- * هر service (rss, gnews, newsdata, ...) محدودیت خود را دارد.
+ * ✅ state پایدار (transient) به‌جای static per-request
+ * ✅ در وب هرگز نمی‌خوابد؛ فقط در cron مکث کوتاه و کراندار
  *
  * @package NextSafar\News
- * @since 1.0.0
  */
 
 namespace NextSafar\News;
@@ -19,15 +16,6 @@ if (!defined('ABSPATH')) {
 
 class RateLimiter
 {
-    /** @var array<string, float> زمان آخرین درخواست هر سرویس */
-    private static array $lastRequest = [];
-
-    /** @var array<string, int> شمارنده درخواست‌های متوالی */
-    private static array $requestCount = [];
-
-    /**
-     * حداکثر درخواست‌های پشت سر هم قبل از اجبار به مکث
-     */
     private const MAX_BURST = [
         'rss'        => 10,
         'gnews'      => 5,
@@ -39,78 +27,88 @@ class RateLimiter
         'gemini'     => 5,
     ];
 
-    /* ========================================================================
-       waitIfNeeded — اگر لازم است صبر کن
-       ======================================================================== */
-    
+    private const STORE_PREFIX = 'ns_rl_';
+    private const STORE_TTL    = 600;
+
     /**
-     * صبر کن اگر زمان کافی از آخرین درخواست نگذشته
-     *
-     * @param string $service نام سرویس (rss, gnews, newsdata, ...)
-     * @param float  $seconds حداقل فاصله بین درخواست‌ها (ثانیه)
+     * سازگاری عقب‌رو — دیگر در وب نمی‌خوابد.
      */
     public static function waitIfNeeded(string $service, float $seconds = 1.0): void
     {
-        $now = microtime(true);
-        $last = self::$lastRequest[$service] ?? 0;
-        $count = self::$requestCount[$service] ?? 0;
-        $elapsed = $now - $last;
+        $delay = self::secondsUntilAllowed($service, $seconds);
 
-        // افزایش شمارنده
-        self::$requestCount[$service] = $count + 1;
-
-        // اگر به محدودیت burst رسیدیم، مکث اجباری
-        $maxBurst = self::MAX_BURST[$service] ?? 5;
-        if (self::$requestCount[$service] >= $maxBurst) {
-            $seconds = max($seconds, 3.0); // حداقل 3 ثانیه مکث
-            self::$requestCount[$service] = 0;
+        if ($delay > 0 && defined('DOING_CRON') && DOING_CRON) {
+            $sleep = min($delay, 3.0); // ✅ کراندار
+            if ($sleep > 0.05) {
+                usleep((int) ($sleep * 1000000));
+            }
         }
 
-        // اگر زمان کافی نگذشته، صبر کن
-        if ($elapsed < $seconds) {
-            $sleepMicroseconds = ($seconds - $elapsed) * 1000000;
-            usleep((int) $sleepMicroseconds);
-        }
-
-        self::$lastRequest[$service] = microtime(true);
+        self::markRequest($service);
     }
 
-    /* ========================================================================
-       Reset Methods
-       ======================================================================== */
-    
     /**
-     * ریست وضعیت یک سرویس خاص
+     * ✅ چند ثانیه تا مجازشدن درخواست بعدی باقی مانده؟ (۰ = مجاز)
      */
+    public static function secondsUntilAllowed(string $service, float $minInterval = 1.0): float
+    {
+        $state = get_transient(self::STORE_PREFIX . $service);
+        if (!is_array($state)) {
+            return 0.0;
+        }
+
+        $last  = (float) ($state['last'] ?? 0);
+        $count = (int) ($state['count'] ?? 0);
+        if ($last <= 0) {
+            return 0.0;
+        }
+
+        $required = $minInterval;
+        $maxBurst = self::MAX_BURST[$service] ?? 5;
+        if ($count >= $maxBurst) {
+            $required = max($required, 3.0);
+        }
+
+        $elapsed = microtime(true) - $last;
+        return $elapsed >= $required ? 0.0 : round($required - $elapsed, 2);
+    }
+
+    /**
+     * ✅ ثبت زمان درخواست (پایدار بین درخواست‌ها)
+     */
+    public static function markRequest(string $service): void
+    {
+        $state    = get_transient(self::STORE_PREFIX . $service);
+        $count    = is_array($state) ? (int) ($state['count'] ?? 0) : 0;
+        $maxBurst = self::MAX_BURST[$service] ?? 5;
+        $count    = ($count >= $maxBurst) ? 0 : $count + 1;
+
+        set_transient(
+            self::STORE_PREFIX . $service,
+            array('last' => microtime(true), 'count' => $count),
+            self::STORE_TTL
+        );
+    }
+
     public static function reset(string $service): void
     {
-        unset(self::$lastRequest[$service]);
-        unset(self::$requestCount[$service]);
+        delete_transient(self::STORE_PREFIX . $service);
     }
 
-    /**
-     * ریست همه سرویس‌ها
-     */
     public static function resetAll(): void
     {
-        self::$lastRequest = [];
-        self::$requestCount = [];
+        foreach (array_keys(self::MAX_BURST) as $service) {
+            self::reset($service);
+        }
     }
 
-    /* ========================================================================
-       Debug
-       ======================================================================== */
-    
-    /**
-     * دریافت وضعیت فعلی (برای دیباگ)
-     *
-     * @return array{last_request: array, request_count: array}
-     */
     public static function getStatus(): array
     {
-        return [
-            'last_request'  => self::$lastRequest,
-            'request_count' => self::$requestCount,
-        ];
+        $out = array();
+        foreach (array_keys(self::MAX_BURST) as $service) {
+            $state = get_transient(self::STORE_PREFIX . $service);
+            $out[$service] = is_array($state) ? $state : array('last' => 0, 'count' => 0);
+        }
+        return $out;
     }
 }

@@ -36,41 +36,34 @@ class ImageManager
        Set Featured Image
        ======================================================================== */
 
-    /**
-     * Download image and set as featured
-     *
-     * @param int    $post_id   Post ID
-     * @param string $image_url Image URL
-     * @param string $source    Source identifier for logging
-     * @return bool Success status
-     */
     public static function setFeaturedImage(int $post_id, string $image_url, string $source = 'api'): bool
     {
         if (empty($image_url) || !self::isValidImageUrl($image_url)) {
             return false;
         }
-
-        // Don't override existing featured image
         if (has_post_thumbnail($post_id)) {
             return true;
         }
 
+        // ✅ اگر همین URL قبلاً دانلود شده، دوباره دانلود نکن
+        $prev = get_post_meta($post_id, '_ns_featured_image_url', true);
+        if ($prev === $image_url) {
+            return false;
+        }
+
         try {
             $attachment_id = self::downloadAndAttach($image_url, $post_id);
-
             if (is_wp_error($attachment_id)) {
                 error_log("⚠️ [ImageManager] Download failed for #{$post_id}: " . $attachment_id->get_error_message());
                 return false;
             }
-
             if ($attachment_id > 0) {
                 set_post_thumbnail($post_id, $attachment_id);
                 update_post_meta($post_id, '_ns_featured_image_source', sanitize_text_field($source));
                 update_post_meta($post_id, '_ns_featured_image_url', esc_url_raw($image_url));
-                error_log("🖼️ [ImageManager] Featured set for #{$post_id} (attachment #{$attachment_id})");
+                self::log("🖼️ [ImageManager] Featured set for #{$post_id} (attachment #{$attachment_id})");
                 return true;
             }
-
             return false;
         } catch (\Throwable $e) {
             error_log("❌ [ImageManager] Error for #{$post_id}: " . $e->getMessage());
@@ -110,38 +103,56 @@ public static function stripImagesFromContent(string $content): string
        Fill Gallery
        ======================================================================== */
 
-    /**
-     * Fill image gallery from array of URLs
-     *
-     * @param int    $post_id Post ID
-     * @param array  $images  Array of image URLs
-     * @param string $meta_key Meta key to store gallery (default: _hotel_gallery)
-     * @param int    $max     Max images to download
-     * @return int Number of images added
-     */
     public static function fillGallery(int $post_id, array $images, string $meta_key = '_hotel_gallery', int $max = 8): int
     {
-        $max = max(1, min(20, $max));
-        $added = 0;
+        $max        = max(1, min(20, $max));
+        $total_cap  = 20; // ✅ سقف کل گالری (قبلاً بی‌نهایت رشد می‌کرد)
+        $source_key = $meta_key . '_sources';
 
         $gallery = get_post_meta($post_id, $meta_key, true);
         $gallery = is_array($gallery) ? $gallery : [];
 
+        // ✅ نگاشت «URL منبع → attachment_id» برای dedup واقعی
+        $sources = get_post_meta($post_id, $source_key, true);
+        $sources = is_array($sources) ? $sources : [];
+
+        $remaining_slots = max(0, $total_cap - count($gallery));
+        if ($remaining_slots <= 0) {
+            return 0;
+        }
+
+        $added = 0;
+        $seen  = [];
+
         foreach (array_slice($images, 0, $max) as $url) {
-            if (!is_string($url) || $url === '' || in_array($url, $gallery, true)) {
+            if ($added >= $remaining_slots) {
+                break;
+            }
+            if (!is_string($url) || $url === '') {
+                continue;
+            }
+            if (isset($seen[$url])) {
+                continue; // تکراری در همین batch
+            }
+            $seen[$url] = true;
+
+            // ✅ قبلاً URL خارجی با URL لوکال مقایسه می‌شد و هرگز match نمی‌شد
+            if (isset($sources[$url])) {
+                continue;
+            }
+            if (!self::isValidImageUrl($url)) {
                 continue;
             }
 
             try {
                 $attachment_id = self::downloadAndAttach($url, $post_id);
-
                 if (is_wp_error($attachment_id) || !$attachment_id) {
                     continue;
                 }
-
                 $attachment_url = wp_get_attachment_url((int) $attachment_id);
                 if ($attachment_url) {
-                    $gallery[] = $attachment_url;
+                    $gallery[]       = $attachment_url;
+                    $sources[$url]   = (int) $attachment_id;
                     $added++;
                 }
             } catch (\Throwable $e) {
@@ -149,9 +160,10 @@ public static function stripImagesFromContent(string $content): string
             }
         }
 
-        if (!empty($gallery)) {
+        if ($added > 0) {
             update_post_meta($post_id, $meta_key, $gallery);
-            error_log("🖼️ [ImageManager] Gallery: {$added} images for #{$post_id}");
+            update_post_meta($post_id, $source_key, $sources);
+            self::log("🖼️ [ImageManager] Gallery: {$added} images for #{$post_id}");
         }
 
         return $added;
@@ -228,22 +240,24 @@ public static function stripImagesFromContent(string $content): string
         return null;
     }
 
-    /**
-     * Fetch OG image from URL (with caching)
-     */
     protected static function fetchOgImage(string $url): ?string
     {
-        $key = 'ns_og_' . md5($url);
+        $key    = 'ns_og_' . md5($url);
         $cached = get_transient($key);
-
         if ($cached !== false) {
             return $cached ?: null;
         }
 
-        $response = wp_remote_get($url, [
+        if (!self::isSafeRemoteUrl($url)) {
+            set_transient($key, '', HOUR_IN_SECONDS);
+            return null;
+        }
+
+        // ✅ wp_safe_remote_get + sslverify=true
+        $response = wp_safe_remote_get($url, [
             'timeout'     => 10,
             'redirection' => 3,
-            'sslverify'   => false,
+            'sslverify'   => true,
         ]);
 
         if (is_wp_error($response)) {
@@ -252,8 +266,7 @@ public static function stripImagesFromContent(string $content): string
         }
 
         $html = wp_remote_retrieve_body($response);
-        $img = null;
-
+        $img  = null;
         if (preg_match('/<meta[^>]+property=["\']og:image["\'][^>]+content=["\']([^"\']+)["\']/i', $html, $m)) {
             $img = $m[1];
         } elseif (preg_match('/<meta[^>]+content=["\']([^"\']+)["\'][^>]+property=["\']og:image["\']/i', $html, $m)) {
@@ -268,20 +281,16 @@ public static function stripImagesFromContent(string $content): string
        Download and Attach (Core Logic)
        ======================================================================== */
 
-    /**
-     * Download image and attach to post
-     *
-     * @param string $url     Image URL
-     * @param int    $post_id Post ID
-     * @return int|WP_Error Attachment ID or error
-     */
     protected static function downloadAndAttach(string $url, int $post_id): int|WP_Error
     {
-        // Ensure WordPress media functions are loaded
         if (!function_exists('media_handle_sideload')) {
             require_once ABSPATH . 'wp-admin/includes/media.php';
             require_once ABSPATH . 'wp-admin/includes/file.php';
             require_once ABSPATH . 'wp-admin/includes/image.php';
+        }
+
+        if (!self::isSafeRemoteUrl($url)) {
+            return new WP_Error('unsafe_url', 'URL is not a safe public image URL');
         }
 
         $tmp = self::downloadImage($url);
@@ -289,38 +298,38 @@ public static function stripImagesFromContent(string $content): string
             return $tmp;
         }
 
-        // Check file size
         $size = @filesize($tmp);
         if ($size === false || $size > self::MAX_FILE_SIZE) {
             @unlink($tmp);
             return new WP_Error('image_too_large', 'Image exceeds 5MB limit');
         }
 
-        // Validate image dimensions
         $info = @getimagesize($tmp);
         if ($info === false) {
             @unlink($tmp);
             return new WP_Error('not_an_image', 'File is not a valid image');
         }
-
         if ($info[0] < 100 || $info[1] < 100) {
             @unlink($tmp);
             return new WP_Error('image_too_small', 'Image smaller than 100px');
         }
 
-        // Prepare for sideload
-        $filename = self::extractFilename($url) ?: ('ns_image_' . $post_id . '_' . time() . '.jpg');
+        $filename   = self::extractFilename($url) ?: ('ns_image_' . $post_id . '_' . time() . '.jpg');
         $file_array = [
             'name'     => sanitize_file_name($filename),
             'tmp_name' => $tmp,
             'size'     => $size,
         ];
 
+                // ✅ بعضی تصاویر خبری EXIF خراب دارند؛ هشدار هسته فقط در همین ناحیه مهار شود
+        $prevReport = error_reporting();
+        error_reporting($prevReport & ~E_WARNING);
         $attachment_id = media_handle_sideload($file_array, $post_id);
+        error_reporting($prevReport);
+        
         if (is_wp_error($attachment_id)) {
             @unlink($tmp);
         }
-
         return $attachment_id;
     }
 
@@ -329,32 +338,47 @@ public static function stripImagesFromContent(string $content): string
      */
     protected static function downloadImage(string $url)
     {
-        $response = wp_remote_get($url, [
-            'timeout'     => self::DOWNLOAD_TIMEOUT,
-            'redirection' => 5,
-            'sslverify'   => false,
-            'headers'     => [
-                'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
-                'Referer'    => 'https://www.google.com/',
-                'Accept'     => 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
-            ],
-        ]);
+        if (!self::isSafeRemoteUrl($url)) {
+            return new WP_Error('unsafe_url', 'Blocked unsafe URL');
+        }
 
-        if (!is_wp_error($response) && (int) wp_remote_retrieve_response_code($response) === 200) {
-            $body = wp_remote_retrieve_body($response);
-            if (!empty($body)) {
-                $tmp = wp_tempnam($url);
-                if ($tmp) {
-                    file_put_contents($tmp, $body);
-                    return $tmp;
-                }
+        // ✅.reject زودهنگام بر اساس Content-Length (بدون دانلود)
+        $head = wp_safe_remote_head($url, [
+            'timeout'     => 10,
+            'redirection' => 3,
+            'sslverify'   => true,
+            'headers'     => self::browserHeaders(),
+        ]);
+        if (!is_wp_error($head)) {
+            $len = (int) wp_remote_retrieve_header($head, 'content-length');
+            if ($len > self::MAX_FILE_SIZE) {
+                return new WP_Error('image_too_large', 'Image exceeds 5MB limit (Content-Length)');
             }
         }
 
-        // Fallback to download_url
-        return download_url($url, self::DOWNLOAD_TIMEOUT);
-    }
+        // ✅ استریم به فایل موقت با download_url (بدون بارگذاری کل body در RAM)
+        // هدرهای مرورگر برای جلوگیری از 403 موقتاً تزریق می‌شوند.
+        $filter = static function ($args) {
+            $args['headers'] = array_merge(isset($args['headers']) ? (array) $args['headers'] : [], self::browserHeaders());
+            return $args;
+        };
+        add_filter('http_request_args', $filter, 10, 1);
+        $tmp = download_url($url, self::DOWNLOAD_TIMEOUT);
+        remove_filter('http_request_args', $filter, 10);
 
+        if (is_wp_error($tmp)) {
+            return $tmp;
+        }
+
+        $size = @filesize($tmp);
+        if ($size === false || $size > self::MAX_FILE_SIZE) {
+            @unlink($tmp);
+            return new WP_Error('image_too_large', 'Image exceeds 5MB limit');
+        }
+
+        return $tmp;
+    }
+    
     /**
      * Extract filename from URL
      */
@@ -378,19 +402,67 @@ public static function stripImagesFromContent(string $content): string
        ======================================================================== */
 
     /**
+     * ✅ جلوگیری از SSRF — فقط URLهای عمومی http/https مجازند.
+     */
+    protected static function isSafeRemoteUrl(string $url): bool
+    {
+        $url = trim($url);
+        if ($url === '' || !filter_var($url, FILTER_VALIDATE_URL)) {
+            return false;
+        }
+        $scheme = strtolower((string) parse_url($url, PHP_URL_SCHEME));
+        if (!in_array($scheme, ['http', 'https'], true)) {
+            return false;
+        }
+        $host = strtolower((string) parse_url($url, PHP_URL_HOST));
+        if ($host === '') {
+            return false;
+        }
+        if (in_array($host, ['localhost', 'metadata', 'metadata.google.internal'], true)) {
+            return false;
+        }
+        // IP مستقیم خصوصی/رزرو ممنوع
+        if (filter_var($host, FILTER_VALIDATE_IP)) {
+            return (bool) filter_var($host, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE);
+        }
+        // دامنه‌ای که به IP خصوصی resolve می‌شود هم ممنوع
+        $ips = @gethostbynamel($host);
+        if (is_array($ips)) {
+            foreach ($ips as $ip) {
+                if (!filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /** هدرهای شبیه مرورگر برای جلوگیری از 403 */
+    protected static function browserHeaders(): array
+    {
+        return [
+            'User-Agent' => 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36',
+            'Referer'    => 'https://www.google.com/',
+            'Accept'     => 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        ];
+    }
+
+    /** لاگ اطلاعاتی فقط در حالت دیباگ */
+    protected static function log(string $msg): void
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log($msg);
+        }
+    }
+
+    /**
      * Check if URL is a valid image URL
      */
     protected static function isValidImageUrl(string $url): bool
     {
-        if (empty($url) || !filter_var($url, FILTER_VALIDATE_URL)) {
+        if (!self::isSafeRemoteUrl($url)) {
             return false;
         }
-
-        $scheme = strtolower(parse_url($url, PHP_URL_SCHEME) ?? '');
-        if (!in_array($scheme, ['http', 'https'], true)) {
-            return false;
-        }
-
         $path = parse_url($url, PHP_URL_PATH);
         if (!empty($path)) {
             $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -398,7 +470,6 @@ public static function stripImagesFromContent(string $content): string
                 return false;
             }
         }
-
         return true;
     }
 }

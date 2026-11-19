@@ -5,157 +5,124 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 /**
  * 🗄️ NextSafar Widget Cache Manager
- * مدیریت هوشمند کش برای ویجت‌های داشبورد
+ * بدون DELETE خام SQL روی wp_options (سازگار با Redis/Memcached و بدون full-scan).
  */
 class NextSafar_Widget_Cache {
 
-    /**
-     * پیشوند کش — 🆕 هماهنگ با class-dashboard.php
-     */
     private static $prefix = 'nextsafar_';
 
-    /**
-     * زمان‌های کش پیش‌فرض (به ثانیه)
-     */
     private static $default_ttl = array(
-        'recent_comments'  => 3 * MINUTE_IN_SECONDS,
-        'expiring_tours'   => 10 * MINUTE_IN_SECONDS,
-        'recent_bookings'  => 2 * MINUTE_IN_SECONDS,
-        'upcoming_tours'   => 10 * MINUTE_IN_SECONDS,
-        'admin_logins'     => 5 * MINUTE_IN_SECONDS,
-        'yoast_stats'      => 15 * MINUTE_IN_SECONDS,
-        'weather'          => 30 * MINUTE_IN_SECONDS,
+        'recent_comments' => 3 * MINUTE_IN_SECONDS,
+        'expiring_tours'  => 10 * MINUTE_IN_SECONDS,
+        'recent_bookings' => 2 * MINUTE_IN_SECONDS,
+        'upcoming_tours'  => 10 * MINUTE_IN_SECONDS,
+        'admin_logins'    => 5 * MINUTE_IN_SECONDS,
+        'yoast_stats'     => 15 * MINUTE_IN_SECONDS,
+        'weather'         => 30 * MINUTE_IN_SECONDS,
     );
 
-    /* =========================================================
-    🎯 گرفتن کش
-    ========================================================== */
-    public static function get( $widget_id, $args = array() ) {
-        $cache_key = self::build_key( $widget_id, $args );
-        $cached    = get_transient( $cache_key );
+    /**
+     * کلیدهای variant که class-dashboard.php واقعاً استفاده می‌کند.
+     * قبلاً با LIKE '_transient_nextsafar_X_%' پاک می‌شدند (full-scan + bypass object cache).
+     */
+    private static $variants = array(
+        'admin_logins' => array( 'admin_logins_html' ),
+        'yoast_stats'  => array( 'yoast_stats_data' ),
+    );
 
+    public static function get( $widget_id, $args = array() ) {
+        $cached = get_transient( self::build_key( $widget_id, $args ) );
         if ( false !== $cached ) {
             self::debug_log( "✅ [Cache HIT] {$widget_id}" );
             return $cached;
         }
-
         return false;
     }
 
-    /**
-     * ذخیره داده در کش
-     */
     public static function set( $widget_id, $data, $args = array(), $ttl = 0 ) {
-        $cache_key = self::build_key( $widget_id, $args );
-
         if ( 0 === $ttl ) {
             $ttl = isset( self::$default_ttl[ $widget_id ] )
                 ? self::$default_ttl[ $widget_id ]
                 : 5 * MINUTE_IN_SECONDS;
         }
-
-        $result = set_transient( $cache_key, $data, $ttl );
-
+        $result = set_transient( self::build_key( $widget_id, $args ), $data, $ttl );
         self::debug_log( "💾 [Cache SET] {$widget_id} (TTL: {$ttl}s)" );
-
         return $result;
     }
 
     /**
-     * 🆕 پاک کردن کش یک ویجت خاص — با delete_transient (سازگار با Redis/Memcached)
+     * ✅ فقط delete_transient — بدون SQL خام. object cache هم invalidate می‌شود.
      */
     public static function delete( $widget_id ) {
-        $cache_key = self::build_key( $widget_id );
-        delete_transient( $cache_key );
+        delete_transient( self::$prefix . $widget_id );
 
-        // اگر کلید با hash هم ذخیره شده، اون رو هم پاک کن
-        global $wpdb;
-        $pattern = self::$prefix . $widget_id . '_%';
-        $wpdb->query( $wpdb->prepare(
-            "DELETE FROM {$wpdb->options}
-            WHERE option_name LIKE %s
-            OR option_name LIKE %s",
-            '_transient_' . $pattern,
-            '_transient_timeout_' . $pattern
-        ) );
+        if ( isset( self::$variants[ $widget_id ] ) ) {
+            foreach ( self::$variants[ $widget_id ] as $variant ) {
+                delete_transient( self::$prefix . $variant );
+            }
+        }
 
         self::debug_log( "🗑️ [Cache DELETE] {$widget_id}" );
     }
 
-    /**
-     * 🆕 پاک کردن همه کش‌های ویجت‌ها — با حلقه delete_transient
-     */
     public static function clear_all() {
         foreach ( array_keys( self::$default_ttl ) as $widget_id ) {
             self::delete( $widget_id );
         }
-
-        self::debug_log( "🗑️ [Cache CLEAR ALL]" );
+        self::debug_log( '🗑️ [Cache CLEAR ALL]' );
     }
 
-    /**
-     * ساخت کلید یکتا برای کش
-     */
     private static function build_key( $widget_id, $args = array() ) {
         $key = self::$prefix . $widget_id;
-
         if ( ! empty( $args ) ) {
             $key .= '_' . md5( wp_json_encode( $args ) );
         }
-
         return $key;
     }
 
-    /**
-     * 🆕 لاگ دیباگ — فقط وقتی WP_DEBUG فعال باشه
-     */
     private static function debug_log( $message ) {
         if ( defined( 'WP_DEBUG' ) && WP_DEBUG && defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
             error_log( $message );
         }
     }
 
-    /* =========================================================
-    🔄 Hook های پاکسازی خودکار کش
-    ========================================================== */
-
-    /**
-     * راه‌اندازی Hook ها
-     */
     public static function init_hooks() {
-        // پاکسازی کش کامنت‌ها
         add_action( 'wp_insert_comment', array( __CLASS__, 'clear_comments_cache' ) );
         add_action( 'edit_comment', array( __CLASS__, 'clear_comments_cache' ) );
         add_action( 'delete_comment', array( __CLASS__, 'clear_comments_cache' ) );
         add_action( 'transition_comment_status', array( __CLASS__, 'clear_comments_cache' ) );
 
-        // پاکسازی کش پست‌ها
         add_action( 'save_post', array( __CLASS__, 'clear_post_cache' ), 10, 3 );
         add_action( 'delete_post', array( __CLASS__, 'clear_post_related_cache' ) );
         add_action( 'transition_post_status', array( __CLASS__, 'clear_post_cache_on_status_change' ), 10, 3 );
 
-        // پاکسازی کش رزروها
         add_action( 'nextsafar_booking_created', array( __CLASS__, 'clear_bookings_cache' ) );
         add_action( 'nextsafar_booking_updated', array( __CLASS__, 'clear_bookings_cache' ) );
 
-        // پاکسازی کش لاگین ادمین‌ها
         add_action( 'wp_login', array( __CLASS__, 'clear_admin_logins_cache' ), 10, 2 );
     }
-
-    /* =========================================================
-    🧹 متدهای پاکسازی
-    ========================================================== */
 
     public static function clear_comments_cache() {
         self::delete( 'recent_comments' );
     }
 
+    /**
+     * ✅ یک‌بار per-request per-post (جلوگیری از flush دوبل save_post + transition_post_status)
+     */
     public static function clear_post_cache( $post_id, $post, $update ) {
-        $important_types = array( 'post', 'page', 'tour', 'visa' );
-
-        if ( ! in_array( $post->post_type, $important_types, true ) ) {
+        if ( ! $post instanceof WP_Post ) {
             return;
         }
+        if ( ! in_array( $post->post_type, array( 'post', 'page', 'tour', 'visa' ), true ) ) {
+            return;
+        }
+
+        static $done = array();
+        $pid = (int) $post->ID;
+        if ( isset( $done[ $pid ] ) ) {
+            return;
+        }
+        $done[ $pid ] = true;
 
         self::delete( 'expiring_tours' );
         self::delete( 'upcoming_tours' );
@@ -183,7 +150,7 @@ class NextSafar_Widget_Cache {
 
     public static function clear_admin_logins_cache( $user_login, $user ) {
         if ( user_can( $user, 'manage_options' ) || user_can( $user, 'edit_posts' ) ) {
-            self::delete( 'admin_logins' );
+            self::delete( 'admin_logins' ); // حالا variant ـhtml را هم پاک می‌کند
         }
     }
 }

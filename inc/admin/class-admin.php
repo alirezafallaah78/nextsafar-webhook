@@ -17,6 +17,7 @@ class NextSafar_Admin {
         add_filter('admin_title', array($this, 'fix_admin_title'), 10, 2);
         add_action('wp_ajax_nextsafar_global_search', array($this, 'ajax_global_search'));
         add_action('wp_ajax_nextsafar_add_term_ajax', array($this, 'ajax_add_term'));
+        add_action('admin_init', array($this, 'maybe_create_fulltext_index'), 5);
         add_action('admin_init', array($this, 'yoast_ajax_proxy'), 1);
         add_action('current_screen', array($this, 'enable_screen_options'));
         add_filter('set-screen-option', array($this, 'save_screen_option'), 10, 3);
@@ -621,7 +622,6 @@ class NextSafar_Admin {
         if (!current_user_can('edit_posts')) {
             wp_send_json_error(array('message' => 'Permission denied.'), 403);
         }
-
         if (empty($_POST['nonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['nonce'])), 'nextsafar_dashboard_nonce')) {
             wp_send_json_error(array('message' => 'Security check failed.'), 403);
         }
@@ -629,74 +629,63 @@ class NextSafar_Admin {
         $user_id = get_current_user_id();
         $rate_limit_key = 'nextsafar_search_rate_' . $user_id;
         $request_count = (int) get_transient($rate_limit_key);
-
         if ($request_count >= 120) {
             wp_send_json_error(array('message' => 'Too many requests. Please wait a moment.'), 429);
         }
-
         set_transient($rate_limit_key, $request_count + 1, MINUTE_IN_SECONDS);
 
         $query = isset($_POST['query']) ? sanitize_text_field(wp_unslash($_POST['query'])) : '';
-
-        if (strlen($query) < 2) {
+        // ✅ mb_strlen برای فارسی (strlen بایتی است)
+        if (mb_strlen($query) < 2) {
             wp_send_json_success(array('results' => array()));
         }
 
-        $cache_key = 'nextsafar_search_' . md5($query . $user_id);
+        $cache_key = 'nextsafar_search_' . md5($query . '|' . $user_id);
         $cached = get_transient($cache_key);
-
         if (false !== $cached) {
             wp_send_json_success(array('results' => $cached, 'cached' => true));
         }
 
         $max_per_type = 3;
-        $type_labels = array(
-            'post'       => 'مقاله',
-            'page'       => 'برگه',
-            'tour'       => 'تور',
-            'visa'       => 'ویزا',
-            'attachment' => 'رسانه',
-            'category'   => 'دسته‌بندی',
-            'user'       => 'کاربر',
-        );
+        $type_labels  = $this->search_type_labels();
 
-        $fulltext_results = $this->search_with_fulltext($query, $max_per_type, $type_labels);
-        $results = !empty($fulltext_results)
-            ? $fulltext_results
-            : $this->search_with_like($query, $max_per_type, $type_labels);
+        $results = $this->search_with_fulltext($query, $max_per_type, $type_labels);
+        if (empty($results)) {
+            $results = $this->search_with_like($query, $max_per_type, $type_labels);
+        }
 
         $results = array_slice($results, 0, 15);
         set_transient($cache_key, $results, 15 * MINUTE_IN_SECONDS);
-
         wp_send_json_success(array('results' => $results));
     }
 
     private function search_with_fulltext($query, $max_per_type, $type_labels) {
-        global $wpdb;
-
-        $has_fulltext = $wpdb->get_var("SHOW INDEX FROM {$wpdb->posts} WHERE Key_name = 'post_title_fulltext'");
-        if (!$has_fulltext) {
+        // ✅ بدون SHOW INDEX در هر درخواست (کش ۱ ساعته + static)
+        if (!$this->has_fulltext_index()) {
             return array();
         }
 
-        $post_types = array('post', 'page');
-        if (post_type_exists('tour')) $post_types[] = 'tour';
-        if (post_type_exists('visa')) $post_types[] = 'visa';
+        // ✅ escape مخصوص BOOLEAN MODE (نه esc_like)
+        $ft_query = $this->build_fulltext_query($query);
+        if ('' === $ft_query) {
+            return array();
+        }
 
+        global $wpdb;
+        $post_types   = $this->get_search_post_types();
         $placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        $search_query = $wpdb->esc_like($query);
-        $limit = $max_per_type * count($post_types);
-        $params = array_merge($post_types, array($search_query, $search_query, $limit));
+        $limit        = $max_per_type * count($post_types);
+        $params       = array_merge($post_types, array($ft_query, $ft_query, $limit));
 
         $posts = $wpdb->get_results($wpdb->prepare(
             "SELECT ID, post_title, post_type,
-                MATCH(post_title) AGAINST(%s IN BOOLEAN MODE) as relevance
-            FROM {$wpdb->posts}
-            WHERE post_type IN ($placeholders)
-                AND post_status IN ('publish', 'draft', 'pending')
-                AND MATCH(post_title) AGAINST(%s IN BOOLEAN MODE)
-            ORDER BY relevance DESC
-            LIMIT %d",
+                    MATCH(post_title) AGAINST(%s IN BOOLEAN MODE) AS relevance
+             FROM {$wpdb->posts}
+             WHERE post_type IN ($placeholders)
+               AND post_status IN ('publish', 'draft', 'pending')
+               AND MATCH(post_title) AGAINST(%s IN BOOLEAN MODE)
+             ORDER BY relevance DESC
+             LIMIT %d",
             ...$params
         ));
 
@@ -704,6 +693,7 @@ class NextSafar_Admin {
         if (!empty($posts)) {
             foreach ($posts as $post) {
                 if (count($results) >= $max_per_type * 2) break;
+                if (!current_user_can('edit_post', $post->ID)) continue;
                 $results[] = array(
                     'type'       => $post->post_type,
                     'type_label' => $type_labels[$post->post_type] ?? ucfirst($post->post_type),
@@ -717,32 +707,29 @@ class NextSafar_Admin {
 
     private function search_with_like($query, $max_per_type, $type_labels) {
         global $wpdb;
-
         $results = array();
-        $like_query = '%' . $wpdb->esc_like($query) . '%';
 
-        $post_types = array('post', 'page');
-        if (post_type_exists('tour')) $post_types[] = 'tour';
-        if (post_type_exists('visa')) $post_types[] = 'visa';
-
+        $like_query   = '%' . $wpdb->esc_like($query) . '%';
+        $post_types   = $this->get_search_post_types();
         $placeholders = implode(',', array_fill(0, count($post_types), '%s'));
-        $limit_posts = $max_per_type * count($post_types);
-        $params = array_merge($post_types, array($like_query, $limit_posts));
+        $limit_posts  = $max_per_type * count($post_types);
+        $params       = array_merge($post_types, array($like_query, $limit_posts));
 
         $posts = $wpdb->get_results($wpdb->prepare(
             "SELECT ID, post_title, post_type
-            FROM {$wpdb->posts}
-            WHERE post_type IN ($placeholders)
-                AND post_status IN ('publish', 'draft', 'pending')
-                AND post_title LIKE %s
-            ORDER BY post_modified DESC
-            LIMIT %d",
+             FROM {$wpdb->posts}
+             WHERE post_type IN ($placeholders)
+               AND post_status IN ('publish', 'draft', 'pending')
+               AND post_title LIKE %s
+             ORDER BY post_modified DESC
+             LIMIT %d",
             ...$params
         ));
 
         if (!empty($posts)) {
             foreach ($posts as $post) {
                 if (count($results) >= $max_per_type * 2) break;
+                if (!current_user_can('edit_post', $post->ID)) continue;
                 $results[] = array(
                     'type'       => $post->post_type,
                     'type_label' => $type_labels[$post->post_type] ?? ucfirst($post->post_type),
@@ -754,14 +741,13 @@ class NextSafar_Admin {
 
         $attachments = $wpdb->get_results($wpdb->prepare(
             "SELECT ID, post_title
-            FROM {$wpdb->posts}
-            WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_title LIKE %s
-            ORDER BY post_modified DESC
-            LIMIT %d",
+             FROM {$wpdb->posts}
+             WHERE post_type = 'attachment' AND post_status = 'inherit' AND post_title LIKE %s
+             ORDER BY post_modified DESC
+             LIMIT %d",
             $like_query,
             $max_per_type
         ));
-
         if (!empty($attachments)) {
             foreach ($attachments as $attachment) {
                 $results[] = array(
@@ -775,14 +761,13 @@ class NextSafar_Admin {
 
         $categories = $wpdb->get_results($wpdb->prepare(
             "SELECT t.term_id, t.name
-            FROM {$wpdb->terms} t
-            INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
-            WHERE tt.taxonomy = 'category' AND t.name LIKE %s
-            LIMIT %d",
+             FROM {$wpdb->terms} t
+             INNER JOIN {$wpdb->term_taxonomy} tt ON t.term_id = tt.term_id
+             WHERE tt.taxonomy = 'category' AND t.name LIKE %s
+             LIMIT %d",
             $like_query,
             $max_per_type
         ));
-
         if (!empty($categories)) {
             foreach ($categories as $cat) {
                 $results[] = array(
@@ -797,12 +782,11 @@ class NextSafar_Admin {
         if (current_user_can('list_users')) {
             $users = $wpdb->get_results($wpdb->prepare(
                 "SELECT ID, display_name, user_email
-                FROM {$wpdb->users}
-                WHERE user_login LIKE %s OR user_email LIKE %s OR display_name LIKE %s
-                LIMIT %d",
+                 FROM {$wpdb->users}
+                 WHERE user_login LIKE %s OR user_email LIKE %s OR display_name LIKE %s
+                 LIMIT %d",
                 $like_query, $like_query, $like_query, $max_per_type
             ));
-
             if (!empty($users)) {
                 foreach ($users as $user) {
                     $results[] = array(
@@ -820,12 +804,116 @@ class NextSafar_Admin {
 
     public static function create_fulltext_index() {
         global $wpdb;
-        $table = $wpdb->posts;
         $index_name = 'post_title_fulltext';
-        $exists = $wpdb->get_var("SHOW INDEX FROM {$table} WHERE Key_name = '{$index_name}'");
+        $exists = $wpdb->get_var("SHOW INDEX FROM {$wpdb->posts} WHERE Key_name = '{$index_name}'");
         if (!$exists) {
-            $wpdb->query("ALTER TABLE {$table} ADD FULLTEXT INDEX {$index_name} (post_title)");
+            $suppress = $wpdb->suppress_errors(true);
+            $wpdb->query("ALTER TABLE {$wpdb->posts} ADD FULLTEXT INDEX {$index_name} (post_title)");
+            $wpdb->suppress_errors($suppress);
         }
+        delete_transient('nextsafar_ft_index_exists');
+        delete_option('nextsafar_ft_index_state');
+    }
+
+    public function maybe_create_fulltext_index() {
+        if (!current_user_can('manage_options')) {
+            return;
+        }
+        if (false !== get_option('nextsafar_ft_index_state', false)) {
+            return; // قبلاً تلاش شده
+        }
+        if ( ! nextsafar_acquire_lock( 'ft_index', 300 ) ) {
+            return;
+        }
+
+        global $wpdb;
+        $index_name = 'post_title_fulltext';
+        $exists = (bool) $wpdb->get_var("SHOW INDEX FROM {$wpdb->posts} WHERE Key_name = '{$index_name}'");
+
+        if ($exists) {
+            update_option('nextsafar_ft_index_state', 'exists');
+            delete_transient('nextsafar_ft_index_exists');
+            nextsafar_release_lock('ft_index');
+            return;
+        }
+
+        $rows = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$wpdb->posts}");
+        if ($rows > 150000) {
+            update_option('nextsafar_ft_index_state', 'skipped_large_table');
+            nextsafar_release_lock('ft_index');
+            return;
+        }
+
+        $suppress = $wpdb->suppress_errors(true);
+        $result   = $wpdb->query("ALTER TABLE {$wpdb->posts} ADD FULLTEXT INDEX {$index_name} (post_title)");
+        $wpdb->suppress_errors($suppress);
+
+        update_option('nextsafar_ft_index_state', (false !== $result) ? 'created' : 'failed');
+        delete_transient('nextsafar_ft_index_exists');
+        nextsafar_release_lock('ft_index');
+    }
+
+    private function has_fulltext_index() {
+        static $has = null;
+        if (null !== $has) {
+            return $has;
+        }
+        $cached = get_transient('nextsafar_ft_index_exists');
+        if (false !== $cached) {
+            $has = (bool) $cached;
+            return $has;
+        }
+        global $wpdb;
+        $exists = (bool) $wpdb->get_var("SHOW INDEX FROM {$wpdb->posts} WHERE Key_name = 'post_title_fulltext'");
+        set_transient('nextsafar_ft_index_exists', $exists ? 1 : 0, HOUR_IN_SECONDS);
+        $has = $exists;
+        return $has;
+    }
+
+    private function build_fulltext_query($query) {
+        $clean = preg_replace('/[+\-><()~*"@]+/u', ' ', $query);
+        $clean = trim(preg_replace('/\s+/u', ' ', (string) $clean));
+        if ('' === $clean) {
+            return '';
+        }
+        $words = array_slice(explode(' ', $clean), 0, 6);
+        $terms = array();
+        foreach ($words as $w) {
+            if (mb_strlen($w) < 2) {
+                continue;
+            }
+            $terms[] = $w . '*';
+        }
+        return implode(' ', $terms);
+    }
+
+    private function get_search_post_types() {
+        $types = array('post', 'page');
+        foreach (array('hotel', 'destination', 'restaurant', 'airport', 'hospital', 'visa', 'travelguide', 'travelnews', 'tour') as $pt) {
+            if (post_type_exists($pt)) {
+                $types[] = $pt;
+            }
+        }
+        return $types;
+    }
+
+    private function search_type_labels() {
+        return array(
+            'post'        => 'مقاله',
+            'page'        => 'برگه',
+            'hotel'       => 'هتل',
+            'destination' => 'مقصد',
+            'restaurant'  => 'رستوران',
+            'airport'     => 'فرودگاه',
+            'hospital'    => 'بیمارستان',
+            'visa'        => 'ویزا',
+            'travelguide' => 'راهنمای سفر',
+            'travelnews'  => 'خبر',
+            'tour'        => 'تور',
+            'attachment'  => 'رسانه',
+            'category'    => 'دسته‌بندی',
+            'user'        => 'کاربر',
+        );
     }
 
     public function ajax_add_term() {
@@ -1040,15 +1128,12 @@ class NextSafar_Admin {
     }
 
     private function get_dashboard_options_html() {
-        $core = nextsafar();
-        $widgets = array();
+        $widgets  = array();
         $settings = array();
 
-        if (isset($core->widgets) && method_exists($core->widgets, 'get_widgets')) {
-            $widgets = $core->widgets->get_widgets();
-        }
-        if (isset($core->widgets) && method_exists($core->widgets, 'get_user_widget_settings')) {
-            $settings = $core->widgets->get_user_widget_settings();
+        if ( class_exists( 'NextSafar_Dashboard_Content' ) ) {
+            $widgets  = NextSafar_Dashboard_Content::widget_registry();
+            $settings = NextSafar_Dashboard_Content::widget_settings();
         }
 
         ob_start();
@@ -1067,9 +1152,10 @@ class NextSafar_Admin {
                     </p>
                 <?php else : ?>
                     <div style="display:flex; flex-direction:column; gap:4px;">
-                        <?php foreach ($widgets as $widget_id => $widget) :
+                        <?php foreach ($widgets as $widget_id => $title) :
                             $enabled = !isset($settings[$widget_id])
-                                || (isset($settings[$widget_id]['enabled']) && $settings[$widget_id]['enabled']);
+                                || !isset($settings[$widget_id]['enabled'])
+                                || $settings[$widget_id]['enabled'];
                         ?>
                             <label style="display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:6px; cursor:pointer; transition:background 0.2s; margin:0;">
                                 <input type="checkbox" name="widgets[]"
@@ -1077,7 +1163,7 @@ class NextSafar_Admin {
                                        <?php checked($enabled); ?>
                                        style="accent-color:var(--ns-primary, #43abff); width:16px; height:16px;">
                                 <span style="font-size:13px; color:var(--ns-text, #111827);">
-                                    <?php echo esc_html($widget->get_title()); ?>
+                                    <?php echo esc_html($title); ?>
                                 </span>
                             </label>
                         <?php endforeach; ?>
@@ -1137,14 +1223,13 @@ class NextSafar_Admin {
         $user_id = get_current_user_id();
         $enabled_widgets = isset($_POST['widgets']) ? array_map('sanitize_key', (array) $_POST['widgets']) : array();
 
-        $core = nextsafar();
         $all_widgets = array();
-        if (isset($core->widgets) && method_exists($core->widgets, 'get_widgets')) {
-            $all_widgets = $core->widgets->get_widgets();
+        if (class_exists('NextSafar_Dashboard_Content')) {
+            $all_widgets = NextSafar_Dashboard_Content::widget_registry();
         }
 
         $settings = array();
-        foreach ($all_widgets as $widget_id => $widget) {
+        foreach ($all_widgets as $widget_id => $title) {
             $settings[$widget_id] = array(
                 'enabled' => in_array($widget_id, $enabled_widgets, true),
             );

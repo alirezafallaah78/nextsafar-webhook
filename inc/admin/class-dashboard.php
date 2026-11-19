@@ -44,74 +44,95 @@ class NextSafar_Dashboard {
 	   🔐 احراز هویت با Service Account JWT
 	========================================================= */
 
-	private function get_google_access_token() {
-		$config = $this->get_gsc_config();
-		$json   = $config['credentials'] ?? array();
+	    private function get_google_access_token() {
+        $config = $this->get_gsc_config();
+        $json   = $config['credentials'] ?? array();
 
-		if ( empty( $json['client_email'] ) || empty( $json['private_key'] ) ) {
-			return new WP_Error(
-				'invalid_key',
-				'کلیدهای Search Console در wp-config.php تعریف نشده‌اند. باید NEXTSAFAR_GSC_CLIENT_EMAIL و NEXTSAFAR_GSC_PRIVATE_KEY (و NEXTSAFAR_GSC_SITE_URL) را define کنید.'
-			);
-		}
+        if ( empty( $json['client_email'] ) || empty( $json['private_key'] ) ) {
+            return new WP_Error(
+                'invalid_key',
+                'کلیدهای Search Console در wp-config.php تعریف نشده‌اند. باید NEXTSAFAR_GSC_CLIENT_EMAIL و NEXTSAFAR_GSC_PRIVATE_KEY (و NEXTSAFAR_GSC_SITE_URL) را define کنید.'
+            );
+        }
 
-		$cache_key = 'nextsafar_google_token_' . md5( $json['client_email'] );
-		$cached    = get_transient( $cache_key );
-		if ( false !== $cached ) {
-			return $cached;
-		}
+        $id        = md5( $json['client_email'] );
+        $cache_key = 'nextsafar_google_token_' . $id;
+        $fail_key  = 'nextsafar_google_token_fail_' . $id;
 
-		$now         = time();
-		$header_json = json_encode( array(
-			'alg' => 'RS256',
-			'typ' => 'JWT',
-			'kid' => isset( $json['private_key_id'] ) ? $json['private_key_id'] : '',
-		) );
-		$header = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $header_json ) );
+        $cached = get_transient( $cache_key );
+        if ( false !== $cached ) {
+            return $cached;
+        }
 
-		$claim_json = json_encode( array(
-			'iss'   => $json['client_email'],
-			'scope' => 'https://www.googleapis.com/auth/webmasters.readonly',
-			'aud'   => 'https://oauth2.googleapis.com/token',
-			'exp'   => $now + 3600,
-			'iat'   => $now,
-		) );
-		$claim = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $claim_json ) );
+        // ✅ کش خطا (۱۰ دقیقه) — جلوگیری از تلاش مجدد ۱۰ ثانیه‌ای در هر بارگذاری داشبورد
+        $last_error = get_transient( $fail_key );
+        if ( false !== $last_error ) {
+            return new WP_Error( 'gsc_cached_error', $last_error );
+        }
 
-		$signature_input = $header . '.' . $claim;
+        $now         = time();
+        $header_json = json_encode( array(
+            'alg' => 'RS256',
+            'typ' => 'JWT',
+            'kid' => isset( $json['private_key_id'] ) ? $json['private_key_id'] : '',
+        ) );
+        $header = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $header_json ) );
 
-		if ( ! function_exists( 'openssl_sign' ) ) {
-			return new WP_Error( 'openssl_missing', 'تابع openssl فعال نیست' );
-		}
+        $claim_json = json_encode( array(
+            'iss'   => $json['client_email'],
+            'scope' => 'https://www.googleapis.com/auth/webmasters.readonly',
+            'aud'   => 'https://oauth2.googleapis.com/token',
+            'exp'   => $now + 3600,
+            'iat'   => $now,
+        ) );
+        $claim = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $claim_json ) );
 
-		$sign_result = @openssl_sign( $signature_input, $signature, $json['private_key'], 'SHA256' );
-		if ( ! $sign_result ) {
-			return new WP_Error( 'sign_failed', 'امضای دیجیتال ناموفق: ' . openssl_error_string() . ' — مقدار NEXTSAFAR_GSC_PRIVATE_KEY را با دابل‌کوتیشن و \n واقعی بررسی کنید.' );
-		}
+        $signature_input = $header . '.' . $claim;
 
-		$signature_b64 = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $signature ) );
-		$jwt           = $signature_input . '.' . $signature_b64;
+        if ( ! function_exists( 'openssl_sign' ) ) {
+            return $this->gsc_token_fail( $fail_key, 'openssl_missing', 'تابع openssl فعال نیست' );
+        }
 
-		$response = wp_remote_post( 'https://oauth2.googleapis.com/token', array(
-			'body'    => array(
-				'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
-				'assertion'  => $jwt,
-			),
-			'timeout' => 20,
-		) );
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
+        $sign_result = @openssl_sign( $signature_input, $signature, $json['private_key'], 'SHA256' );
+        if ( ! $sign_result ) {
+            return $this->gsc_token_fail(
+                $fail_key,
+                'sign_failed',
+                'امضای دیجیتال ناموفق: ' . openssl_error_string() . ' — مقدار NEXTSAFAR_GSC_PRIVATE_KEY را بررسی کنید.'
+            );
+        }
 
-		$data = json_decode( wp_remote_retrieve_body( $response ), true );
-		if ( empty( $data['access_token'] ) ) {
-			$err_msg = isset( $data['error_description'] ) ? $data['error_description'] : 'دریافت Token ناموفق';
-			return new WP_Error( 'token_failed', $err_msg );
-		}
+        $signature_b64 = str_replace( array( '+', '/', '=' ), array( '-', '_', '' ), base64_encode( $signature ) );
+        $jwt           = $signature_input . '.' . $signature_b64;
 
-		set_transient( $cache_key, $data['access_token'], 55 * MINUTE_IN_SECONDS );
-		return $data['access_token'];
-	}
+        $response = wp_remote_post( 'https://oauth2.googleapis.com/token', array(
+            'body'    => array(
+                'grant_type' => 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+                'assertion'  => $jwt,
+            ),
+            'timeout' => 10, // ✅ کاهش از ۲۰
+        ) );
+
+        if ( is_wp_error( $response ) ) {
+            return $this->gsc_token_fail( $fail_key, 'token_http', 'اتصال به Google ناموفق: ' . $response->get_error_message() );
+        }
+
+        $data = json_decode( wp_remote_retrieve_body( $response ), true );
+        if ( empty( $data['access_token'] ) ) {
+            $err_msg = isset( $data['error_description'] ) ? $data['error_description'] : 'دریافت Token ناموفق';
+            return $this->gsc_token_fail( $fail_key, 'token_failed', $err_msg );
+        }
+
+        set_transient( $cache_key, $data['access_token'], 55 * MINUTE_IN_SECONDS );
+        delete_transient( $fail_key );
+        return $data['access_token'];
+    }
+
+    /** ✅ ثبت خطای توکن برای ۱۰ دقیقه */
+    private function gsc_token_fail( $fail_key, $code, $message ) {
+        set_transient( $fail_key, $message, 10 * MINUTE_IN_SECONDS );
+        return new WP_Error( $code, $message );
+    }
 
 	/* =========================================================
 	   🔍 کلاینت مشترک Search Console (نمودار + ویجت فرصت‌ها)
@@ -138,7 +159,7 @@ class NextSafar_Dashboard {
 				'Authorization' => 'Bearer ' . $access_token,
 			),
 			'body'    => wp_json_encode( $body ),
-			'timeout' => 20,
+			'timeout' => 10,
 		) );
 		if ( is_wp_error( $response ) ) {
 			return $response;
@@ -205,11 +226,19 @@ class NextSafar_Dashboard {
 
 		$config    = $this->get_gsc_config();
 		$cache_key = 'nextsafar_gsc_' . $range . '_' . md5( $config['site_url'] );
-		$cached    = get_transient( $cache_key );
-		if ( false !== $cached ) {
-			wp_send_json_success( array( 'data' => $cached, 'range_label' => $label ) );
-			return;
-		}
+        $cached    = get_transient( $cache_key );
+        if ( false !== $cached ) {
+            wp_send_json_success( array( 'data' => $cached, 'range_label' => $label ) );
+            return;
+        }
+
+        // ✅ کش خطا (۱۰ دقیقه) — داشبورد در هر بارگذاری معطل گوگل نمی‌ماند
+        $err_key    = $cache_key . '_err';
+        $last_error = get_transient( $err_key );
+        if ( false !== $last_error ) {
+            wp_send_json_error( array( 'message' => $last_error, 'cached_error' => true ) );
+            return;
+        }
 
 		$data = $this->query_search_console( array(
 			'startDate'  => date( 'Y-m-d', strtotime( "-{$days_start} days" ) ),
@@ -217,10 +246,12 @@ class NextSafar_Dashboard {
 			'dimensions' => array( 'date' ),
 			'rowLimit'   => 100,
 		) );
-		if ( is_wp_error( $data ) ) {
-			wp_send_json_error( array( 'message' => 'خطای احراز هویت: ' . $data->get_error_message() ) );
-			return;
-		}
+        if ( is_wp_error( $data ) ) {
+            $msg = 'خطای Search Console: ' . $data->get_error_message();
+            set_transient( $err_key, $msg, 10 * MINUTE_IN_SECONDS );
+            wp_send_json_error( array( 'message' => $msg ) );
+            return;
+        }
 
 		$chart        = array();
 		$clicks       = 0;
@@ -720,12 +751,18 @@ class NextSafar_Dashboard {
 			return;
 		}
 
-		$comments = get_comments( array(
-			'number'  => 8,
-			'status'  => 'all',
-			'orderby' => 'comment_date_gmt',
-			'order'   => 'DESC',
-		) );
+        $comments = get_comments( array(
+            'number'  => 24,
+            'status'  => 'all',
+            'orderby' => 'comment_date_gmt',
+            'order'   => 'DESC',
+        ) );
+
+        // ✅ حذف اسپم و زباله (status=all آن‌ها را هم می‌آورد)
+        $comments = array_values( array_filter( $comments, function ( $c ) {
+            return in_array( (string) $c->comment_approved, array( '0', '1' ), true );
+        } ) );
+        $comments = array_slice( $comments, 0, 8 );
 
 		if ( empty( $comments ) ) {
 			$empty_html = '<div class="widget-empty"><div class="widget-empty-icon">💬</div><p>هنوز کامنتی ثبت نشده</p></div>';
@@ -762,20 +799,36 @@ class NextSafar_Dashboard {
 	   🔐 Admin Logins
 	========================================================= */
 
-	public function track_admin_login( $user_login, $user ) {
-		if ( ! user_can( $user, 'manage_options' ) && ! user_can( $user, 'edit_posts' ) ) {
-			return;
-		}
-		$logins = get_option( 'nextsafar_admin_logins', array() );
-		array_unshift( $logins, array(
-			'user_id'      => $user->ID,
-			'display_name' => $user->display_name,
-			'email'        => $user->user_email,
-			'time'         => current_time( 'mysql' ),
-		) );
-		update_option( 'nextsafar_admin_logins', array_slice( $logins, 0, 20 ) );
-		delete_transient( 'nextsafar_admin_logins' );
-	}
+    public function track_admin_login( $user_login, $user ) {
+        if ( ! $user instanceof WP_User ) {
+            return;
+        }
+        if ( ! user_can( $user, 'manage_options' ) && ! user_can( $user, 'edit_posts' ) ) {
+            return;
+        }
+
+        $logins = get_option( 'nextsafar_admin_logins', array() );
+        if ( ! is_array( $logins ) ) {
+            $logins = array();
+        }
+
+        array_unshift( $logins, array(
+            'user_id'      => $user->ID,
+            'display_name' => $user->display_name,
+            'email'        => $user->user_email,
+            'time'         => current_time( 'mysql' ),
+        ) );
+
+        // ✅ autoload=false — option پرتغییر نباید در alloptions هر ریکوئست لود شود
+        update_option( 'nextsafar_admin_logins', array_slice( $logins, 0, 20 ), false );
+        if ( function_exists( 'wp_set_option_autoload' ) ) {
+            wp_set_option_autoload( 'nextsafar_admin_logins', false );
+        }
+
+        // ✅ کلید واقعی کش ویجت _html است — هر دو پاک شوند
+        delete_transient( 'nextsafar_admin_logins' );
+        delete_transient( 'nextsafar_admin_logins_html' );
+    }
 
 	public function ajax_admin_logins() {
 		if ( ! isset( $_POST['nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['nonce'] ) ), 'nextsafar_dashboard_nonce' ) ) {

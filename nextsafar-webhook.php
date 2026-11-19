@@ -65,6 +65,9 @@ require_once NEXTSAFAR_PATH . 'inc/admin/class-external-menus.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/class-categories.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/class-login.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/class-role-access.php';
+require_once NEXTSAFAR_PATH . 'inc/admin/class-post-sync.php';
+require_once NEXTSAFAR_PATH . 'inc/admin/columns.php';
+require_once NEXTSAFAR_PATH . 'inc/admin/icon-menu.php';
 
 // Widgets
 require_once NEXTSAFAR_PATH . 'inc/admin/class-widget-base.php';
@@ -73,7 +76,7 @@ require_once NEXTSAFAR_PATH . 'inc/admin/class-dashboard.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/widgets/class-widget-yoast-seo.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/class-widget-cache.php';
 require_once NEXTSAFAR_PATH . 'inc/admin/class-dashboard-content.php';
-require_once NEXTSAFAR_PATH . 'inc/admin/class-dashboard-insights.php';   // 🆕 فاز ۲
+require_once NEXTSAFAR_PATH . 'inc/admin/class-dashboard-insights.php';
 // ═══════════════════════════════════════════════════════════
 // 3. CORE HOOKS
 // ═══════════════════════════════════════════════════════════
@@ -144,11 +147,12 @@ require_once NEXTSAFAR_PATH . 'inc/metaboxes/geo-metabox.php';
 // 6. API CLIENTS
 // ═══════════════════════════════════════════════════════════
 
+require_once NEXTSAFAR_PATH . 'inc/api/clients/class-api-cache.php';
 require_once NEXTSAFAR_PATH . 'inc/api/clients/class-base-client.php';
 require_once NEXTSAFAR_PATH . 'inc/api/clients/class-serpapi-client.php';
 require_once NEXTSAFAR_PATH . 'inc/api/clients/class-searchapi-client.php';
 require_once NEXTSAFAR_PATH . 'inc/api/clients/class-wikipedia-client.php';
-
+require_once NEXTSAFAR_PATH . 'inc/api/clients/class-aviation-client.php';
 // ═══════════════════════════════════════════════════════════
 // 7. API SERVICES
 // ═══════════════════════════════════════════════════════════
@@ -189,6 +193,7 @@ require_once NEXTSAFAR_PATH . 'inc/admin/post-generator/class-ajax-handler.php';
 
 require_once NEXTSAFAR_PATH . 'inc/database/class-news-tables.php';
 require_once NEXTSAFAR_PATH . 'inc/news/class-rate-limiter.php';
+require_once NEXTSAFAR_PATH . 'inc/news/class-gemini-quota.php';
 require_once NEXTSAFAR_PATH . 'inc/news/class-gemini-client.php';
 require_once NEXTSAFAR_PATH . 'inc/news/class-rss-fetcher.php';
 require_once NEXTSAFAR_PATH . 'inc/news/class-newsapi-fetcher.php';
@@ -269,12 +274,6 @@ class NextSafar_Core {
 
         // Widget Cache Hooks
         NextSafar_Widget_Cache::init_hooks();
-
-        // Clear caches on save
-        add_action('save_post', function() {
-            delete_transient('nextsafar_widget_recent_content');
-            delete_transient('nextsafar_widget_stats_data');
-        }, 20);
 
         add_action('wp_insert_comment', function() {
             delete_transient('nextsafar_pending_comments_count');

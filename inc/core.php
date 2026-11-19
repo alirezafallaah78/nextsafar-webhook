@@ -23,13 +23,16 @@ class Core {
         // Register Post Types and Taxonomies
         add_action('init', [__CLASS__, 'register_post_types']);
         add_action('init', [__CLASS__, 'register_taxonomies']);
+        add_action('init', [__CLASS__, 'register_thumbnail_support'], 20);
+        add_action('rest_api_init', [__CLASS__, 'register_featured_image_field']);
         add_action('add_meta_boxes', [__CLASS__, 'register_metaboxes']);
 
         // News System Menus
         add_action('admin_menu', [__CLASS__, 'register_news_menus'], 20);
-
-        // ✅ منوی شهرهای توریستی (tourism) — زیرمنوی همه پست‌تایپ‌ها
         add_action('admin_menu', [__CLASS__, 'register_tourism_menu'], 25);
+
+        // ✅ سیستم cron اخبار — باید در همه ریکوئست‌ها (cron/ajax/frontend) ثبت شود
+        \NextSafar\News\NewsSync::init();
 
         // Initialize News AJAX handlers
         \NextSafar\Admin\News\NewsAjaxHandler::init();
@@ -60,28 +63,24 @@ class Core {
         if (is_admin()) {
             Taxonomies\TermImages::init();
             Admin\PostGenerator\AjaxHandler::init();
+            Admin\PostSync::init();   // ✅ متاباکس «سینک از API» + صفحه سینک انبوه
+            Admin\Columns::init();    // ✅ ستون‌های سفارشی لیست هتل
         }
 
         // Admin Menu Registration
         add_action('admin_menu', [__CLASS__, 'register_admin_menus']);
 
-        // Create database tables
-        add_action('admin_init', function() {
-            \NextSafar\Database\NewsTables::createAll();
-            \NextSafar\Database\NewsTables::seedDefaultSources();
-        });
-
-        // ❌ حذف شده - Admin System در NextSafar_Core container init می‌شود
-        // نیازی به init مجدد WP_Pages_Wrapper و Role_Access نیست
+        // ✅ ساخت/ارتقای جداول فقط یک‌بار (نسخه‌بندی‌شده) — نه در هر admin_init
+        add_action('admin_init', ['\NextSafar\Database\NewsTables', 'maybeUpgrade']);
     }
 
     /**
      * Get correct AJAX URL (with port for Local by Flywheel)
      */
-    public static function get_ajax_url(): string {
-        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        return $protocol . '://' . $host . '/wp-admin/admin-ajax.php';
+    public static function get_ajax_url(): string
+    {
+        // ✅ admin_url به‌جای ساخت دستی از HTTP_HOST (رفع Host Header Injection)
+        return admin_url('admin-ajax.php');
     }
 
     /**

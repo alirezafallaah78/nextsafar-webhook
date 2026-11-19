@@ -38,6 +38,8 @@ class NewsSync
     
     public const LAST_RUN_KEY = 'nextsafar_news_last_run_hour';
 
+    public const CRON_STATE_OPTION = 'nextsafar_news_cron_state';
+
     private RSSFetcher $rssFetcher;
     private NewsApiFetcher $apiFetcher;
     private DuplicateChecker $duplicateChecker;
@@ -93,21 +95,28 @@ class NewsSync
 
     public static function scheduleCron(): void
     {
+        // ✅ اگر سینک خودکار خاموش است، فقط یک‌بار پاک کن (نه در هر ریکوئست)
         if (get_option(self::OPT_AUTO_ENABLED, '1') !== '1') {
-            self::clearCron();
+            if (get_option(self::CRON_STATE_OPTION) !== 'cleared') {
+                self::clearCron();
+            }
             return;
         }
 
         // Hourly tick - هر ساعت چک می‌کند آیا زمان اجرای sync است یا نه
         if (!wp_next_scheduled(self::HOURLY_HOOK)) {
             wp_schedule_event(time() + 60, 'hourly', self::HOURLY_HOOK);
-            error_log('📅 [NewsSync] Hourly cron scheduled');
+            self::log('📅 [NewsSync] Hourly cron scheduled');
         }
 
         // Retry cron - هر 15 دقیقه اخبار در حال انتظار را بازنویسی می‌کند
         if (!wp_next_scheduled(self::RETRY_HOOK)) {
             wp_schedule_event(time() + 120, 'ns_15min', self::RETRY_HOOK);
-            error_log('📅 [NewsSync] Retry cron scheduled');
+            self::log('📅 [NewsSync] Retry cron scheduled');
+        }
+
+        if (get_option(self::CRON_STATE_OPTION) !== 'scheduled') {
+            update_option(self::CRON_STATE_OPTION, 'scheduled');
         }
     }
 
@@ -117,7 +126,11 @@ class NewsSync
         wp_clear_scheduled_hook(self::HOURLY_HOOK);
         wp_clear_scheduled_hook(self::RETRY_HOOK);
         delete_transient(self::LAST_RUN_KEY);
-        error_log('📅 [NewsSync] همه cron ها پاک شدند');
+
+        // ✅ علامت بزن تا دفعه بعد دوباره پاک نشود
+        update_option(self::CRON_STATE_OPTION, 'cleared');
+
+        self::log('📅 [NewsSync] همه cron ها پاک شدند');
     }
 
     /* ========================================================================
@@ -130,30 +143,32 @@ class NewsSync
             return;
         }
 
-        $hours = array_map('intval', (array) get_option(self::OPT_SCHEDULE_HOURS, [8, 14, 20]));
+        $hours   = array_map('intval', (array) get_option(self::OPT_SCHEDULE_HOURS, [8, 14, 20]));
         $nowHour = (int) wp_date('H');
 
         if (!in_array($nowHour, $hours, true)) {
             return;
         }
 
-        // چک کن آیا این ساعت قبلاً اجرا شده
-        $lastRunHour = get_transient(self::LAST_RUN_KEY);
         $currentHourKey = wp_date('Y-m-d-H');
-
-        if ($lastRunHour === $currentHourKey) {
-            error_log("⏰ [NewsSync] ساعت {$nowHour}:00 قبلاً اجرا شده");
+        if (get_transient(self::LAST_RUN_KEY) === $currentHourKey) {
             return;
         }
 
         set_transient(self::LAST_RUN_KEY, $currentHourKey, HOUR_IN_SECONDS);
 
-        error_log("🕐 [NewsSync] ساعت {$nowHour}:00 - اجرای sync");
-
         @ini_set('max_execution_time', 300);
         @ini_set('memory_limit', '256M');
 
-        self::runCron();
+        $ok = self::runCron();
+
+        // ✅ اگر شکست خورد، قفل ساعت را بردار و یک تلاش مجدد ۱۵ دقیقه بعد زمان‌بندی کن
+        if (!$ok) {
+            delete_transient(self::LAST_RUN_KEY);
+            if (!wp_next_scheduled(self::CRON_HOOK)) {
+                wp_schedule_single_event(time() + 15 * MINUTE_IN_SECONDS, self::CRON_HOOK);
+            }
+        }
     }
 
     /* ========================================================================
@@ -176,24 +191,19 @@ class NewsSync
             return;
         }
 
-        $lastRunHour = get_transient(self::LAST_RUN_KEY);
         $currentHourKey = wp_date('Y-m-d-H');
-
-        if ($lastRunHour === $currentHourKey) {
+        if (get_transient(self::LAST_RUN_KEY) === $currentHourKey) {
             return;
         }
 
-        // فقط هر 3 دقیقه چک کن
-        $checkKey = 'ns_missed_check_' . $currentHourKey;
-        if (get_transient($checkKey)) {
+        // ✅ قفل اتمیک ۳ دقیقه‌ای — جایگزین set_transient با متغیر تعریف‌نشده
+        if (!nextsafar_acquire_lock('news_missed_check', 180)) {
             return;
         }
-
-        set_transient($checkKey, 1, 3 * MINUTE_IN_SECONDS);
 
         // اگر در wp-cron.php هست، مستقیم اجرا کن
         if (defined('DOING_CRON') && DOING_CRON) {
-            error_log("🕐 [NewsSync] اجرای مستقیم cron از دست رفته");
+            self::log('🕐 [NewsSync] اجرای مستقیم cron از دست رفته');
             set_transient(self::LAST_RUN_KEY, $currentHourKey, HOUR_IN_SECONDS);
             @ini_set('max_execution_time', 300);
             @ini_set('memory_limit', '256M');
@@ -202,7 +212,7 @@ class NewsSync
         }
 
         // در غیر این صورت، schedule کن
-        error_log("🕐 [NewsSync] schedule کردن cron فوری");
+        self::log('🕐 [NewsSync] schedule کردن cron فوری');
         if (!wp_next_scheduled(self::CRON_HOOK)) {
             wp_schedule_single_event(time() + 5, self::CRON_HOOK);
         }
@@ -213,16 +223,14 @@ class NewsSync
        Run Cron - اجرای اصلی sync
        ======================================================================== */
     
-    public static function runCron(): void
+    public static function runCron(): bool
     {
-        error_log('🕐 [NewsSync] Cron شروع شد در ' . current_time('mysql'));
-
         $sync = new self();
 
         try {
             $result = $sync->doSync();
 
-            error_log('✅ [NewsSync] Cron کامل شد: ' . json_encode([
+            self::log('✅ [NewsSync] Cron کامل شد: ' . json_encode([
                 'fetched'    => $result['total_fetched'] ?? 0,
                 'rss'        => $result['fetched_rss'] ?? 0,
                 'api'        => $result['fetched_api'] ?? 0,
@@ -233,8 +241,76 @@ class NewsSync
                 'ai_checks'  => $result['ai_checks'] ?? 0,
                 'ai_used'    => $result['ai_used'] ?? 0,
             ], JSON_UNESCAPED_UNICODE));
+
+            return true;
         } catch (\Throwable $e) {
             error_log('❌ [NewsSync] Cron ناموفق: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function runRetry(): void
+    {
+        if (get_option(self::OPT_AI_ENABLED, '0') !== '1') {
+            return;
+        }
+
+        if ( ! nextsafar_acquire_lock( 'news_retry', 300 ) ) {
+            return; // اجرای همزمان در جریان است
+        }
+
+        try {
+            $maxPub = max(1, (int) get_option(self::OPT_MAX_PUBLISH, 5));
+            $sync   = new self();
+            $n      = $sync->retryPendingRewrites($maxPub);
+            if ($n > 0) {
+                self::log("♻️ [NewsSync] Retry: {$n} خبر بازنویسی و منتشر شد");
+            }
+        } catch (\Throwable $e) {
+            error_log('❌ [NewsSync] Retry failed: ' . $e->getMessage());
+        } finally {
+            nextsafar_release_lock( 'news_retry' );
+        }
+    }
+
+    private static function resolveAuthorId(): int
+    {
+        $uid = get_current_user_id();
+        if ($uid > 0) {
+            return $uid;
+        }
+
+        static $admin = null;
+        if ($admin === null) {
+            $admins = get_users([
+                'role'    => 'administrator',
+                'number'  => 1,
+                'fields'  => 'ID',
+                'orderby' => 'ID',
+                'order'   => 'ASC',
+            ]);
+            $admin = !empty($admins) ? (int) $admins[0] : 0;
+        }
+
+        return $admin;
+    }
+
+    private static function resolvePostDate(string $raw): string
+    {
+        $ts  = $raw ? strtotime($raw) : false;
+        $now = current_time('timestamp');
+
+        if (!$ts || $ts > $now) {
+            return current_time('mysql');
+        }
+
+        return wp_date('Y-m-d H:i:s', $ts);
+    }
+
+    private static function log(string $msg): void
+    {
+        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log($msg);
         }
     }
 
@@ -250,7 +326,7 @@ class NewsSync
         $maxAi = max(0, (int) get_option(self::OPT_MAX_AI_CHECKS, 2));
         $aiOn = get_option(self::OPT_AI_ENABLED, '0') === '1';
 
-        error_log("📋 [NewsSync] Config: window={$window}h, max_pub={$maxPub}, max_draft={$maxDraft}, max_ai={$maxAi}, ai_on=" . ($aiOn ? 'yes' : 'no'));
+        self::log("📋 [NewsSync] Config: window={$window}h, max_pub={$maxPub}, max_draft={$maxDraft}, max_ai={$maxAi}, ai_on=" . ($aiOn ? 'yes' : 'no'));
 
         $stats = [
             'fetched_rss'    => 0,
@@ -277,16 +353,20 @@ class NewsSync
 
         $publishBudget = max(0, $maxPub - $publishedByRetry);
 
-        // تعداد drafts در حال انتظار
-        $pending = get_posts([
-            'post_type'   => self::POST_TYPE,
-            'post_status' => 'draft',
-            'meta_key'    => '_ns_needs_rewrite',
-            'meta_value'  => '1',
-            'numberposts' => -1,
-            'fields'      => 'ids',
-        ]);
-        $draftBudget = max(0, $maxDraft - count($pending));
+        // تعداد drafts در حال انتظار — کوئری محدود (قبلاً numberposts = -1 بود)
+        $pendingCount = 0;
+        if ($maxDraft > 0) {
+            $pending = get_posts([
+                'post_type'   => self::POST_TYPE,
+                'post_status' => 'draft',
+                'meta_key'    => '_ns_needs_rewrite',
+                'meta_value'  => '1',
+                'numberposts' => $maxDraft,
+                'fields'      => 'ids',
+            ]);
+            $pendingCount = count($pending);
+        }
+        $draftBudget = max(0, $maxDraft - $pendingCount);
 
         // ═══ Stage 1: Fetch RSS ═══
         try {
@@ -424,7 +504,7 @@ class NewsSync
             }
         }
 
-        error_log('✅ [NewsSync] Created=' . $stats['created'] . ', Drafts=' . $stats['drafts']);
+        self::log('✅ [NewsSync] Created=' . $stats['created'] . ', Drafts=' . $stats['drafts']);
 
         return $this->buildResult($stats);
     }
@@ -435,12 +515,16 @@ class NewsSync
     
     private function retryPendingRewrites(int $maxPublish): int
     {
+        if ($maxPublish <= 0) {
+            return 0;
+        }
+
         $pending = get_posts([
             'post_type'   => self::POST_TYPE,
             'post_status' => 'draft',
             'meta_key'    => '_ns_needs_rewrite',
             'meta_value'  => '1',
-            'numberposts' => $maxPublish,
+            'numberposts' => min($maxPublish, 20),
             'fields'      => 'ids',
         ]);
 
@@ -451,10 +535,10 @@ class NewsSync
         $published = 0;
 
         foreach ($pending as $postId) {
-            $originalTitle = get_post_meta($postId, '_ns_original_title', true);
+            $originalTitle   = get_post_meta($postId, '_ns_original_title', true);
             $originalContent = get_post_meta($postId, '_ns_original_content', true);
-            $sourceUrl = get_post_meta($postId, '_ns_source_url', true);
-            $sourceName = get_post_meta($postId, '_ns_source_name', true);
+            $sourceUrl       = get_post_meta($postId, '_ns_source_url', true);
+            $sourceName      = get_post_meta($postId, '_ns_source_name', true);
 
             if (empty($originalContent)) {
                 continue;
@@ -469,7 +553,7 @@ class NewsSync
 
             $result = $this->aiRewriter->process($item);
 
-            if ($result['ai_used']) {
+            if (!empty($result['ai_used'])) {
                 wp_update_post([
                     'ID'           => $postId,
                     'post_title'   => $result['title'],
@@ -545,8 +629,8 @@ class NewsSync
             'post_content' => wp_kses_post($content),
             'post_excerpt' => sanitize_textarea_field($excerpt),
             'post_status'  => $postStatus,
-            'post_author'  => 1,
-            'post_date'    => $item['pub_date'] ?? current_time('mysql'),
+            'post_author'  => self::resolveAuthorId(),
+            'post_date'    => self::resolvePostDate($item['pub_date'] ?? ''),
             'post_name'    => $slug,
         ]);
 
@@ -641,79 +725,64 @@ class NewsSync
         global $wpdb;
 
         $stats = [
-            'total_posts'           => 0,
-            'today_posts'           => 0,
-            'total_duplicates'      => 0,
-            'ai_total_cost_usd'     => 0,
-            'ai_total_tokens'       => 0,
-            'ai_total_calls'        => 0,
-            'total_rss_fetched'     => 0,
-            'total_api_fetched'     => 0,
+            'total_posts'       => 0,
+            'today_posts'       => 0,
+            'total_duplicates'  => 0,
+            'ai_total_cost_usd' => 0,
+            'ai_total_tokens'   => 0,
+            'ai_total_calls'    => 0,
+            'total_rss_fetched' => 0,
+            'total_api_fetched' => 0,
         ];
 
-        // Total posts
         $stats['total_posts'] = (int) $wpdb->get_var(
             "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'travelnews'"
         );
 
-        // Today's posts
         $stats['today_posts'] = (int) $wpdb->get_var(
             "SELECT COUNT(*) FROM {$wpdb->posts} WHERE post_type = 'travelnews' AND DATE(post_date) = CURDATE()"
         );
 
-        // Duplicates table
         $dupesTable = $wpdb->prefix . 'ns_news_duplicates';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$dupesTable}'") === $dupesTable) {
-            $stats['total_duplicates'] = (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$dupesTable}"
-            );
+        if (self::tableExists($dupesTable)) {
+            $stats['total_duplicates'] = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$dupesTable}");
         }
 
-        // AI log
         $aiTable = $wpdb->prefix . 'ns_news_ai_log';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$aiTable}'") === $aiTable) {
-            $stats['ai_total_calls'] = (int) $wpdb->get_var(
-                "SELECT COUNT(*) FROM {$aiTable}"
-            );
-            $stats['ai_total_tokens'] = (int) $wpdb->get_var(
-                "SELECT SUM(tokens_used) FROM {$aiTable}"
-            );
-            $stats['ai_total_cost_usd'] = (float) $wpdb->get_var(
-                "SELECT SUM(cost_usd) FROM {$aiTable}"
-            );
+        if (self::tableExists($aiTable)) {
+            $stats['ai_total_calls']    = (int) $wpdb->get_var("SELECT COUNT(*) FROM {$aiTable}");
+            $stats['ai_total_tokens']   = (int) $wpdb->get_var("SELECT SUM(tokens_used) FROM {$aiTable}");
+            $stats['ai_total_cost_usd'] = (float) $wpdb->get_var("SELECT SUM(cost_usd) FROM {$aiTable}");
         }
 
-        // Sources
         $sourcesTable = $wpdb->prefix . 'ns_news_sources';
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$sourcesTable}'") === $sourcesTable) {
-            $rssFetched = (int) $wpdb->get_var(
-                "SELECT SUM(total_fetched) FROM {$sourcesTable} WHERE type = 'rss'"
-            );
-            $apiFetched = (int) $wpdb->get_var(
-                "SELECT SUM(total_fetched) FROM {$sourcesTable} WHERE type = 'api'"
-            );
-            $stats['total_rss_fetched'] = $rssFetched;
-            $stats['total_api_fetched'] = $apiFetched;
+        if (self::tableExists($sourcesTable)) {
+            $stats['total_rss_fetched'] = (int) $wpdb->get_var("SELECT SUM(total_fetched) FROM {$sourcesTable} WHERE type = 'rss'");
+            $stats['total_api_fetched'] = (int) $wpdb->get_var("SELECT SUM(total_fetched) FROM {$sourcesTable} WHERE type = 'api'");
         }
 
         return $stats;
     }
 
-    /**
-     * Get status of all sources
-     */
     public static function getSourcesStats(): array
     {
         global $wpdb;
         $table = $wpdb->prefix . 'ns_news_sources';
-
-        if ($wpdb->get_var("SHOW TABLES LIKE '{$table}'") !== $table) {
+        if (!self::tableExists($table)) {
             return [];
         }
+        return $wpdb->get_results("SELECT * FROM {$table} ORDER BY type, priority DESC", ARRAY_A) ?: [];
+    }
 
-        return $wpdb->get_results(
-            "SELECT * FROM {$table} ORDER BY type, priority DESC",
-            ARRAY_A
-        ) ?: [];
+    /** ✅ وجود جدول یک‌بار per-request چک شود */
+    private static function tableExists(string $table): bool
+    {
+        static $cache = [];
+        if (isset($cache[$table])) {
+            return $cache[$table];
+        }
+        global $wpdb;
+        $cache[$table] = ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) === $table);
+        return $cache[$table];
     }
 }

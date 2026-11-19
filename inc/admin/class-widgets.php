@@ -16,13 +16,20 @@ class NextSafar_Widgets {
     }
 
     public function register_widgets() {
-        $this->widgets = array(
-            'stats_cards'          => new NextSafar_Widget_Stats(),
-            'revenue_chart'        => new NextSafar_Widget_Revenue_Chart(),
-            'recent_content'       => new NextSafar_Widget_Recent_Bookings(),
-            'visa_applications'    => new NextSafar_Widget_Visa_Applications(),
-            'yoast_seo'            => new NextSafar_Widget_Yoast_SEO(),
+        $candidates = array(
+            'stats_cards'       => 'NextSafar_Widget_Stats',
+            'revenue_chart'     => 'NextSafar_Widget_Revenue_Chart',
+            'recent_content'    => 'NextSafar_Widget_Recent_Bookings',
+            'visa_applications' => 'NextSafar_Widget_Visa_Applications',
+            'yoast_seo'         => 'NextSafar_Widget_Yoast_SEO',
         );
+
+        $this->widgets = array();
+        foreach ( $candidates as $id => $class ) {
+            if ( class_exists( $class ) ) {
+                $this->widgets[ $id ] = new $class();
+            }
+        }
 
         $this->widgets = apply_filters( 'nextsafar_dashboard_widgets', $this->widgets );
     }

@@ -171,26 +171,29 @@ if ( $comment_count && isset( $comment_count->moderated ) ) {
     $pending_comments = (int) $comment_count->moderated;
 }
 
-// 🚀 کش شمارنده کامنت‌ها — ۲ دقیقه
 $pending_count_cached = get_transient( 'nextsafar_pending_comments_count' );
 if ( false !== $pending_count_cached ) {
     $pending_comments = (int) $pending_count_cached;
 } else {
+    $pending_comments = 0;
+    $comment_count    = wp_count_comments();
+    if ( $comment_count && isset( $comment_count->moderated ) ) {
+        $pending_comments = (int) $comment_count->moderated;
+    }
     set_transient( 'nextsafar_pending_comments_count', $pending_comments, 2 * MINUTE_IN_SECONDS );
 }
 $pending_count = $pending_comments;
-// شمارنده آپدیت‌ها
-$update_data = wp_get_update_data();
 
-// 🚀 کش شمارنده آپدیت‌ها — ۵ دقیقه
-$pending_updates = get_transient( 'nextsafar_pending_updates_count' );
-if ( false === $pending_updates ) {
+// 🚀 شمارنده آپدیت‌ها — اول کش، بعد محاسبه
+$pending_updates_cached = get_transient( 'nextsafar_pending_updates_count' );
+if ( false !== $pending_updates_cached ) {
+    $pending_updates = (int) $pending_updates_cached;
+} else {
+    $update_data     = wp_get_update_data();
     $pending_updates = isset( $update_data['counts']['total'] ) ? (int) $update_data['counts']['total'] : 0;
     set_transient( 'nextsafar_pending_updates_count', $pending_updates, 5 * MINUTE_IN_SECONDS );
 }
-$pending_updates = (int) $pending_updates;
 
-// ✅ حالا هر دو متغیر تعریف شده‌اند
 $total_notifications = $pending_comments + $pending_updates;
 
 ?>

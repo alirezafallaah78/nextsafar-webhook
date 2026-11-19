@@ -123,92 +123,89 @@ class HotelSync extends BaseSync
         }
     }
 
-// تابع جدید:
-protected function enrichWithPropertyDetails(int $post_id, string $property_token): void
-{
-    // Prevent repeated attempts
-    if (get_post_meta($post_id, '_hotel_property_details_attempted', true)) {
-        return;
-    }
-
-    update_post_meta($post_id, '_hotel_property_details_attempted', '1');
-
-    try {
-        $api_client = new \NextSafar\Api\Clients\SerpApiClient();
-        $details = $api_client->getHotelPropertyDetails($property_token);
-
-        if (empty($details)) {
+    protected function enrichWithPropertyDetails(int $post_id, string $property_token): void
+    {
+        if (get_post_meta($post_id, '_hotel_property_details_attempted', true)) {
             return;
         }
 
-        // Check-in instructions
-        if (!empty($details['checkin_instructions'])) {
-            $existing = get_post_meta($post_id, '_hotel_dis_checkin', true);
-            if (empty($existing)) {
-                update_post_meta($post_id, '_hotel_dis_checkin', wp_kses_post($details['checkin_instructions']));
-            }
+        // ✅ این قابلیت مخصوص SerpApi است؛ کلید SerpApi را جداگانه بخوان.
+        $serpapi_key = (string) get_option('nextsafar_serpapi_key', '');
+        if ($serpapi_key === '') {
+            // بدون کلید، پرچم attempted را ست نکن تا بعداً (پس از تنظیم کلید) دوباره تلاش شود.
+            return;
         }
 
-        // Check-out instructions
-        if (!empty($details['checkout_instructions'])) {
-            $existing = get_post_meta($post_id, '_hotel_dis_checkout', true);
-            if (empty($existing)) {
-                update_post_meta($post_id, '_hotel_dis_checkout', wp_kses_post($details['checkout_instructions']));
-            }
-        }
+        try {
+            $api_client = new \NextSafar\Api\Clients\SerpApiClient($serpapi_key);
+            $details    = $api_client->getHotelPropertyDetails($property_token);
 
-        // Optional fees
-        if (!empty($details['optional_fees'])) {
-            $existing = get_post_meta($post_id, '_hotel_dis_expenses', true);
-            if (empty($existing)) {
-                $fees_text = '';
-                foreach ($details['optional_fees'] as $fee) {
-                    $fees_text .= "- {$fee['name']}: {$fee['price']}\n";
+            if (empty($details)) {
+                return; // نتیجه خالی = بعداً دوباره تلاش شود
+            }
+
+            if (!empty($details['checkin_instructions'])) {
+                $existing = get_post_meta($post_id, '_hotel_dis_checkin', true);
+                if (empty($existing)) {
+                    update_post_meta($post_id, '_hotel_dis_checkin', wp_kses_post($details['checkin_instructions']));
                 }
-                update_post_meta($post_id, '_hotel_dis_expenses', wp_kses_post($fees_text));
             }
-        }
 
-        // House rules (includes pet policy, age restriction, etc.)
-        if (!empty($details['house_rules'])) {
-            $rules_text = implode("\n", $details['house_rules']);
-            
-            // Detect pet rules
-            $pet_keywords = ['pet', 'animal', 'dog', 'cat'];
-            foreach ($details['house_rules'] as $rule) {
-                $rule_lower = strtolower($rule);
-                foreach ($pet_keywords as $keyword) {
-                    if (strpos($rule_lower, $keyword) !== false) {
-                        update_post_meta($post_id, '_hotel_Pets_rouls', wp_kses_post($rule));
-                        break 2;
+            if (!empty($details['checkout_instructions'])) {
+                $existing = get_post_meta($post_id, '_hotel_dis_checkout', true);
+                if (empty($existing)) {
+                    update_post_meta($post_id, '_hotel_dis_checkout', wp_kses_post($details['checkout_instructions']));
+                }
+            }
+
+            if (!empty($details['optional_fees'])) {
+                $existing = get_post_meta($post_id, '_hotel_dis_expenses', true);
+                if (empty($existing)) {
+                    $fees_text = '';
+                    foreach ($details['optional_fees'] as $fee) {
+                        $fees_text .= "- {$fee['name']}: {$fee['price']}\n";
+                    }
+                    update_post_meta($post_id, '_hotel_dis_expenses', wp_kses_post($fees_text));
+                }
+            }
+
+            if (!empty($details['house_rules'])) {
+                $rules_text = implode("\n", $details['house_rules']);
+                update_post_meta($post_id, '_hotel_no_age_restriction', wp_kses_post($rules_text));
+
+                $pet_keywords = ['pet', 'animal', 'dog', 'cat'];
+                foreach ($details['house_rules'] as $rule) {
+                    $rule_lower = strtolower($rule);
+                    foreach ($pet_keywords as $keyword) {
+                        if (strpos($rule_lower, $keyword) !== false) {
+                            update_post_meta($post_id, '_hotel_Pets_rouls', wp_kses_post($rule));
+                            break 2;
+                        }
                     }
                 }
             }
-        }
 
-        // Property description (use as content if empty)
-        if (!empty($details['property_description'])) {
-            $current = get_post($post_id);
-            if ($current && empty($current->post_content)) {
-                wp_update_post([
-                    'ID'           => $post_id,
-                    'post_content' => wp_kses_post($details['property_description']),
-                ]);
+            if (!empty($details['property_description'])) {
+                $current = get_post($post_id);
+                if ($current && empty($current->post_content)) {
+                    wp_update_post([
+                        'ID'           => $post_id,
+                        'post_content' => wp_kses_post($details['property_description']),
+                    ]);
+                }
             }
+
+            if (!empty($details['images'])) {
+                \NextSafar\Api\Services\ImageManager::fillGallery($post_id, $details['images'], '_hotel_gallery', 20);
+            }
+
+            // ✅ پرچم فقط پس از موفقیت واقعی ست می‌شود (قبلاً قبل از تلاش ست می‌شد و برای همیشه قفل می‌کرد)
+            update_post_meta($post_id, '_hotel_property_details_attempted', '1');
+
+        } catch (\Throwable $e) {
+            error_log("⚠️ [HotelSync] Property details failed: " . $e->getMessage());
         }
-
-        // Additional images for gallery
-        if (!empty($details['images'])) {
-            \NextSafar\Api\Services\ImageManager::fillGallery($post_id, $details['images'], '_hotel_gallery', 20);
-        }
-
-        error_log("✅ [HotelSync] Property details enriched for #{$post_id}");
-
-    } catch (\Throwable $e) {
-        error_log("⚠️ [HotelSync] Property details failed: " . $e->getMessage());
     }
-}
-
 
     /**
      * Extract minutes from duration string like "7 min", "1 hr 30 min"

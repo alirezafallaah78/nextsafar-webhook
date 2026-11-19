@@ -66,7 +66,6 @@ require NEXTSAFAR_PATH . 'inc/admin/layout/sidebar.php';
 
         <div class="nextsafar-panel nextsafar-posts-panel">
 
-            <!-- 🎯 هدر یک‌خطی: جستجو | وضعیت | عملیات گروهی | اعمال | برگه جدید -->
             <div class="nextsafar-posts-toolbar ns-posts-toolbar">
                 <form method="get" action="<?php echo esc_url( admin_url( 'admin.php' ) ); ?>" id="ns-posts-filters">
                     <input type="hidden" name="page" value="nextsafar-pages">

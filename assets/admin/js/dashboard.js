@@ -10,14 +10,16 @@
   const NONCE = nextsafarAdmin.dashboardNonce;
 
   async function ensureChartJs() {
-    if (typeof Chart !== "undefined") return true;
-    return new Promise((resolve, reject) => {
-      const script = document.createElement("script");
-      script.src = "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => reject(new Error("Chart.js از CDN بارگذاری نشد"));
-      document.head.appendChild(script);
-    });
+      if (typeof Chart !== "undefined") return true;
+      const url = (window.nextsafarChart && window.nextsafarChart.url)
+          || "https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js";
+      return new Promise((resolve, reject) => {
+          const script = document.createElement("script");
+          script.src = url;
+          script.onload = () => resolve(true);
+          script.onerror = () => reject(new Error("Chart.js بارگذاری نشد"));
+          document.head.appendChild(script);
+      });
   }
 
   function loadWidget(widgetId, action, params = {}) {
@@ -32,7 +34,7 @@
     formData.append("action", action);
     formData.append("nonce", NONCE);
     for (const [key, value] of Object.entries(params)) formData.append(key, value);
-    fetch(AJAX_URL, { method: "POST", body: formData })
+    nsFetch(AJAX_URL, { method: "POST", body: formData })
       .then((r) => r.json())
       .then((data) => {
         if (data.success && data.data?.html) container.innerHTML = data.data.html;
@@ -140,7 +142,7 @@
     fd.append("nonce", NONCE);
     fd.append("year", jYear);
     try {
-      const res = await fetch(AJAX_URL, { method: "POST", body: fd });
+      const res = await nsFetch(AJAX_URL, { method: "POST", body: fd });
       const data = await res.json();
       if (data.success && data.data?.holidays) calState.holidays[jYear] = data.data.holidays;
     } catch (e) { /* offline: calendar still works without holidays */ }
@@ -356,18 +358,16 @@
   }
 
   async function loadSearchConsoleData(range = "28d") {
+    const container = document.getElementById("gsc-chart-container");
+    if (!container) return;
+
     const formData = new FormData();
     formData.append("action", "nextsafar_get_search_console_data");
     formData.append("nonce", NONCE);
     formData.append("date_range", range);
-
-    const container = document.getElementById("gsc-chart-container");
-    if (container) {
-      container.innerHTML = '<div class="widget-loading"><div class="loading-spinner"></div><span>در حال دریافت از Google Search Console...</span></div>';
-    }
-
+    container.innerHTML = '<div class="widget-loading"><div class="loading-spinner"></div><span>در حال دریافت از Google Search Console...</span></div>';
     try {
-      const response = await fetch(AJAX_URL, { method: "POST", body: formData });
+      const response = await nsFetch(AJAX_URL, { method: "POST", body: formData });
       const data = await response.json();
 
       if (data.success && data.data?.data) {
@@ -456,6 +456,15 @@
     }
   }
 
+  function nsFetch(url, opts, ms) {
+      ms = ms || 15000;
+      if (typeof AbortController === "undefined") return fetch(url, opts);
+      const ctrl = new AbortController();
+      const t = setTimeout(function () { ctrl.abort(); }, ms);
+      return fetch(url, Object.assign({}, opts, { signal: ctrl.signal }))
+          .finally(function () { clearTimeout(t); });
+  }
+
   function getJalaliMonthShort(month) {
     const months = ["","فرو","ارد","خرد","تیر","مرد","شهر","مهر","آبا","آذر","دی","بهم","اسف"];
     return months[month] || "";
@@ -465,6 +474,9 @@
      Initialize
   ============================================================ */
   document.addEventListener("DOMContentLoaded", function () {
+    if (window.__nextsafarDashboardInit) return;
+    window.__nextsafarDashboardInit = true;
+
     initCalendar();
     initSearchConsoleTabs();
     loadSearchConsoleData("28d");

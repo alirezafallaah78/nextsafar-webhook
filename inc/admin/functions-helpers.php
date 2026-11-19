@@ -126,3 +126,46 @@ if ( ! function_exists( 'nextsafar_user_can_menu' ) ) {
         return (bool) $core->role_access->user_can_access_menu( $slug );
     }
 }
+
+if ( ! function_exists( 'nextsafar_acquire_lock' ) ) {
+    /**
+     * 🔒 قفل اتمیک وردپرس.
+     * add_option() اتمیک است: اگر option از قبل وجود داشته باشد false برمی‌گرداند.
+     * (وردپرس تابع add_transient ندارد.)
+     */
+    function nextsafar_acquire_lock( $key, $ttl = 300 ) {
+        $option = 'nextsafar_lock_' . sanitize_key( $key );
+        $ttl    = max( 10, (int) $ttl );
+
+        $existing = get_option( $option, false );
+        if ( false !== $existing ) {
+            $expires = ( is_array( $existing ) && isset( $existing['expires'] ) ) ? (int) $existing['expires'] : 0;
+            if ( $expires > 0 && $expires < time() ) {
+                delete_option( $option ); // قفل منقضی‌شده را بردار
+            }
+        }
+
+        return (bool) add_option( $option, array( 'expires' => time() + $ttl ), '', 'no' );
+    }
+}
+
+if ( ! function_exists( 'nextsafar_release_lock' ) ) {
+    function nextsafar_release_lock( $key ) {
+        delete_option( 'nextsafar_lock_' . sanitize_key( $key ) );
+    }
+}
+
+if ( ! function_exists( 'nextsafar_refresh_lock' ) ) {
+    /**
+     * تمدید قفل (heartbeat) — برای عملیات چندمرحله‌ای که ممکن است طول بکشند.
+     */
+    function nextsafar_refresh_lock( $key, $ttl = 300 ) {
+        $option = 'nextsafar_lock_' . sanitize_key( $key );
+        $ttl    = max( 10, (int) $ttl );
+        if ( false === get_option( $option, false ) ) {
+            return false;
+        }
+        update_option( $option, array( 'expires' => time() + $ttl ), false );
+        return true;
+    }
+}

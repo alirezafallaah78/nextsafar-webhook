@@ -3,9 +3,9 @@
  * BatchSync — Orchestrates batch processing of sync operations
  *
  * Features:
- * - Prevents concurrent sync (with stale lock detection)
+ * - Atomic lock (prevents concurrent sync)
  * - AJAX-based batch processing (prevents PHP timeout)
- * - Progress tracking via WordPress options
+ * - Lightweight progress state (payloads stored per-item)
  * - Detailed logging to database table
  * - Support for all 5 post types
  *
@@ -24,90 +24,75 @@ class BatchSync
     public const BATCH_SIZE = 2;
     public const SYNC_STATE_KEY = 'nextsafar_sync_state';
     public const LOCK_TTL = 1800; // 30 minutes
-    public const STALE_LOCK_AGE = 900; // 15 minutes
+    public const STALE_LOCK_AGE = 900; // 15 minutes (برای سازگاری نگه داشته شده)
+    public const ITEM_TTL = 7200; // 2 hours — عمر payload هر آیتم
 
     /* ========================================================================
        Start Sync
-       ======================================================================== */
+    ======================================================================== */
 
-    /**
-     * Start a new sync operation
-     *
-     * @param string $sync_type   Post type (hotel, destination, restaurant, hospital, airport)
-     * @param string $location    Location to search
-     * @param string $source      Provider (serpapi, searchapi)
-     * @param int    $total_limit Max items to sync (1-10)
-     * @return array Result with success status and metadata
-     */
     public static function startSync(string $sync_type, string $location, string $source, int $total_limit): array
     {
         $lock_key = 'ns_sync_lock_' . $sync_type;
 
-        // Handle stale locks
-        $lock_time = get_transient($lock_key);
-        if ($lock_time !== false) {
-            $age = time() - (int) $lock_time;
-
-            if ($age > self::STALE_LOCK_AGE) {
-                error_log("🔓 [BatchSync] Stale lock cleared: {$lock_key} (age {$age}s)");
-                delete_transient($lock_key);
-            } else {
-                return [
-                    'success' => false,
-                    'message' => 'یک سینک از این نوع در حال اجرا است. لطفاً صبر کنید.',
-                ];
-            }
+        // ✅ قفل اتمیک — قفل منقضی‌شده خودکار آزاد می‌شود
+        if (!nextsafar_acquire_lock($lock_key, self::LOCK_TTL)) {
+            return [
+                'success' => false,
+                'message' => 'یک سینک از این نوع در حال اجرا است. لطفاً صبر کنید.',
+            ];
         }
-
-        // Set new lock
-        set_transient($lock_key, time(), self::LOCK_TTL);
 
         // Release lock on fatal error
         register_shutdown_function(function () use ($lock_key) {
             $err = error_get_last();
             if ($err && in_array($err['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR], true)) {
-                delete_transient($lock_key);
+                nextsafar_release_lock($lock_key);
                 error_log("🔓 [BatchSync] Lock released after fatal: {$lock_key}");
             }
         });
 
-        // Validate sync type
         $allowed_types = ['hotel', 'destination', 'restaurant', 'hospital', 'airport'];
         if (!in_array($sync_type, $allowed_types, true)) {
-            delete_transient($lock_key);
+            nextsafar_release_lock($lock_key);
             return ['success' => false, 'message' => 'نوع محتوا معتبر نیست'];
         }
 
-        // Get client and fetch items
         $client = self::getClient($source);
         if (!$client) {
-            delete_transient($lock_key);
-            return ['success' => false, 'message' => 'کلاینت معتبر نیست'];
+            nextsafar_release_lock($lock_key);
+            return ['success' => false, 'message' => 'کلید API تنظیم نشده است'];
         }
 
         try {
             $all_items = self::fetchAllItems($sync_type, $client, $location, min(10, max(1, $total_limit)));
         } catch (\Throwable $e) {
-            delete_transient($lock_key);
+            nextsafar_release_lock($lock_key);
             return ['success' => false, 'message' => 'خطا در دریافت لیست: ' . $e->getMessage()];
         }
 
         if (is_wp_error($all_items)) {
-            delete_transient($lock_key);
+            nextsafar_release_lock($lock_key);
             return ['success' => false, 'message' => $all_items->get_error_message()];
         }
 
         if (empty($all_items)) {
-            delete_transient($lock_key);
+            nextsafar_release_lock($lock_key);
             return ['success' => false, 'message' => 'هیچ آیتمی یافت نشد'];
         }
 
-        // Save state
+        // ✅ payload سنگین هر آیتم جداگانه ذخیره می‌شود (نه داخل state)
+        $all_items = array_values($all_items);
+        $run_id    = self::makeRunId();
+        foreach ($all_items as $i => $item) {
+            set_transient(self::itemKey($run_id, $i), $item, self::ITEM_TTL);
+        }
+
         $state = [
+            'run_id'        => $run_id,
             'sync_type'     => $sync_type,
             'source'        => $source,
             'location'      => $location,
-            'all_items'     => $all_items,
             'total'         => count($all_items),
             'processed'     => 0,
             'created'       => 0,
@@ -118,7 +103,6 @@ class BatchSync
             'started_at'    => current_time('mysql'),
             'lock_key'      => $lock_key,
         ];
-
         update_option(self::SYNC_STATE_KEY, $state, false);
 
         self::logSyncStart($sync_type, $source, count($all_items));
@@ -133,47 +117,63 @@ class BatchSync
 
     /* ========================================================================
        Process Next Batch
-       ======================================================================== */
+    ======================================================================== */
 
-    /**
-     * Process next batch of items
-     */
     public static function processNextBatch(): array
     {
         $state = get_option(self::SYNC_STATE_KEY);
-
         if (!$state || ($state['status'] ?? '') !== 'running') {
-            if (!empty($state['lock_key'] ?? '')) {
-                delete_transient($state['lock_key']);
+            if (!empty($state['lock_key'])) {
+                nextsafar_release_lock($state['lock_key']);
             }
             return ['completed' => true, 'message' => 'سینک فعالی وجود ندارد'];
         }
 
-        $total = $state['total'];
-        $current_batch = $state['current_batch'];
-        $batch_start = $current_batch * self::BATCH_SIZE;
+        // ✅ تمدید قفل در هر مرحله
+        if (!empty($state['lock_key'])) {
+            nextsafar_refresh_lock($state['lock_key'], self::LOCK_TTL);
+        }
 
-        $items_to_process = array_slice($state['all_items'], $batch_start, self::BATCH_SIZE);
+        $total         = (int) $state['total'];
+        $current_batch = (int) $state['current_batch'];
+        $batch_start   = $current_batch * self::BATCH_SIZE;
 
-        if (empty($items_to_process)) {
+        if ($batch_start >= $total) {
             return self::finishSync($state);
         }
 
+        $batch_end     = min($batch_start + self::BATCH_SIZE, $total);
+        $run_id        = $state['run_id'] ?? '';
         $sync_instance = self::getSyncInstance($state['sync_type'], $state['source']);
         $batch_details = [];
 
-        foreach ($items_to_process as $index => $item) {
-            $item_name = $item['name'] ?? $item['title'] ?? 'Item ' . ($batch_start + $index + 1);
+        // ✅ فقط آیتم‌های همین batch خوانده می‌شوند
+        for ($i = $batch_start; $i < $batch_end; $i++) {
+            $item = $run_id ? get_transient(self::itemKey($run_id, $i)) : false;
+            if (false === $item && isset($state['all_items'][$i])) {
+                $item = $state['all_items'][$i]; // سازگاری با state قدیمی
+            }
 
+            if (!is_array($item) || empty($item)) {
+                $state['failed']++;
+                $batch_details[] = [
+                    'index'  => $i + 1,
+                    'name'   => '—',
+                    'status' => 'failed',
+                    'error'  => 'آیتم منقضی شده است',
+                ];
+                continue;
+            }
+
+            $item_name = $item['name'] ?? $item['title'] ?? ('Item ' . ($i + 1));
             $detail = [
-                'index'  => $batch_start + $index + 1,
+                'index'  => $i + 1,
                 'name'   => mb_substr($item_name, 0, 40),
                 'status' => 'processing',
             ];
 
             try {
                 $result = $sync_instance->save($item);
-
                 if ($result === 'created') {
                     $state['created']++;
                     $detail['status'] = 'created';
@@ -187,21 +187,23 @@ class BatchSync
             } catch (\Throwable $e) {
                 $state['failed']++;
                 $detail['status'] = 'failed';
-                $detail['error'] = $e->getMessage();
-                error_log("❌ [BatchSync] Error: " . $e->getMessage());
+                $detail['error']  = $e->getMessage();
+                error_log('❌ [BatchSync] Error: ' . $e->getMessage());
+            }
+
+            if ($run_id) {
+                delete_transient(self::itemKey($run_id, $i)); // ✅ آیتم مصرف‌شده پاک شود
             }
 
             $batch_details[] = $detail;
         }
 
-        $batch_end = $batch_start + count($items_to_process);
-        $state['processed'] = $batch_end;
-        $state['current_batch']++;
-
+        $state['processed']     = $batch_end;
+        $state['current_batch'] = $current_batch + 1;
+        unset($state['all_items']);
         update_option(self::SYNC_STATE_KEY, $state, false);
 
         $is_completed = $batch_end >= $total;
-
         if ($is_completed) {
             self::finishSync($state);
         }
@@ -223,18 +225,19 @@ class BatchSync
 
     /* ========================================================================
        Finish Sync
-       ======================================================================== */
+    ======================================================================== */
 
     protected static function finishSync(array $state): array
     {
-        $state['status'] = 'completed';
+        $state['status']       = 'completed';
         $state['completed_at'] = current_time('mysql');
-
+        unset($state['all_items']);
         update_option(self::SYNC_STATE_KEY, $state, false);
+
         self::logSyncComplete($state);
 
         if (!empty($state['lock_key'])) {
-            delete_transient($state['lock_key']);
+            nextsafar_release_lock($state['lock_key']);
         }
 
         return [
@@ -253,25 +256,18 @@ class BatchSync
 
     /* ========================================================================
        Factory Methods
-       ======================================================================== */
+    ======================================================================== */
 
-    /**
-     * Get API client based on source
-     */
     protected static function getClient(string $source): ?object
     {
         if ($source === 'serpapi') {
             $key = (string) get_option('nextsafar_serpapi_key', '');
-            return new \NextSafar\Api\Clients\SerpApiClient($key);
+            return $key !== '' ? new \NextSafar\Api\Clients\SerpApiClient($key) : null;
         }
-
         $key = (string) get_option('nextsafar_searchapi_key', '');
-        return new \NextSafar\Api\Clients\SearchApiClient($key);
+        return $key !== '' ? new \NextSafar\Api\Clients\SearchApiClient($key) : null;
     }
 
-    /**
-     * Get sync instance for a post type
-     */
     protected static function getSyncInstance(string $sync_type, string $source): object
     {
         return match ($sync_type) {
@@ -283,9 +279,6 @@ class BatchSync
         };
     }
 
-    /**
-     * Fetch all items from API
-     */
     protected static function fetchAllItems(string $sync_type, object $client, string $location, int $limit): array|\WP_Error
     {
         $options = ['limit' => $limit];
@@ -301,17 +294,30 @@ class BatchSync
     }
 
     /* ========================================================================
+       Helpers
+    ======================================================================== */
+
+    protected static function makeRunId(): string
+    {
+        return time() . '_' . wp_rand(1000, 9999);
+    }
+
+    protected static function itemKey(string $run_id, int $index): string
+    {
+        return 'ns_si_' . $run_id . '_' . $index;
+    }
+
+    /* ========================================================================
        Logging
-       ======================================================================== */
+    ======================================================================== */
 
     protected static function logSyncStart(string $sync_type, string $source, int $total): void
     {
         global $wpdb;
-
         $table = $wpdb->prefix . 'api_sync_log';
 
         if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table)) !== $table) {
-            return; // Table doesn't exist yet
+            return;
         }
 
         $wpdb->insert($table, [
@@ -326,8 +332,8 @@ class BatchSync
     protected static function logSyncComplete(array $state): void
     {
         global $wpdb;
-
         $table = $wpdb->prefix . 'api_sync_log';
+
         if ($wpdb->get_var($wpdb->prepare("SHOW TABLES LIKE %s", $table)) !== $table) {
             return;
         }

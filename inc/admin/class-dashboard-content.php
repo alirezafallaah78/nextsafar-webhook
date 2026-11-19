@@ -44,11 +44,59 @@ class NextSafar_Dashboard_Content {
     }
 
     public static function flush() {
+        static $done = false;
+        if ( $done ) {
+            return; // یک‌بار per-request (maybe_flush + flush_on_transition دوبل صدا می‌زدند)
+        }
+        $done = true;
+
         foreach ( self::CACHE_KEYS as $key ) {
             delete_transient( self::CACHE_PREFIX . $key );
         }
     }
 
+        /* =====================================================================
+       رجیستری ویجت‌های واقعی داشبورد + تنظیمات نمایش (Screen Options)
+    ===================================================================== */
+
+    public static function widget_registry() {
+        return array(
+            'kpis'              => 'کارت‌های شاخص (KPI)',
+            'gsc_chart'         => 'نمودار عملکرد جستجو',
+            'yoast_seo'         => 'وضعیت SEO سایت',
+            'pipeline'          => 'پایپلاین محتوا',
+            'seo_tasks'         => 'کارهای سئو',
+            'gsc_opportunities' => 'فرصت‌های سئو',
+            'coverage'          => 'پوشش مقاصد',
+            'orphaned'          => 'محتوای یتیم',
+            'media'             => 'سلامت رسانه',
+            'comments'          => 'جدیدترین کامنت‌ها',
+            'news'              => 'صف خبرها',
+            'geo'               => 'کامل بودن داده هتل‌ها',
+            'weather'           => 'آب و هوای مقاصد',
+            'calendar'          => 'تقویم',
+            'scheduled'         => 'انتشارهای زمان‌بندی‌شده',
+            'stale'             => 'محتوای کهنه',
+            'admin_logins'      => 'آخرین ورود ادمین‌ها',
+        );
+    }
+
+    public static function widget_settings() {
+        $settings = get_user_meta( get_current_user_id(), 'nextsafar_dashboard_widgets', true );
+        return is_array( $settings ) ? $settings : array();
+    }
+
+    public static function is_enabled( $widget_id ) {
+        $settings = self::widget_settings();
+        if ( ! isset( $settings[ $widget_id ] ) ) {
+            return true; // پیش‌فرض: فعال
+        }
+        if ( ! isset( $settings[ $widget_id ]['enabled'] ) ) {
+            return true;
+        }
+        return (bool) $settings[ $widget_id ]['enabled'];
+    }
+    
     /* =====================================================================
        Helpers
     ===================================================================== */

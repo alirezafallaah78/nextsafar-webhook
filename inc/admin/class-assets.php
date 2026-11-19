@@ -393,13 +393,23 @@ public function enqueue_assets($hook) {
     }
 
     if ('toplevel_page_nextsafar-admin' === $hook) {
+
+        // ✅ Chart.js لوکال — اگر فایل هنوز اضافه نشده، موقتاً CDN (fallback)
+        $chart_local = NEXTSAFAR_PATH . 'assets/admin/js/vendor/chart.umd.min.js';
+        $chart_url   = file_exists($chart_local)
+            ? NEXTSAFAR_URL . 'assets/admin/js/vendor/chart.umd.min.js'
+            : 'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js';
+
         wp_enqueue_script(
             'chartjs',
-            'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
+            $chart_url,
             array(),
             '4.4.1',
             true
         );
+
+        // آدرس Chart.js را به JS بده تا fallback داخلی هم لوکال باشد
+        wp_localize_script('chartjs', 'nextsafarChart', array('url' => $chart_url));
 
         wp_enqueue_script('common');
         wp_enqueue_script('wp-lists');

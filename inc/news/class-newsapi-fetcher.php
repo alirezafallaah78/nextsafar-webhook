@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 
 class NewsApiFetcher
 {
-    private int $timeout = 30;
+    private int $timeout = 12;
 
     /* ========================================================================
        fetchAll — دریافت از همه API ها
@@ -136,7 +136,8 @@ class NewsApiFetcher
 
         $response = wp_remote_get($url, [
             'timeout'   => $this->timeout,
-            'sslverify' => false,
+            'limit_response_size' => 1048576,
+            'sslverify' => true,
         ]);
 
         if (is_wp_error($response)) {
@@ -220,7 +221,8 @@ class NewsApiFetcher
 
         $response = wp_remote_get($url, [
             'timeout'   => $this->timeout,
-            'sslverify' => false,
+            'limit_response_size' => 1048576,
+            'sslverify' => true,
         ]);
 
         if (is_wp_error($response)) {
@@ -302,7 +304,8 @@ class NewsApiFetcher
 
         $response = wp_remote_get($url, [
             'timeout'   => $this->timeout,
-            'sslverify' => false,
+            'limit_response_size' => 1048576,
+            'sslverify' => true,
         ]);
 
         if (is_wp_error($response)) {
@@ -335,7 +338,8 @@ class NewsApiFetcher
 
         $response = wp_remote_get($url, [
             'timeout'   => $this->timeout,
-            'sslverify' => false,
+            'limit_response_size' => 1048576,
+            'sslverify' => true,
         ]);
 
         if (is_wp_error($response)) {
@@ -355,6 +359,37 @@ class NewsApiFetcher
         return $this->parseCurrentsResponse($data['news']);
     }
 
+        /**
+     * ✅ لیست پروایدرهای API (برای دریافت تک‌منبعی)
+     */
+    public function getProviders(): array
+    {
+        return [
+            ['key' => 'gnews',    'name' => 'GNews.io',     'has_key' => (string) get_option('nextsafar_gnews_api_key', '') !== ''],
+            ['key' => 'newsdata', 'name' => 'NewsData.io',  'has_key' => (string) get_option('nextsafar_newsdata_api_key', '') !== ''],
+            ['key' => 'currents', 'name' => 'Currents API', 'has_key' => (string) get_option('nextsafar_currents_api_key', '') !== ''],
+        ];
+    }
+
+    /**
+     * ✅ دریافت فقط یک پروایدر — هر درخواست حداکثر ~۲۴ ثانیه (۲ زبان)
+     */
+    public function fetchProvider(string $key): array
+    {
+        switch ($key) {
+            case 'gnews':
+                $items = $this->fetchGNews();
+                return ['name' => 'GNews.io', 'items' => $items];
+            case 'newsdata':
+                $items = $this->fetchNewsData();
+                return ['name' => 'NewsData.io', 'items' => $items];
+            case 'currents':
+                $items = $this->fetchCurrents();
+                return ['name' => 'Currents API', 'items' => $items];
+        }
+        return ['name' => $key, 'items' => []];
+    }
+    
     private function filterCurrentsTravelNews(array $news): array
     {
         $travelKeywords = [

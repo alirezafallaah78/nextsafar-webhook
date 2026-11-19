@@ -24,7 +24,7 @@ if (!defined('ABSPATH')) {
 
 class RSSFetcher
 {
-    private int $timeout = 20;
+    private int $timeout = 12;
     private string $userAgent;
     private int $cutoffTs = 0;
 
@@ -113,9 +113,11 @@ class RSSFetcher
         $items = [];
 
         $response = wp_remote_get($url, [
-            'timeout'    => $this->timeout,
-            'user-agent' => $this->userAgent,
-            'headers'    => [
+            'timeout'             => $this->timeout,
+            'redirection'         => 3,
+            'limit_response_size' => 1048576, 
+            'user-agent'          => $this->userAgent,
+            'headers'             => [
                 'Accept'          => 'application/rss+xml, application/xml, text/xml, */*',
                 'Accept-Language' => 'en-US,en;q=0.9,fa;q=0.8',
             ],
@@ -157,7 +159,13 @@ class RSSFetcher
             throw new \Exception('Parse error: ' . $feed->error());
         }
 
+        $maxItems = 25;
+        $taken    = 0;
+
         foreach ($feed->get_items() as $item) {
+            if ($taken >= $maxItems) {
+                break;
+            }
             $pubDate = $item->get_date('Y-m-d H:i:s');
 
             // فیلتر زمانی
@@ -166,7 +174,7 @@ class RSSFetcher
             }
 
             $content = $item->get_content();
-
+            $taken++;
             $items[] = [
                 'title'        => $this->cleanText($item->get_title()),
                 'content'      => $this->cleanHtml($content),
@@ -186,6 +194,64 @@ class RSSFetcher
         return $items;
     }
 
+        /**
+     * ✅ لیست فیدهای فعال (برای دریافت تک‌منبعی)
+     */
+    public function getSources(): array
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . 'ns_news_sources';
+        if ($wpdb->get_var($wpdb->prepare('SHOW TABLES LIKE %s', $table)) !== $table) {
+            return [];
+        }
+        $rows = $wpdb->get_results(
+            "SELECT id, name, url FROM {$table} WHERE type = 'rss' AND is_active = 1 ORDER BY priority DESC",
+            ARRAY_A
+        );
+        return is_array($rows) ? $rows : [];
+    }
+
+    /**
+     * ✅ دریافت فقط یک فید — هر درخواست حداکثر ~۱۲ ثانیه
+     */
+    public function fetchSourceById(int $id, int $maxAgeHours = 12): array
+    {
+        global $wpdb;
+        $table = $wpdb->prefix . 'ns_news_sources';
+
+        $feed = $wpdb->get_row($wpdb->prepare(
+            "SELECT * FROM {$table} WHERE id = %d AND type = 'rss' LIMIT 1",
+            $id
+        ));
+        if (!$feed) {
+            return ['name' => '—', 'items' => [], 'error' => 'منبع یافت نشد'];
+        }
+
+        $this->cutoffTs = time() - max(1, $maxAgeHours) * HOUR_IN_SECONDS;
+
+        try {
+            RateLimiter::waitIfNeeded('rss', 1.0);
+            $items = $this->fetchFeed($feed->url, $feed->name);
+
+            $wpdb->update($table, [
+                'last_fetch'    => current_time('mysql'),
+                'last_success'  => current_time('mysql'),
+                'total_fetched' => (int) $feed->total_fetched + count($items),
+                'error_message' => null,
+            ], ['id' => $feed->id]);
+
+            return ['name' => $feed->name, 'items' => $items, 'error' => null];
+        } catch (\Throwable $e) {
+            $wpdb->update($table, [
+                'last_fetch'    => current_time('mysql'),
+                'error_message' => mb_substr($e->getMessage(), 0, 500),
+            ], ['id' => $feed->id]);
+
+            error_log("❌ [RSSFetcher] {$feed->name}: " . $e->getMessage());
+            return ['name' => $feed->name, 'items' => [], 'error' => $e->getMessage()];
+        }
+    }
+    
     /* ========================================================================
        Helper Methods
        ======================================================================== */

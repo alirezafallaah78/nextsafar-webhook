@@ -208,11 +208,10 @@ class PostSync
     
     public static function assets($hook): void
     {
-        $screen = function_exists('get_current_screen') ? get_current_screen() : null;
-        
+        $screen       = function_exists('get_current_screen') ? get_current_screen() : null;
         $isPostScreen = $screen && in_array($screen->post_type ?? '', self::TYPES, true);
         $isBulkScreen = ($hook === 'tools_page_ns-bulk-sync');
-        
+
         if (!$isPostScreen && !$isBulkScreen) {
             return;
         }
@@ -225,14 +224,10 @@ class PostSync
             true
         );
 
-        // ✅ استفاده از URL با پورت صحیح (برای Local by Flywheel)
-        $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
-        $ajax_url = $protocol . '://' . $host . '/wp-admin/admin-ajax.php';
-
+        // ✅ admin_url به‌جای ساخت دستی از HTTP_HOST (رفع Host Header Injection)
         wp_localize_script('ns-post-sync', 'NS_SYNC', [
             'nonce'   => wp_create_nonce('ns_post_sync'),
-            'ajaxUrl' => $ajax_url,
+            'ajaxUrl' => admin_url('admin-ajax.php'),
         ]);
     }
 
@@ -249,6 +244,9 @@ class PostSync
         }
 
         $post_id = (int) ($_POST['post_id'] ?? 0);
+        if (!current_user_can('edit_post', $post_id)) {
+            wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
+        }
         $query = sanitize_text_field($_POST['query'] ?? '');
         $post = get_post($post_id);
 
@@ -316,19 +314,13 @@ class PostSync
     {
         check_ajax_referer('ns_post_sync', 'nonce');
 
-        if (!current_user_can('edit_posts')) {
+        $post_id = (int) ($_POST['post_id'] ?? 0);
+        if (!current_user_can('edit_post', $post_id)) {
             wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
         }
 
-        // ✅ افزایش timeout برای عملیات سنگین
         @set_time_limit(120);
         @ini_set('max_execution_time', 120);
-
-        $post_id = (int) ($_POST['post_id'] ?? 0);
-
-        if (!current_user_can('edit_posts')) {
-            wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
-        }
 
         $data = json_decode(wp_unslash($_POST['data'] ?? ''), true);
         $force = !empty($_POST['force']);
@@ -358,48 +350,63 @@ class PostSync
     public static function ajaxBulkStep(): void
     {
         check_ajax_referer('ns_post_sync', 'nonce');
-
         if (!current_user_can('manage_options')) {
             wp_send_json_error(['message' => 'دسترسی غیرمجاز']);
         }
 
-        $batch = min(5, max(1, (int) ($_POST['batch'] ?? 5)));
-        $offset = max(0, (int) ($_POST['offset'] ?? 0));
-        $ids = self::getUnsyncedIds($batch, $offset);
-        $client = self::getClient();
+        @set_time_limit(120);
 
+        $batch = min(5, max(1, (int) ($_POST['batch'] ?? 5)));
+
+        // ✅ قفل اتمیک — جلوگیری از اجرای همزمان
+        if (!nextsafar_acquire_lock('ns_bulk_sync', 180)) {
+            wp_send_json_error(['message' => 'یک سینک انبوه دیگر در حال اجراست؛ کمی صبر کنید.']);
+        }
+
+        // ✅ لیست تلاش‌شده‌ها (موفق و ناموفق) — دیگر offset روی مجموعهٔ در حال کوچک‌شدن نداریم
+        $state_key = 'ns_bulk_sync_attempted';
+        $attempted = get_transient($state_key);
+        $attempted = is_array($attempted) ? $attempted : [];
+        if (!empty($_POST['restart'])) {
+            $attempted = [];
+        }
+
+        $ids    = self::getUnsyncedIds($batch, $attempted);
+        $client = self::getClient();
         $results = [];
 
         foreach ($ids as $pid) {
             $post = get_post($pid);
             if (!$post) {
+                $attempted[] = $pid;
                 continue;
             }
 
             if (!$client) {
                 $results[] = [
-                    'id'     => $pid, 
-                    'title'  => $post->post_title, 
+                    'id'     => $pid,
+                    'title'  => $post->post_title,
                     'status' => 'no_key',
                     'source' => self::getActiveSource(),
                 ];
+                $attempted[] = $pid;
                 continue;
             }
 
-            $query = self::buildQuery($post);
+            $query  = self::buildQuery($post);
             $places = $client->searchPlacesByName($query, 3, 'fa');
-
             if (is_wp_error($places) || empty($places)) {
                 $places = $client->searchPlacesByName($query, 3, 'en');
             }
 
             if (is_wp_error($places) || empty($places)) {
-                $results[] = ['id' => $pid, 'title' => $post->post_title, 'status' => 'no_result'];
+                $results[]   = ['id' => $pid, 'title' => $post->post_title, 'status' => 'no_result'];
+                $attempted[] = $pid;
                 continue;
             }
 
             $best = $places[0];
-            $sim = round(self::similarity($post->post_title, $best['name'] ?? ''), 2);
+            $sim  = round(self::similarity($post->post_title, $best['name'] ?? ''), 2);
 
             if ($sim < 0.35) {
                 $results[] = [
@@ -408,23 +415,34 @@ class PostSync
                     'status' => 'low_sim',
                     'sim'    => (int) ($sim * 100),
                 ];
+                $attempted[] = $pid;
                 continue;
             }
 
             self::applyToPost($post, $best);
-
             $results[] = [
                 'id'     => $pid,
                 'title'  => $post->post_title,
                 'status' => 'ok',
                 'sim'    => (int) ($sim * 100),
             ];
+            $attempted[] = $pid;
         }
+
+        $attempted = array_values(array_unique(array_map('intval', $attempted)));
+        set_transient($state_key, $attempted, 15 * MINUTE_IN_SECONDS);
+
+        // ✅ باقی‌ماندهٔ واقعی = هنوز سینک‌نشده و تلاش‌نشده
+        $remaining = self::countRemainingUnsynced($attempted);
+
+        nextsafar_release_lock('ns_bulk_sync');
 
         wp_send_json_success([
             'results'   => $results,
             'processed' => count($ids),
-            'offset'    => $offset + count($ids),
+            'offset'    => count($attempted), // سازگار با JS فعلی
+            'remaining' => $remaining,
+            'done'      => (0 === $remaining),
         ]);
     }
 
@@ -670,13 +688,11 @@ class PostSync
             return trim($s);
         };
 
-        $wa = array_filter(explode(' ', $norm($a)));
-        $wb = array_filter(explode(' ', $norm($b)));
-
+        $wa = array_unique(array_filter(explode(' ', $norm($a))));
+        $wb = array_unique(array_filter(explode(' ', $norm($b))));
         if (!$wa || !$wb) {
             return 0.0;
         }
-
         $inter = count(array_intersect($wa, $wb));
         return $inter / min(count($wa), count($wb));
     }
@@ -690,20 +706,39 @@ class PostSync
         ];
     }
 
-    private static function getUnsyncedIds(int $limit, int $offset): array
+    private static function getUnsyncedIds(int $limit, array $exclude = []): array
     {
-        $q = new \WP_Query([
+        $args = [
             'post_type'      => self::TYPES,
             'post_status'    => 'publish',
             'posts_per_page' => $limit,
-            'offset'         => $offset,
             'fields'         => 'ids',
             'meta_query'     => self::unsyncedMetaQuery(),
             'orderby'        => 'ID',
             'order'          => 'ASC',
-        ]);
-
+            'no_found_rows'  => true,
+        ];
+        if (!empty($exclude)) {
+            $args['post__not_in'] = array_map('intval', $exclude);
+        }
+        $q = new \WP_Query($args);
         return $q->posts;
+    }
+
+    private static function countRemainingUnsynced(array $exclude = []): int
+    {
+        $args = [
+            'post_type'      => self::TYPES,
+            'post_status'    => 'publish',
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+            'meta_query'     => self::unsyncedMetaQuery(),
+        ];
+        if (!empty($exclude)) {
+            $args['post__not_in'] = array_map('intval', $exclude);
+        }
+        $q = new \WP_Query($args);
+        return (int) $q->found_posts;
     }
 
     public static function countUnsynced(): int

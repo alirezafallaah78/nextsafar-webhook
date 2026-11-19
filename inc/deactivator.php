@@ -7,43 +7,36 @@ if (!defined('ABSPATH')) exit;
 /**
  * Deactivator — Manages plugin deactivation
  *
- * Note: Tables are NOT deleted in this method.
- * Tables are only deleted when the plugin is completely uninstalled,
- * so that if the user temporarily deactivates the plugin, their data is preserved.
+ * Note: Tables are NOT deleted here. They are removed only on uninstall,
+ * so temporary deactivation preserves the user's data.
  */
 class Deactivator {
 
-    /** Option key for storing database version */
     const DB_VERSION_OPTION = 'nextsafar_db_version';
 
-    /**
-     * Execute deactivation operations
-     */
     public static function deactivate() {
-        /* Clear all scheduled cron jobs */
         self::clear_all_cron_jobs();
-
-        /* Flush rewrite rules */
         flush_rewrite_rules();
-
-        /* Clear temporary transients */
         self::clear_temporary_transients();
-
-        /* Record deactivation time (for debugging) */
         update_option('nextsafar_deactivated_at', current_time('mysql'));
-
-        error_log('✅ NextSafar Core: Plugin deactivated successfully');
+        self::log('✅ NextSafar Core: Plugin deactivated successfully');
     }
 
-    /**
-     * Clear all scheduled cron jobs
-     */
+    /** لاگ فقط در حالت دیباگ */
+    private static function log(string $msg): void {
+        if (defined('WP_DEBUG') && WP_DEBUG && defined('WP_DEBUG_LOG') && WP_DEBUG_LOG) {
+            error_log($msg);
+        }
+    }
+
     private static function clear_all_cron_jobs(): void {
         $cron_hooks = [
-            /* News system cron */
+            // News system crons
             'nextsafar_news_cron_hook',
-
-            /* Other crons (if any) */
+            'nextsafar_news_hourly_tick',
+            'nextsafar_news_retry_hook',
+            'nextsafar_news_batch_fetch',
+            // Other crons
             'ns_enrich_locations_cron',
             'nextsafar_exchange_update_cron',
             'nextsafar_sync_cron',
@@ -51,19 +44,13 @@ class Deactivator {
 
         foreach ($cron_hooks as $hook) {
             wp_clear_scheduled_hook($hook);
-            error_log('🗑️ NextSafar: Cron hook cleared: ' . $hook);
+            self::log('🗑️ NextSafar: Cron hook cleared: ' . $hook);
         }
     }
 
-    /**
-     * Clear temporary transients (not permanent data)
-     *
-     * Note: Only cache transients are cleared, not important data
-     */
     private static function clear_temporary_transients(): void {
         global $wpdb;
 
-        /* List of temporary transient patterns */
         $patterns = [
             'ns_ai_rates_cache',
             'visa_api_rates_cache',
@@ -78,13 +65,12 @@ class Deactivator {
             delete_transient($pattern);
         }
 
-        /* Clear maps cache with pattern */
         $wpdb->query(
             "DELETE FROM {$wpdb->options}
              WHERE option_name LIKE '_transient_ns_maps_%'
                 OR option_name LIKE '_transient_timeout_ns_maps_%'"
         );
 
-        error_log('🗑️ NextSafar: Temporary transients cleared');
+        self::log('🗑️ NextSafar: Temporary transients cleared');
     }
 }

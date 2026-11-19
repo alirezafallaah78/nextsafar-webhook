@@ -5,46 +5,46 @@ namespace NextSafar;
 if (!defined('NEXTSAFAR_PATH')) exit;
 
 /**
- * PSR-4 Autoloader for NextSafar plugin
- * Converts class names to file paths using kebab-case naming convention
+ * PSR-4 Autoloader — با پشتیبانی از پیشوند «class-» در نام فایل‌ها.
+ * اکثر فایل‌های پلاگین class-*.php هستند؛ نسخه قبلی فقط *.php را می‌گشت
+ * و باعث Fatal «Class not found» برای ApiCache / GeminiQuota / AviationClient می‌شد.
  */
 spl_autoload_register(function ($class) {
-    if (strpos($class, 'NextSafar') !== 0) return;
-
-    $class = str_replace('NextSafar', '', $class);
-    $class = trim($class, '\\');
-
-    if (empty($class)) return;
-
-    $parts = explode('\\', $class);
-    $className = array_pop($parts);
-
-    $subPath = '';
-
-    if (!empty($parts)) {
-        $subPath = implode(DIRECTORY_SEPARATOR, array_map(function($part) {
-            return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $part));
-        }, $parts));
-    }
-
-    $fileName = strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $className)) . '.php';
-
-    $file = NEXTSAFAR_PATH . 'inc' . DIRECTORY_SEPARATOR;
-
-    if (!empty($subPath)) {
-        $file .= $subPath . DIRECTORY_SEPARATOR;
-    }
-
-    $file .= $fileName;
-
-    if (file_exists($file)) {
-        require_once $file;
+    if (strpos($class, 'NextSafar\\') !== 0) {
         return;
     }
 
-    $fallback = NEXTSAFAR_PATH . 'inc' . DIRECTORY_SEPARATOR . $fileName;
+    $relative = substr($class, strlen('NextSafar\\'));
+    if ($relative === '') {
+        return;
+    }
 
-    if (file_exists($fallback)) {
-        require_once $fallback;
+    $parts     = explode('\\', $relative);
+    $className = array_pop($parts);
+
+    $kebab = static function ($s) {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '-$0', $s));
+    };
+
+    $subPath = '';
+    if (!empty($parts)) {
+        $subPath = implode('/', array_map($kebab, $parts)) . '/';
+    }
+
+    $base = $kebab($className);
+    $root = NEXTSAFAR_PATH . 'inc/';
+
+    $candidates = [
+        $root . $subPath . 'class-' . $base . '.php',
+        $root . $subPath . $base . '.php',
+        $root . 'class-' . $base . '.php',
+        $root . $base . '.php',
+    ];
+
+    foreach ($candidates as $file) {
+        if (is_file($file)) {
+            require_once $file;
+            return;
+        }
     }
 });

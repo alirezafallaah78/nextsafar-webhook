@@ -40,7 +40,7 @@ class GeminiClient
     public const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
     public const MAX_HTTP_RETRIES = 2;
     public const RETRYABLE_CODES = [429, 500, 503];
-    
+    private float $retryAfter = 0;
     /** حداقل فاصله بین درخواست‌ها (ثانیه) - برای rate limiting */
     public const MIN_REQUEST_INTERVAL = 8.0;
 
@@ -50,10 +50,16 @@ class GeminiClient
     private ?string $lastError = null;
     private static float $lastRequestTime = 0;
 
-    public function __construct(int $timeout = 90)
+    public function __construct(int $timeout = 45)
     {
         $this->api_key = (string) get_option('nextsafar_gemini_api_key', '');
-        $this->timeout = $timeout;
+        $this->timeout = max(10, min(60, $timeout));
+    }
+
+    /** ✅ چند ثانیه بعد دوباره تلاش شود (برای pace کردن سمت کلاینت) */
+    public function getRetryAfter(): float
+    {
+        return $this->retryAfter;
     }
 
     /* ========================================================================
@@ -139,32 +145,33 @@ public function ping(): bool
        Rate Limiting
        ======================================================================== */
     
-    private function rateLimitWait(): void
+    private function rateLimitWait(): bool
     {
-        $now = microtime(true);
-        $elapsed = $now - self::$lastRequestTime;
+        $delay = RateLimiter::secondsUntilAllowed('gemini', self::MIN_REQUEST_INTERVAL);
 
-        if ($elapsed < self::MIN_REQUEST_INTERVAL) {
-            $waitTime = self::MIN_REQUEST_INTERVAL - $elapsed;
-            if ($waitTime > 0.1) {
-                usleep((int) ($waitTime * 1000000));
-            }
+        if ($delay <= 0) {
+            RateLimiter::markRequest('gemini');
+            return true;
         }
 
-        self::$lastRequestTime = microtime(true);
+        if (defined('DOING_CRON') && DOING_CRON) {
+            $sleep = min($delay, self::MIN_REQUEST_INTERVAL);
+            if ($sleep > 0.05) {
+                usleep((int) ($sleep * 1000000));
+            }
+            RateLimiter::markRequest('gemini');
+            return true;
+        }
+
+        $this->retryAfter = $delay;
+        $this->lastError  = 'rate_limited: حداقل فاصله بین درخواست‌ها رعایت نشده (' . (int) ceil($delay) . ' ثانیه)';
+        return false;
     }
 
     /* ========================================================================
        Send Request — ارسال درخواست به Gemini
        ======================================================================== */
     
-    /**
-     * ارسال درخواست و دریافت پاسخ متنی
-     *
-     * @param string $prompt متن درخواست
-     * @param array  $options تنظیمات اضافی (temperature, max_tokens, model)
-     * @return string|null پاسخ متنی یا null در صورت خطا
-     */
     public function sendRequest(string $prompt, array $options = []): ?string
     {
         if (!$this->hasApiKey()) {
@@ -172,18 +179,27 @@ public function ping(): bool
             return null;
         }
 
+        $this->retryAfter = 0;
+
         $model = $options['model'] ?? $this->getActiveModel();
-        // گیت بودجه: اگر مدل قفل است یا به سقف امن رسیده، اصلاً درخواست نفرست
+
         if (!GeminiQuota::canCall($model)) {
             $this->lastError = 'HTTP 429 (local quota): سهمیه امروز مدل ' . $model
-                . ' تمام شده یا به سقف امن رسیده — تا ریست (≈۱۱:۳۰ تهران) صبر کنید یا مدل دیگری انتخاب کنید';
+                . ' تمام شده یا به سقف امن رسیده — تا ریست صبر کنید یا مدل دیگری انتخاب کنید';
             return null;
         }
-        $temperature = $options['temperature'] ?? 0.7;
-        $maxTokens = max(1024, (int) ($options['max_tokens'] ?? 2048));
+
+        // ✅ بدون usleep در وب
+        if (!$this->rateLimitWait()) {
+            return null;
+        }
+
+        $temperature  = $options['temperature'] ?? 0.7;
+        $maxTokens    = max(1024, (int) ($options['max_tokens'] ?? 2048));
         $responseMime = $options['response_mime'] ?? 'application/json';
 
-        $url = self::API_URL . '/' . $model . ':generateContent?key=' . urlencode($this->api_key);
+        // ✅ کلید در هدر، نه در query string
+        $url = self::API_URL . '/' . $model . ':generateContent';
 
         $requestBody = [
             'contents' => [[
@@ -203,34 +219,31 @@ public function ping(): bool
             ],
         ];
 
-        $body = json_encode($requestBody);
         $attempt = 0;
 
         while (true) {
-            $this->rateLimitWait();
-
             $response = wp_remote_post($url, [
                 'timeout' => $this->timeout,
-                'headers' => ['Content-Type' => 'application/json'],
-                'body'    => $body,
+                'headers' => [
+                    'Content-Type'   => 'application/json',
+                    'Accept'         => 'application/json',
+                    'x-goog-api-key' => $this->api_key,
+                ],
+                'body'    => wp_json_encode($requestBody),
             ]);
 
+            // ✅ خطای شبکه: بدون sleep — به صف retry سپرده می‌شود
             if (is_wp_error($response)) {
-                $this->lastError = 'HTTP Error: ' . $response->get_error_message();
-                if ($attempt < self::MAX_HTTP_RETRIES) {
-                    $attempt++;
-                    sleep(5 * $attempt);
-                    continue;
-                }
+                $this->lastError  = 'HTTP Error: ' . $response->get_error_message();
+                $this->retryAfter = 30;
                 return null;
             }
 
-            $code = wp_remote_retrieve_response_code($response);
-            $raw = wp_remote_retrieve_body($response);
+            $code = (int) wp_remote_retrieve_response_code($response);
+            $raw  = wp_remote_retrieve_body($response);
             $this->lastResponse = $raw;
 
-            // 429 روزانه: retry بی‌فایده است — مدل تا ریست قفل می‌شود
-            if ((int) $code === 429) {
+            if ($code === 429) {
                 $err = json_decode($raw, true);
                 $msg = $err['error']['message'] ?? '';
 
@@ -244,25 +257,22 @@ public function ping(): bool
                     error_log("⛔ [Gemini] Daily quota exhausted for {$model} — no retry");
                     return null;
                 }
+
+                // ✅ 429 موقت: بدون sleep
+                $this->retryAfter = 30;
+                if (preg_match('/retry in (\d+(?:\.\d+)?)s/i', $msg, $m)) {
+                    $this->retryAfter = min(120, max(5, (float) $m[1]));
+                }
+                $this->lastError = 'HTTP 429: ' . $msg;
+                return null;
             }
 
-            // Retry برای خطاهای موقت
-            if (in_array((int) $code, self::RETRYABLE_CODES, true) && $attempt < self::MAX_HTTP_RETRIES) {
-                $attempt++;
+            // ✅ خطاهای موقت سرور: بدون sleep — صف retry بعداً تلاش می‌کند
+            if (in_array($code, self::RETRYABLE_CODES, true)) {
                 $err = json_decode($raw, true);
-                $waitTime = 5 * $attempt;
-                $msg = $err['error']['message'] ?? '';
-
-                if ($code === 429 && preg_match('/retry in (\d+(?:\.\d+)?)s/i', $msg, $m)) {
-                    $waitTime = min((int) ceil((float) $m[1]), 30);
-                }
-                if ($code === 503) {
-                    $waitTime = 10 * $attempt;
-                }
-
-                error_log("⏳ [Gemini] HTTP {$code} — retry {$attempt}/" . self::MAX_HTTP_RETRIES . " (wait: {$waitTime}s)");
-                sleep($waitTime);
-                continue;
+                $this->retryAfter = ($code === 503) ? 60 : 30;
+                $this->lastError  = "HTTP {$code}: " . ($err['error']['message'] ?? mb_substr($raw, 0, 200));
+                return null;
             }
 
             if ($code !== 200) {
@@ -271,7 +281,6 @@ public function ping(): bool
                 return null;
             }
 
-            // هر پاسخ 200 یک درخواست مصرف‌شده از سهمیه امروز است
             GeminiQuota::record($model);
 
             $data = json_decode($raw, true);
@@ -280,19 +289,16 @@ public function ping(): bool
                 return null;
             }
 
-            $candidate = $data['candidates'][0];
+            $candidate    = $data['candidates'][0];
             $finishReason = $candidate['finishReason'] ?? 'UNKNOWN';
 
             if (empty($candidate['content']['parts'][0]['text'])) {
                 $this->lastError = "Empty text. Reason: {$finishReason}";
 
-                // اگر MAX_TOKENS، با max_tokens بیشتر retry کن
+                // فقط این یک retry بدون انتظار مجاز است (درخواست بزرگ‌تر)
                 if ($finishReason === 'MAX_TOKENS' && $attempt < self::MAX_HTTP_RETRIES) {
                     $attempt++;
-                    $newMax = $maxTokens * 2;
-                    error_log("⚠️ [Gemini] MAX_TOKENS — retrying with {$newMax} tokens");
-                    $requestBody['generationConfig']['maxOutputTokens'] = $newMax;
-                    $body = json_encode($requestBody);
+                    $requestBody['generationConfig']['maxOutputTokens'] = $maxTokens * 2;
                     continue;
                 }
                 return null;
@@ -384,10 +390,12 @@ public function ping(): bool
             ];
         }
 
-        // دریافت لیست واقعی از API
-        $response = wp_remote_get(self::API_URL . '?key=' . urlencode($apiKey), [
-            'timeout' => 15,
-            'headers' => ['Accept' => 'application/json'],
+        $response = wp_remote_get(self::API_URL . '?pageSize=200', [
+            'timeout' => 12,
+            'headers' => [
+                'Accept'         => 'application/json',
+                'x-goog-api-key' => $apiKey, // ✅ کلید در هدر
+            ],
         ]);
 
         if (is_wp_error($response) || wp_remote_retrieve_response_code($response) !== 200) {
