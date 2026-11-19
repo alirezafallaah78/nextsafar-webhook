@@ -371,13 +371,13 @@ function nextsafar_render_submenu( $submenus ) {
                 </a>
                 <div class="nextsafar-submenu">
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news' ) ); ?>"
-                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news' ) ? 'active' : ''; ?>"><span>📊 آنالیز</span></a>
+                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news' ) ? 'active' : ''; ?>"><span>آنالیز</span></a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news-manual' ) ); ?>"
-                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-manual' ) ? 'active' : ''; ?>"><span>🎯 تولید دستی</span></a>
+                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-manual' ) ? 'active' : ''; ?>"><span>تولید دستی</span></a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news-filter' ) ); ?>"
-                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-filter' ) ? 'active' : ''; ?>"><span>🎛️ فیلترها</span></a>
+                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-filter' ) ? 'active' : ''; ?>"><span>فیلترها</span></a>
                     <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news-settings' ) ); ?>"
-                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-settings' ) ? 'active' : ''; ?>"><span>⚙️ تنظیمات</span></a>
+                       class="nextsafar-submenu-item <?php echo H::page( 'nextsafar-news-settings' ) ? 'active' : ''; ?>"><span>تنظیمات</span></a>
                 </div>
             </div>
         </div>

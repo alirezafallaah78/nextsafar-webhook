@@ -1,69 +1,89 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 
 <div class="wrap nextsafar-wrap">
-    <h1>تولید پست هوشمند</h1>
-    <p class="description">تولید خودکار پست برای هتل، رستوران، مقصد، بیمارستان و فرودگاه</p>
+    <div class="nextsafar-page-header">
+        <div>
+            <h1>تولید پست هوشمند</h1>
+            <p>تولید خودکار پست برای هتل، رستوران، مقصد، بیمارستان و فرودگاه</p>
+        </div>
+    </div>
 
-    <div class="ns-card">
-        <h2>تنظیمات جستجو</h2>
-        <form id="nextsafar-pg-form">
-            <table class="form-table">
-                <tr>
-                    <th><label for="sync_type">نوع محتوا:</label></th>
-                    <td>
-                        <select id="sync_type" name="sync_type">
+    <div class="nextsafar-panel">
+        <div class="nextsafar-panel-header"><h2>تنظیمات جستجو</h2></div>
+        <div class="nextsafar-panel-body">
+            <form id="nextsafar-pg-form">
+                <div class="ns-form-grid cols-3">
+                    <div class="nextsafar-form-group">
+                        <label for="sync_type">نوع محتوا</label>
+                        <select id="sync_type" name="sync_type" class="nextsafar-form-input">
                             <option value="hotel">هتل</option>
                             <option value="restaurant">رستوران</option>
                             <option value="destination">مقصد گردشگری</option>
                             <option value="hospital">بیمارستان</option>
                             <option value="airport">فرودگاه</option>
                         </select>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="location">مقصد:</label></th>
-                    <td>
-                        <input type="text" id="location" name="location" class="regular-text" placeholder="Istanbul, Turkey" required>
-                    </td>
-                </tr>
-                <tr>
-                    <th><label for="limit">تعداد:</label></th>
-                    <td>
-                        <select id="limit" name="limit">
+                    </div>
+                    <div class="nextsafar-form-group">
+                        <label for="location">مقصد (Location)</label>
+                        <input type="text" id="location" name="location" class="nextsafar-form-input" dir="ltr" placeholder="Istanbul, Turkey" required>
+                    </div>
+                    <div class="nextsafar-form-group">
+                        <label for="limit">تعداد نتایج</label>
+                        <select id="limit" name="limit" class="nextsafar-form-input">
                             <option value="1">1</option>
                             <option value="5">5</option>
                             <option value="10" selected>10</option>
+                            <option value="20">20</option>
                         </select>
-                    </td>
-                </tr>
-            </table>
-            <p class="submit">
-                <button type="submit" id="start-sync-btn" class="button button-primary button-large">شروع تولید</button>
-                <button type="button" id="test-api-btn" class="button">تست API</button>
-            </p>
-        </form>
+                    </div>
+                </div>
+
+                <div class="ns-panel-footer">
+                    <span class="ns-hint">پس از تولید، پست‌ها به عنوان پیش‌نویس در وردپرس ثبت می‌شوند.</span>
+                    <div style="display: flex; gap: 10px;">
+                        <button type="button" id="test-api-btn" class="nextsafar-secondary-button">تست API</button>
+                        <button type="submit" id="start-sync-btn" class="nextsafar-primary-button">شروع تولید</button>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <div id="terminal-container" style="display:none;">
-        <h2>خروجی</h2>
-        <div class="ns-terminal">
-            <div class="ns-terminal-header">
-                <div class="ns-terminal-dots">
-                    <div class="ns-terminal-dot red"></div>
-                    <div class="ns-terminal-dot yellow"></div>
-                    <div class="ns-terminal-dot green"></div>
+    <div id="terminal-container" style="display:none; margin-top: 20px;">
+        <div class="nextsafar-panel">
+            <div class="nextsafar-panel-header"><h2>خروجی اجرای زنده</h2></div>
+            <div class="nextsafar-panel-body">
+                <div class="ns-terminal">
+                    <div class="ns-terminal-header">
+                        <div class="ns-terminal-dots">
+                            <span class="ns-terminal-dot red"></span>
+                            <span class="ns-terminal-dot yellow"></span>
+                            <span class="ns-terminal-dot green"></span>
+                        </div>
+                        <div class="ns-terminal-title">NextSafar Post Generator</div>
+                    </div>
+                    <div class="ns-terminal-body" id="terminal-body"></div>
                 </div>
-                <div class="ns-terminal-title">NextSafar Post Generator</div>
+
+                <div class="ns-progress-container">
+                    <div class="ns-progress-bar" id="progress-bar"></div>
+                </div>
+
+                <div class="ns-stats-row" id="stats-row" style="display:none; margin-top: 16px;">
+                    <div class="ns-stat-box">
+                        <div class="ns-stat-box-value ns-stat-total" id="stat-total">0</div>
+                        <div class="ns-stat-box-label">کل</div>
+                    </div>
+                    <div class="ns-stat-box">
+                        <div class="ns-stat-box-value ns-stat-created" id="stat-created">0</div>
+                        <div class="ns-stat-box-label">ایجاد شده</div>
+                    </div>
+                    <div class="ns-stat-box">
+                        <div class="ns-stat-box-value ns-stat-failed" id="stat-failed">0</div>
+                        <div class="ns-stat-box-label">ناموفق</div>
+                    </div>
+                </div>
             </div>
-            <div class="ns-terminal-body" id="terminal-body"></div>
-        </div>
-        <div class="ns-progress-container">
-            <div class="ns-progress-bar" id="progress-bar"></div>
-        </div>
-        <div class="ns-stats-row" id="stats-row" style="display:none;">
-            <div class="ns-stat-box"><div class="ns-stat-box-value ns-stat-total" id="stat-total">0</div><div class="ns-stat-box-label">کل</div></div>
-            <div class="ns-stat-box"><div class="ns-stat-box-value ns-stat-created" id="stat-created">0</div><div class="ns-stat-box-label">ایجاد</div></div>
-            <div class="ns-stat-box"><div class="ns-stat-box-value ns-stat-failed" id="stat-failed">0</div><div class="ns-stat-box-label">ناموفق</div></div>
         </div>
     </div>
 </div>

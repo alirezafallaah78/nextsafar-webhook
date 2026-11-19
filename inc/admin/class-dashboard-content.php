@@ -551,8 +551,8 @@ class NextSafar_Dashboard_Content {
             <?php echo self::empty_state( 'جدول منابع خبر هنوز ساخته نشده است.' ); ?>
         <?php endif; ?>
         <div class="ns-widget-foot">
-            <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news' ) ); ?>">📊 آنالیز اخبار</a> ·
-            <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news-manual' ) ); ?>">🎯 تولید دستی</a>
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news' ) ); ?>">آنالیز اخبار</a> ·
+            <a href="<?php echo esc_url( admin_url( 'admin.php?page=nextsafar-news-manual' ) ); ?>">تولید دستی</a>
             <?php if ( $publish ) : ?> · <?php echo number_format_i18n( $publish ); ?> خبر منتشرشده<?php endif; ?>
         </div>
         <?php

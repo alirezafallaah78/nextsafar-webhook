@@ -1,144 +1,171 @@
-/* ═══════════════════════════════════════════════════════════
-📰 NextSafar News & Post Generator Styles
-═══════════════════════════════════════════════════════════ */
+/* =========================================================
+   News Admin — نسخه نهایی و مرجع واحد
+   صفحات: اخبار (آنالیز، دستی، فیلترها، تنظیمات) + تولید پست
+========================================================= */
 
-/* Dashboard Grid */
+/* ── سیستم آیکن — هم‌سبک منوها و داشبورد ── */
+.ns-icon {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+    display: block;
+}
+
+/* ── کارت‌های آمار (آنالیز) ── */
 .ns-dashboard-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 16px;
+    gap: 20px;
     margin-bottom: 24px;
 }
 
-/* Stat Cards */
 .ns-stat-card {
     background: var(--ns-surface);
     border: 1px solid var(--ns-border);
     border-radius: var(--ns-radius);
-    padding: 20px;
+    padding: 22px;
     display: flex;
     align-items: center;
     gap: 16px;
-    transition: all 0.2s ease;
+    box-shadow: var(--ns-shadow-card);
+    transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
-
 .ns-stat-card:hover {
-    box-shadow: var(--ns-shadow-md);
+    box-shadow: var(--ns-shadow-card-hover);
     transform: translateY(-2px);
 }
 
+/* آیکن خنثی — تم ساده، بدون رنگ‌بندی */
 .ns-stat-icon {
-    font-size: 32px;
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: var(--ns-radius-sm);
-    background: var(--ns-primary-light-3);
-}
-
-.ns-stat-content {
-    flex: 1;
+    border-radius: var(--ns-radius-lg);
+    background: var(--ns-bg-sec);
+    color: var(--ns-text-muted);
 }
 
 .ns-stat-value {
-    font-size: 24px;
-    font-weight: 700;
+    font-size: 22px;
+    font-weight: 800;
     color: var(--ns-text);
     line-height: 1.2;
 }
-
 .ns-stat-label {
+    font-size: 13px;
+    color: var(--ns-text-muted);
+    margin-top: 4px;
+}
+
+/* ── استت‌باکس‌ها — مشترک بین داشبورد و ترمینال ── */
+.ns-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+}
+.ns-stat-box {
+    background: var(--ns-bg);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    padding: 14px 16px;
+    text-align: center;
+}
+.ns-stat-box-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ns-text);
+    line-height: 1.3;
+}
+.ns-stat-box-value.ns-stat-total { color: var(--ns-primary-dark); }
+.ns-stat-box-value.ns-stat-published,
+.ns-stat-box-value.ns-stat-created { color: var(--ns-success-text); }
+.ns-stat-box-value.ns-stat-failed { color: var(--ns-danger-text); }
+.ns-stat-box-label {
     font-size: 12px;
     color: var(--ns-text-muted);
     margin-top: 4px;
 }
 
-.ns-stat-primary .ns-stat-icon { background: rgba(67, 171, 255, 0.1); }
-.ns-stat-success .ns-stat-icon { background: rgba(34, 197, 94, 0.1); }
-.ns-stat-warning .ns-stat-icon { background: rgba(245, 158, 11, 0.1); }
-.ns-stat-danger .ns-stat-icon { background: rgba(239, 68, 68, 0.1); }
-.ns-stat-info .ns-stat-icon { background: rgba(59, 130, 246, 0.1); }
-.ns-stat-purple .ns-stat-icon { background: rgba(139, 92, 246, 0.1); }
+/* ── وضعیت AI ── */
+.ns-ai-disabled {
+    background: var(--ns-warning-bg);
+    border: 1px solid rgba(245, 158, 11, 0.30);
+    border-radius: var(--ns-radius);
+    padding: 20px;
+    color: var(--ns-warning-text);
+}
+.ns-ai-disabled strong {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+.ns-ai-disabled p { margin: 0 0 14px; }
 
-/* Mini Stats */
-.ns-stats-row {
+/* ── گرید ساعت‌های سینک ── */
+.ns-hours-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(86px, 1fr));
+    gap: 10px;
+}
+.ns-hour-cell {
     display: flex;
-    gap: 24px;
-    flex-wrap: wrap;
-}
-
-.ns-mini-stat {
-    text-align: center;
-}
-
-.ns-mini-value {
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--ns-text);
-}
-
-.ns-mini-label {
-    font-size: 11px;
-    color: var(--ns-text-muted);
-    margin-top: 2px;
-}
-
-/* Badges */
-.ns-badge {
-    display: inline-flex;
     align-items: center;
-    padding: 4px 10px;
-    border-radius: 12px;
-    font-size: 11px;
+    justify-content: center;
+    padding: 11px 8px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    background: var(--ns-surface);
+    cursor: pointer;
+    font-size: 13px;
     font-weight: 600;
-    background: var(--ns-bg);
-    color: var(--ns-text-secondary);
+    color: var(--ns-text);
+    user-select: none;
+    margin: 0;
+    transition: all 0.15s ease;
 }
-
-.ns-badge-success {
-    background: rgba(34, 197, 94, 0.1);
-    color: #16a34a;
+.ns-hour-cell:hover {
+    border-color: var(--ns-primary);
+    background: var(--ns-primary-light-3);
 }
-
-.ns-badge-warning {
-    background: rgba(245, 158, 11, 0.1);
-    color: #d97706;
+.ns-hour-cell.checked {
+    background: var(--ns-primary);
+    border-color: var(--ns-primary);
+    color: #fff;
+    box-shadow: var(--ns-shadow-button);
 }
+.ns-hour-cell input { display: none; }
 
-.ns-badge-danger {
-    background: rgba(239, 68, 68, 0.1);
-    color: #dc2626;
-}
-
-.ns-badge-info {
-    background: rgba(59, 130, 246, 0.1);
-    color: #2563eb;
-}
-
-/* Toggle Switch */
+/* ── سوییچ و ردیف‌های تاگل ── */
 .ns-toggle-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 20px;
-    padding: 16px 0;
+    padding: 6px 0;
 }
-
-.ns-toggle-info {
-    flex: 1;
+.ns-toggle-row + .ns-toggle-row {
+    margin-top: 14px;
+    padding-top: 18px;
+    border-top: 1px solid var(--ns-divider);
 }
-
 .ns-toggle-label {
-    font-weight: 600;
+    font-weight: 700;
+    font-size: 13.5px;
     color: var(--ns-text);
     margin-bottom: 4px;
 }
-
 .ns-toggle-desc {
-    font-size: 12px;
+    font-size: 12.5px;
     color: var(--ns-text-muted);
+    line-height: 1.7;
 }
 
 .ns-switch {
@@ -146,365 +173,99 @@
     display: inline-block;
     width: 48px;
     height: 26px;
+    flex-shrink: 0;
 }
-
-.ns-switch input {
-    opacity: 0;
-    width: 0;
-    height: 0;
-}
-
+.ns-switch input { opacity: 0; width: 0; height: 0; }
 .ns-slider {
     position: absolute;
-    cursor: pointer;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--ns-border-dark);
-    transition: 0.3s;
+    inset: 0;
+    background: var(--ns-border-dark, #cbd5e1);
     border-radius: 26px;
+    cursor: pointer;
+    transition: background 0.25s ease;
 }
-
-.ns-slider:before {
-    position: absolute;
+.ns-slider::before {
     content: "";
-    height: 20px;
+    position: absolute;
     width: 20px;
+    height: 20px;
     left: 3px;
     bottom: 3px;
-    background: white;
-    transition: 0.3s;
+    background: #fff;
     border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    transition: transform 0.25s ease;
 }
+.ns-switch input:checked + .ns-slider { background: var(--ns-primary); }
+.ns-switch input:checked + .ns-slider::before { transform: translateX(22px); }
 
-.ns-switch input:checked + .ns-slider {
-    background: var(--ns-primary);
-}
-
-.ns-switch input:checked + .ns-slider:before {
-    transform: translateX(22px);
-}
-
-/* Hours Grid */
-.ns-hours-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    gap: 8px;
-}
-
-.ns-hour-cell {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    padding: 10px;
-    border: 1px solid var(--ns-border);
-    border-radius: var(--ns-radius-sm);
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-size: 13px;
-}
-
-.ns-hour-cell:hover {
-    border-color: var(--ns-primary);
-    background: var(--ns-primary-light-3);
-}
-
-.ns-hour-cell.checked {
-    background: var(--ns-primary);
-    border-color: var(--ns-primary);
-    color: white;
-}
-
-.ns-hour-cell input {
-    display: none;
-}
-
-/* Numbers Grid */
-.ns-numbers-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 16px;
-}
-
-.ns-number-card {
-    text-align: center;
-    padding: 16px;
-    border: 1px solid var(--ns-border);
-    border-radius: var(--ns-radius);
-    background: var(--ns-bg);
-}
-
-.ns-number-icon {
-    font-size: 24px;
-    margin-bottom: 8px;
-}
-
-.ns-number-title {
-    font-size: 12px;
-    color: var(--ns-text-muted);
-    margin-bottom: 8px;
-}
-
-.ns-number-input {
-    width: 100%;
-    max-width: 100px;
-    text-align: center;
-}
-
-/* Form Grid */
-.ns-form-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-}
-
-/* Form Row */
-.ns-form-row {
-    margin-bottom: 20px;
-}
-
-.ns-form-row label {
-    display: block;
-    font-weight: 500;
-    color: var(--ns-text);
-    margin-bottom: 8px;
-    font-size: 13px;
-}
-
-.ns-form-row .description {
-    font-size: 12px;
-    color: var(--ns-text-muted);
-    margin-top: 6px;
-}
-
-/* Provider Options */
-.ns-provider-options {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 12px;
-}
-
-.ns-provider-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 16px;
-    border: 2px solid var(--ns-border);
-    border-radius: var(--ns-radius);
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.ns-provider-card:hover {
-    border-color: var(--ns-primary);
-}
-
-.ns-provider-card.active {
-    border-color: var(--ns-primary);
-    background: var(--ns-primary-light-3);
-}
-
-.ns-provider-card input {
-    display: none;
-}
-
-.ns-provider-icon {
-    font-size: 28px;
-    width: 48px;
-    height: 48px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--ns-bg);
-    border-radius: var(--ns-radius-sm);
-}
-
-.ns-provider-info strong {
-    display: block;
-    color: var(--ns-text);
-    margin-bottom: 2px;
-}
-
-.ns-provider-info small {
-    font-size: 11px;
-    color: var(--ns-text-muted);
-}
-
-/* Info Box */
-.ns-info-box {
-    padding: 12px 16px;
-    background: var(--ns-primary-light-3);
-    border-left: 4px solid var(--ns-primary);
-    border-radius: var(--ns-radius-sm);
-    font-size: 13px;
-}
-
-/* Submit Row */
-.ns-submit-row {
-    margin-top: 32px;
-    padding-top: 24px;
-    border-top: 1px solid var(--ns-border);
-    display: flex;
-    justify-content: flex-end;
-}
-
-/* Keywords List */
-.ns-keywords-list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 16px;
-}
-
-.ns-keyword-item {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 16px;
-    background: var(--ns-bg);
-    border: 1px solid var(--ns-border);
-    border-radius: var(--ns-radius-sm);
-}
-
-.ns-keyword-text {
-    flex: 1;
-    font-weight: 500;
-}
-
-.ns-keyword-meta {
-    display: flex;
-    gap: 8px;
-}
-
-.delete-keyword-btn {
-    padding: 4px 8px !important;
-    min-height: auto !important;
-}
-
-/* AI Status */
-.ns-ai-disabled {
-    padding: 20px;
-    background: rgba(239, 68, 68, 0.05);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-    border-radius: var(--ns-radius);
-}
-
-.ns-ai-active {
-    padding: 8px 0;
-}
-
-/* Stat Boxes */
-.ns-stat-box {
-    flex: 1;
-    min-width: 100px;
-    text-align: center;
-    padding: 16px;
-    background: var(--ns-surface);
-    border: 1px solid var(--ns-border);
-    border-radius: var(--ns-radius);
-}
-
-.ns-stat-box-value {
-    font-size: 28px;
-    font-weight: 700;
-    color: var(--ns-text);
-}
-
-.ns-stat-box-label {
-    font-size: 12px;
-    color: var(--ns-text-muted);
-    margin-top: 4px;
-}
-
-.ns-stat-total { color: var(--ns-primary); }
-.ns-stat-created { color: #16a34a; }
-.ns-stat-updated { color: #2563eb; }
-.ns-stat-failed { color: #dc2626; }
-
-/* Progress Bar */
-.ns-progress-container {
-    margin: 16px 0;
-    height: 8px;
-    background: var(--ns-border);
-    border-radius: 4px;
-    overflow: hidden;
-}
-
-.ns-progress-bar {
-    height: 100%;
-    background: linear-gradient(90deg, var(--ns-primary) 0%, var(--ns-primary-dark) 100%);
-    border-radius: 4px;
-    width: 0%;
-    transition: width 0.3s ease;
-}
-
-/* Terminal */
+/* ── ترمینال — مرجع واحد ── */
 .ns-terminal {
-    background: #1e1e1e;
+    background: #1a1d23;
     border-radius: var(--ns-radius);
     overflow: hidden;
+    box-shadow: var(--ns-shadow-card);
 }
-
 .ns-terminal-header {
     display: flex;
     align-items: center;
     gap: 12px;
     padding: 12px 16px;
-    background: #2d2d2d;
+    background: #23272f;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
 }
-
-.ns-terminal-dots {
-    display: flex;
-    gap: 6px;
-}
-
-.ns-terminal-dot {
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-}
-
+.ns-terminal-dots { display: flex; gap: 6px; }
+.ns-terminal-dot { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
 .ns-terminal-dot.red { background: #ff5f56; }
 .ns-terminal-dot.yellow { background: #ffbd2e; }
 .ns-terminal-dot.green { background: #27c93f; }
-
 .ns-terminal-title {
-    color: #999;
-    font-size: 12px;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 12.5px;
+    font-family: var(--ns-font-mono, monospace);
 }
-
 .ns-terminal-body {
-    padding: 16px;
-    min-height: 300px;
-    max-height: 500px;
+    padding: 18px 20px;
+    min-height: 240px;
+    max-height: 420px;
     overflow-y: auto;
-    font-family: 'Courier New', monospace;
-    font-size: 12px;
-    line-height: 1.6;
-    color: #d4d4d4;
+    font-family: var(--ns-font-mono, monospace);
+    font-size: 13px;
+    line-height: 1.8;
+    color: #d6dae3;
+    direction: ltr;
+    text-align: left;
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-    .ns-dashboard-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .ns-form-grid {
-        grid-template-columns: 1fr;
-    }
-    
-    .ns-hours-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
-    
-    .ns-numbers-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .ns-provider-options {
-        grid-template-columns: 1fr;
-    }
+/* ── پروگرس‌بار ── */
+.ns-progress-container {
+    margin: 16px 0 4px;
+    height: 8px;
+    background: var(--ns-bg-sec);
+    border-radius: 999px;
+    overflow: hidden;
+}
+.ns-progress-bar {
+    height: 100%;
+    width: 0%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, var(--ns-primary), var(--ns-primary-dark));
+    transition: width 0.3s ease;
+}
+
+/* ── جدول منابع ── */
+#sources-table-container .wp-list-table {
+    border-radius: var(--ns-radius);
+    overflow: hidden;
+    border: 1px solid var(--ns-border);
+}
+
+/* ── ریسپانسیو ── */
+@media (max-width: 782px) {
+    .ns-dashboard-grid { grid-template-columns: 1fr 1fr; }
+    .ns-hours-grid { grid-template-columns: repeat(4, 1fr); }
+    .ns-toggle-row { flex-direction: column; align-items: flex-start; }
+}
+@media (max-width: 520px) {
+    .ns-dashboard-grid { grid-template-columns: 1fr; }
 }

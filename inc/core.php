@@ -322,7 +322,7 @@ class Core {
         add_submenu_page(
             'nextsafar-news',
             'آنالیز و پرووایدرها',
-            '📊 آنالیز و پرووایدرها',
+            'آنالیز و پرووایدرها',
             'manage_options',
             'nextsafar-news',
             [\NextSafar\Admin\News\DashboardPage::class, 'render']
@@ -332,7 +332,7 @@ class Core {
         add_submenu_page(
             'nextsafar-news',
             'تولید دستی',
-            '🎯 تولید دستی',
+            'تولید دستی',
             'manage_options',
             'nextsafar-news-manual',
             [\NextSafar\Admin\News\ManualSyncPage::class, 'render']
@@ -342,7 +342,7 @@ class Core {
         add_submenu_page(
             'nextsafar-news',
             'فیلترها',
-            '🎛️ فیلترها',
+            'فیلترها',
             'manage_options',
             'nextsafar-news-filter',
             [\NextSafar\Admin\News\FilterPage::class, 'render']
@@ -352,7 +352,7 @@ class Core {
         add_submenu_page(
             'nextsafar-news',
             'تنظیمات',
-            '⚙️ تنظیمات',
+            'تنظیمات',
             'manage_options',
             'nextsafar-news-settings',
             [\NextSafar\Admin\News\NewsSettingsPage::class, 'render']

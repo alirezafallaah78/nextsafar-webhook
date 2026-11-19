@@ -1293,3 +1293,200 @@ Buttons, Panels, Tables, Forms, Modals, Icons
     padding: 6px;
   }
 }
+
+/* ═══════════════════════════════════════════════════════════
+📐 FORM GRID SYSTEM — پایان استایل زیرهم و نامرتب
+═══════════════════════════════════════════════════════════ */
+.ns-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 24px;
+    align-items: start;
+}
+
+.ns-form-grid.cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.ns-form-grid > .span-2 { grid-column: span 2; }
+.ns-form-grid > .span-full { grid-column: 1 / -1; }
+.ns-form-grid .nextsafar-form-group { margin-bottom: 0; }
+
+@media (max-width: 1200px) {
+    .ns-form-grid.cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 900px) {
+    .ns-form-grid,
+    .ns-form-grid.cols-3 { grid-template-columns: 1fr; }
+    .ns-form-grid > .span-2,
+    .ns-form-grid > .span-full { grid-column: span 1; }
+}
+
+/* فوتر پنل برای دکمه‌ها و اکشن‌ها */
+.ns-panel-footer {
+    margin-top: 22px;
+    padding-top: 16px;
+    border-top: 1px solid var(--ns-divider);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.ns-hint {
+    font-size: 12px;
+    color: var(--ns-text-muted);
+    margin: 0;
+    line-height: 1.7;
+}
+
+/* بج تعداد */
+.ns-count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 22px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--ns-bg-sec);
+    color: var(--ns-text-muted);
+    font-size: 12px;
+    font-weight: 700;
+    margin-inline-start: 6px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🏷️ CHIPS — لیست فشرده کلمات (حل مشکل اسکرول ۵۰۰ کلمه)
+═══════════════════════════════════════════════════════════ */
+.ns-chips {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 8px;
+    max-height: 480px;
+    overflow-y: auto;
+    padding: 4px 4px 4px 2px;
+}
+
+.ns-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.ns-chip:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--ns-shadow-sm);
+}
+
+.ns-chip-positive {
+    background: var(--ns-success-bg);
+    border-color: rgba(16, 185, 129, 0.30);
+    color: var(--ns-success-text);
+}
+.ns-chip-negative {
+    background: var(--ns-danger-bg);
+    border-color: rgba(220, 38, 38, 0.30);
+    color: var(--ns-danger-text);
+}
+
+.ns-chip-weight {
+    font-size: 11px;
+    font-weight: 700;
+    opacity: 0.65;
+}
+
+.ns-chip-delete {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    opacity: 0.5;
+    cursor: pointer;
+    font-size: 13px;
+    line-height: 1;
+    padding: 0;
+}
+.ns-chip-delete:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.08);
+}
+
+/* لیست خالی */
+.ns-list-empty {
+    padding: 36px 20px;
+    text-align: center;
+    color: var(--ns-text-muted);
+    font-size: 13px;
+    width: 100%;
+}
+
+/* چیدمان دوستونه صفحه فیلترها */
+.ns-filter-layout {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+    align-items: start;
+}
+@media (max-width: 1100px) {
+    .ns-filter-layout { grid-template-columns: 1fr; }
+}
+
+.ns-keyword-search {
+    padding: 7px 12px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    background: var(--ns-bg);
+    font-size: 12.5px;
+    font-family: inherit;
+    min-width: 170px;
+    transition: all 0.2s ease;
+}
+.ns-keyword-search:focus {
+    border-color: var(--ns-primary);
+    box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15);
+    outline: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🔑 API KEY ROWS — ردیف‌های کارت‌مانند برای کلیدها
+═══════════════════════════════════════════════════════════ */
+.ns-api-key-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-end;
+    padding: 16px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius);
+    background: var(--ns-bg);
+    transition: border-color 0.2s ease;
+}
+.ns-api-key-row:hover { border-color: var(--ns-primary-light); }
+.ns-api-key-row + .ns-api-key-row { margin-top: 12px; }
+.ns-api-key-row .nextsafar-form-group { flex: 1; margin-bottom: 0; }
+
+.ns-api-key-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    min-width: 130px;
+}
+
+.ns-test-result { font-size: 12px; color: var(--ns-text-muted); }
+.ns-test-result.is-ok { color: var(--ns-success-text); font-weight: 700; }
+.ns-test-result.is-err { color: var(--ns-danger-text); font-weight: 700; }
+
+@media (max-width: 782px) {
+    .ns-api-key-row { flex-direction: column; align-items: stretch; }
+    .ns-api-key-actions { flex-direction: row; min-width: 0; }
+}

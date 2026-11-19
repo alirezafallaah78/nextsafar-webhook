@@ -1237,3 +1237,217 @@
     white-space: nowrap;
     border: 0;
 }
+
+/* ═══════════════════════════════════════════════════════════
+🎯 BASELINE NORMALIZATION
+بدون نیاز به تغییر مارک‌آپ — تمام متاباکس‌ها یکدست می‌شوند
+═══════════════════════════════════════════════════════════ */
+
+.postbox.nextsafar-metabox .inside {
+    font-family: var(--ns-font-family);
+    color: var(--ns-text);
+    font-size: 13px;
+}
+
+/* ── همه ورودی‌ها یک شکل ── */
+.postbox.nextsafar-metabox .inside input[type="text"],
+.postbox.nextsafar-metabox .inside input[type="number"],
+.postbox.nextsafar-metabox .inside input[type="url"],
+.postbox.nextsafar-metabox .inside input[type="email"],
+.postbox.nextsafar-metabox .inside input[type="date"],
+.postbox.nextsafar-metabox .inside input[type="time"],
+.postbox.nextsafar-metabox .inside select,
+.postbox.nextsafar-metabox .inside textarea {
+    width: 100%;
+    max-width: 100%;
+    padding: 9px 12px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    background: var(--ns-surface);
+    color: var(--ns-text);
+    font-size: 13px;
+    font-family: inherit;
+    line-height: 1.6;
+    box-shadow: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.postbox.nextsafar-metabox .inside input:focus,
+.postbox.nextsafar-metabox .inside select:focus,
+.postbox.nextsafar-metabox .inside textarea:focus {
+    border-color: var(--ns-primary);
+    box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15);
+    outline: none;
+}
+
+.postbox.nextsafar-metabox .inside textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+/* ── لبل‌ها و توضیحات ── */
+.postbox.nextsafar-metabox .inside label,
+.postbox.nextsafar-metabox .inside th label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ns-text);
+}
+
+.postbox.nextsafar-metabox .inside .description,
+.postbox.nextsafar-metabox .inside p.description {
+    font-size: 12px;
+    color: var(--ns-text-muted);
+    margin-top: 4px;
+    line-height: 1.7;
+}
+
+/* ── چک‌باکس و رادیو با رنگ تم ── */
+.postbox.nextsafar-metabox .inside input[type="checkbox"],
+.postbox.nextsafar-metabox .inside input[type="radio"] {
+    accent-color: var(--ns-primary);
+}
+
+/* ── جدول‌های وردپرسی داخل متاباکس ── */
+.postbox.nextsafar-metabox .inside table {
+    width: 100%;
+    border-collapse: collapse;
+}
+.postbox.nextsafar-metabox .inside table th {
+    text-align: right;
+    padding: 10px 0 10px 14px;
+    font-weight: 600;
+    color: var(--ns-text);
+    width: 180px;
+    vertical-align: top;
+}
+.postbox.nextsafar-metabox .inside table td {
+    padding: 8px 0;
+}
+.postbox.nextsafar-metabox .inside table td input,
+.postbox.nextsafar-metabox .inside table td select {
+    max-width: 420px;
+}
+
+/* ── دکمه‌های داخل متاباکس ── */
+.postbox.nextsafar-metabox .inside .button,
+.postbox.nextsafar-metabox .inside button:not(.ns-chip-delete) {
+    border-radius: var(--ns-radius-sm);
+    font-family: var(--ns-font-family);
+}
+
+/* ── جداکننده‌ها ── */
+.postbox.nextsafar-metabox .inside hr {
+    border: none;
+    border-top: 1px solid var(--ns-divider);
+    margin: 18px 0;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🧩 UNIFIED METABOX COMPONENTS
+کلاس‌های استاندارد — متاباکس‌ها به ترتیب به این مهاجرت می‌کنن
+═══════════════════════════════════════════════════════════ */
+
+/* گرید فیلدها */
+.nsm-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px 20px;
+}
+.nsm-grid > .span-2 { grid-column: span 2; }
+.nsm-grid > .span-full { grid-column: 1 / -1; }
+
+@media (max-width: 850px) {
+    .nsm-grid { grid-template-columns: 1fr; }
+    .nsm-grid > .span-2,
+    .nsm-grid > .span-full { grid-column: span 1; }
+}
+
+/* فیلد استاندارد */
+.nsm-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.nsm-field > label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ns-text);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* بخش‌بندی داخل متاباکس */
+.nsm-section {
+    margin-top: 22px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ns-divider);
+}
+.nsm-section:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+}
+.nsm-section-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--ns-text);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* گرید چک‌باکس — امکانات، سرویس‌ها، ایرلاین‌ها */
+.nsm-check-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+    gap: 8px;
+}
+.nsm-check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 12px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    background: var(--ns-surface);
+    cursor: pointer;
+    font-size: 13px;
+    margin: 0;
+    user-select: none;
+    transition: all 0.15s ease;
+}
+.nsm-check-item:hover {
+    border-color: var(--ns-primary);
+    background: var(--ns-primary-light-3);
+}
+.nsm-check-item input[type="checkbox"] {
+    margin: 0 !important;
+    flex-shrink: 0;
+}
+.nsm-check-item.checked,
+.nsm-check-item:has(input:checked) {
+    background: var(--ns-primary-light-2);
+    border-color: var(--ns-primary);
+    color: var(--ns-primary-dark);
+    font-weight: 600;
+}
+
+/* ردیف ساعت کاری */
+.nsm-hours-row {
+    display: grid;
+    grid-template-columns: 100px 1fr 1fr 80px;
+    gap: 10px;
+    align-items: center;
+    padding: 8px 12px;
+    background: var(--ns-bg);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+}
+.nsm-hours-row + .nsm-hours-row { margin-top: 6px; }
+.nsm-hours-row .day-name { font-weight: 600; font-size: 13px; }
+
+@media (max-width: 700px) {
+    .nsm-hours-row { grid-template-columns: 80px 1fr 1fr; }
+}
