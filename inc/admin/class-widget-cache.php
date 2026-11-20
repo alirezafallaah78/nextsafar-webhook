@@ -107,16 +107,29 @@ class NextSafar_Widget_Cache {
     }
 
     /**
-     * ✅ یک‌بار per-request per-post (جلوگیری از flush دوبل save_post + transition_post_status)
+     * ✅ فقط هنگام تغییر واقعی پست کش را پاک کن (نه هنگام auto-draft یا لود اولیه)
      */
     public static function clear_post_cache( $post_id, $post, $update ) {
         if ( ! $post instanceof WP_Post ) {
             return;
         }
-        if ( ! in_array( $post->post_type, array( 'post', 'page', 'tour', 'visa' ), true ) ) {
+        
+        // ❌ رد کردن auto-draft (هنگام باز کردن صفحه post-new.php)
+        if ( 'auto-draft' === $post->post_status ) {
+            return;
+        }
+        
+        // ❌ رد کردن revision ها
+        if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+            return;
+        }
+        
+        // ❌ فقط برای post type های مشخص
+        if ( ! in_array( $post->post_type, array( 'post', 'page', 'tour', 'visa', 'hotel', 'restaurant', 'destination', 'hospital', 'airport', 'travelguide', 'travelnews' ), true ) ) {
             return;
         }
 
+        // ❌ جلوگیری از اجرای تکراری (save_post + transition_post_status)
         static $done = array();
         $pid = (int) $post->ID;
         if ( isset( $done[ $pid ] ) ) {
@@ -124,10 +137,17 @@ class NextSafar_Widget_Cache {
         }
         $done[ $pid ] = true;
 
-        self::delete( 'expiring_tours' );
-        self::delete( 'upcoming_tours' );
-        self::delete( 'recent_bookings' );
+        // ✅ فقط برای post type های خاص، کش‌های مرتبط را پاک کن
+        if ( in_array( $post->post_type, array( 'tour' ), true ) ) {
+            self::delete( 'expiring_tours' );
+            self::delete( 'upcoming_tours' );
+        }
+        
+        // ✅ yoast_stats برای همه post type ها
         self::delete( 'yoast_stats' );
+        
+        // ✅ recent_bookings فقط برای booking-related post types
+        // اگر booking post type دارید، اینجا اضافه کنید
     }
 
     public static function clear_post_related_cache( $post_id ) {

@@ -1,238 +1,211 @@
-/* ==========================================================================
-   NextSafar Visa Metabox Styles
-   ========================================================================== */
+/* =========================================================
+🛂 Visa Metabox - استایل‌های خاص ویزا
+========================================================= */
 
-.nextsafar-visa-metabox {
-  padding: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
-/* ==========================================================================
-   Prices
-   ========================================================================== */
-
-/* ✅ هدر ستون‌ها — دقیقاً هم‌اندازه گرید ردیف‌ها */
+/* ═══ Visa Prices Header ═══ */
 .ns-visa-prices-header {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
-  gap: 10px;
-  padding: 0 12px 6px;
-  font-size: 12px;
-  font-weight: 600;
-  color: #50575e;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
+    gap: 10px;
+    padding: 0 12px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ns-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
 }
 
 .ns-visa-prices-header span:last-child {
-  width: 32px;
+    width: 32px;
+    text-align: center;
 }
 
 .ns-visa-prices-wrapper {
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  padding: 15px;
-  margin-bottom: 15px;
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius);
+    padding: 16px;
+    margin-bottom: 16px;
+    background: var(--ns-bg-sec);
 }
 
 .ns-visa-prices-wrapper:empty {
-  display: none;
+    display: none;
 }
 
-/* ✅ قبلاً 7 ستون تعریف شده بود ولی هر ردیف 6 سلول دارد (5 فیلد + دکمه حذف) */
 .ns-visa-price-group {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
-  gap: 10px;
-  padding: 12px;
-  background: #f9f9f9;
-  border-radius: 6px;
-  margin-bottom: 10px;
-  align-items: center;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr 1.2fr auto;
+    gap: 10px;
+    padding: 14px;
+    background: var(--ns-surface);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    margin-bottom: 10px;
+    align-items: center;
+    transition: all var(--ns-tr);
+}
+
+.ns-visa-price-group:hover {
+    border-color: var(--ns-primary);
+    box-shadow: var(--ns-shadow-sm);
 }
 
 .ns-visa-price-group input,
 .ns-visa-price-group select {
-  width: 100%;
-  min-width: 0;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 13px;
-  box-sizing: border-box;
-  background: #fff;
+    width: 100%;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid var(--ns-border-dark);
+    border-radius: var(--ns-radius-sm);
+    font-size: 13px;
+    font-family: var(--ns-font);
+    background: var(--ns-surface);
+    transition: all var(--ns-tr);
 }
 
 .ns-visa-price-group input:focus,
 .ns-visa-price-group select:focus {
-  border-color: #2271b1;
-  outline: none;
-  box-shadow: 0 0 0 1px #2271b1;
+    border-color: var(--ns-primary);
+    box-shadow: 0 0 0 3px var(--ns-primary-light-3);
+    outline: none;
 }
 
 .ns-remove-visa-price {
-  background: #d63638;
-  color: #fff;
-  border: none;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  line-height: 1;
+    background: var(--ns-danger);
+    color: white;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    transition: all var(--ns-tr);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .ns-remove-visa-price:hover {
-  background: #b32d2e;
+    background: var(--ns-danger-text);
+    transform: scale(1.1);
 }
 
-.ns-btn-add {
-  padding: 8px 16px;
-  background: #2271b1;
-  color: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 13px;
-}
-
-.ns-btn-add:hover {
-  background: #135e96;
-}
-
-/* ==========================================================================
-   Visa Information
-   ========================================================================== */
-
+/* ═══ Visa Info Grid ═══ */
 .ns-visa-info-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
 }
 
-.ns-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.ns-field label {
-  font-weight: 600;
-  font-size: 13px;
-  color: #1d2327;
-}
-
-.ns-input {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-}
-
-.ns-input:focus {
-  border-color: #2271b1;
-  outline: none;
-  box-shadow: 0 0 0 1px #2271b1;
-}
-
-/* ==========================================================================
-   Documents
-   ========================================================================== */
-
+/* ═══ Visa Documents ═══ */
 .ns-visa-docs-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 12px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
 }
 
 .ns-visa-doc-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px;
-  background: #f9f9f9;
-  border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    background: var(--ns-bg-sec);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    transition: all var(--ns-tr);
+}
+
+.ns-visa-doc-item:hover {
+    border-color: var(--ns-primary);
 }
 
 .ns-visa-doc-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  min-width: 150px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    min-width: 150px;
 }
 
 .ns-visa-doc-label input {
-  width: 18px;
-  height: 18px;
-  cursor: pointer;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--ns-primary);
+    cursor: pointer;
 }
 
 .ns-visa-doc-text {
-  flex: 1;
-  padding: 6px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 12px;
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid var(--ns-border-dark);
+    border-radius: var(--ns-radius-sm);
+    font-size: 12px;
+    font-family: var(--ns-font);
 }
 
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
-
-@media (max-width: 1024px) {
-  .ns-visa-prices-header {
-    display: none;
-  }
-
-  .ns-visa-price-group {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-@media (max-width: 768px) {
-  .ns-visa-price-group {
-    grid-template-columns: 1fr;
-  }
-
-  .ns-visa-info-grid,
-  .ns-visa-docs-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* ==========================================================================
-   Visa Banner Image
-   ========================================================================== */
-
+/* ═══ Visa Banner ═══ */
 .ns-visa-banner-field {
-  padding: 10px;
+    padding: 12px;
 }
 
 .ns-visa-banner-preview {
-  min-height: 80px;
-  border: 2px dashed #d1d5db;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f9fafb;
-  overflow: hidden;
+    min-height: 100px;
+    border: 2px dashed var(--ns-border-dark);
+    border-radius: var(--ns-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ns-bg-sec);
+    overflow: hidden;
+    transition: all var(--ns-tr);
+}
+
+.ns-visa-banner-preview:hover {
+    border-color: var(--ns-primary);
+    background: var(--ns-primary-light-3);
 }
 
 .ns-visa-banner-placeholder {
-  color: #9ca3af;
-  font-size: 13px;
-  padding: 20px;
-  text-align: center;
+    color: var(--ns-text-muted);
+    font-size: 13px;
+    padding: 24px;
+    text-align: center;
 }
 
 .ns-visa-banner-buttons {
-  display: flex;
-  gap: 8px;
+    display: flex;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 .ns-visa-banner-buttons .button {
-  flex: 1;
-  text-align: center;
+    flex: 1;
+    text-align: center;
+    border-radius: var(--ns-radius-sm);
+    font-family: var(--ns-font);
+}
+
+/* ═══ Responsive ═══ */
+@media (max-width: 1024px) {
+    .ns-visa-prices-header {
+        display: none;
+    }
+    
+    .ns-visa-price-group {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .ns-visa-price-group {
+        grid-template-columns: 1fr;
+    }
+    
+    .ns-visa-info-grid,
+    .ns-visa-docs-grid {
+        grid-template-columns: 1fr;
+    }
 }

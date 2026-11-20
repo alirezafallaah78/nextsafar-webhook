@@ -1,4 +1,5 @@
-<?php if (!defined('ABSPATH')) exit;
+<?php
+if (!defined('ABSPATH')) exit;
 
 $visa_options = \NextSafar\MetaBoxes\TravelGuideMetaBox::get_visa_options();
 $safety_options = \NextSafar\MetaBoxes\TravelGuideMetaBox::get_safety_options();
@@ -8,7 +9,10 @@ $season_options = \NextSafar\MetaBoxes\TravelGuideMetaBox::get_season_options();
 
     <!-- Basic Information -->
     <div class="ns-section">
-        <h3 class="ns-section-title">🌍 اطلاعات پایه کشور</h3>
+        <h3 class="ns-section-title">
+            <svg class="ns-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            اطلاعات پایه کشور
+        </h3>
 
         <div class="ns-grid ns-grid-2">
             <?php
@@ -26,7 +30,8 @@ $season_options = \NextSafar\MetaBoxes\TravelGuideMetaBox::get_season_options();
             ];
 
             foreach ($text_fields as $id => $label) :
-                $value = get_post_meta($post->ID, '_' . $id, true); ?>
+                $value = get_post_meta($post->ID, '_' . $id, true);
+            ?>
                 <div class="ns-field">
                     <label for="<?= esc_attr($id); ?>"><?= esc_html($label); ?>:</label>
                     <input class="ns-input" type="text" id="<?= esc_attr($id); ?>"
@@ -38,7 +43,10 @@ $season_options = \NextSafar\MetaBoxes\TravelGuideMetaBox::get_season_options();
 
     <!-- Travel Information -->
     <div class="ns-section">
-        <h3 class="ns-section-title">✈️ اطلاعات سفر</h3>
+        <h3 class="ns-section-title">
+            <svg class="ns-icon" viewBox="0 0 24 24"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>
+            اطلاعات سفر
+        </h3>
 
         <div class="ns-grid ns-grid-3">
             <?php

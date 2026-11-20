@@ -25,9 +25,6 @@ class GeoSchema
         'restaurant',
         'hospital',
         'tour',
-        'visa',
-        'travelguide',
-        'travelnews',
     ];
 
     /**

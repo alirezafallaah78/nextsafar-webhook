@@ -41,7 +41,18 @@ class NextSafar_Dashboard_Insights {
         );
     }
 
-    public static function flush_local() {
+    public static function flush_local( $post_id = null ) {
+        // ❌ رد کردن auto-draft
+        if ( $post_id ) {
+            $post = get_post( $post_id );
+            if ( $post && 'auto-draft' === $post->post_status ) {
+                return;
+            }
+            if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+                return;
+            }
+        }
+        
         foreach ( array( 'media', 'orphaned', 'coverage' ) as $key ) {
             delete_transient( self::PREFIX . $key );
         }

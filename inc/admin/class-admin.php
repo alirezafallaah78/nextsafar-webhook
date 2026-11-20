@@ -909,7 +909,6 @@ class NextSafar_Admin {
             'visa'        => 'ویزا',
             'travelguide' => 'راهنمای سفر',
             'travelnews'  => 'خبر',
-            'tour'        => 'تور',
             'attachment'  => 'رسانه',
             'category'    => 'دسته‌بندی',
             'user'        => 'کاربر',

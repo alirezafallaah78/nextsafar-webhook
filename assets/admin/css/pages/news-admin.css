@@ -269,3 +269,372 @@
 @media (max-width: 520px) {
     .ns-dashboard-grid { grid-template-columns: 1fr; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+📦 ALIAS CLASSES — سازگاری با ساختار فعلی
+═══════════════════════════════════════════════════════════ */
+
+/* .ns-card = .nextsafar-panel */
+.ns-card {
+    background: var(--ns-surface);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius);
+    overflow: hidden;
+    box-shadow: var(--ns-shadow-sm);
+    margin-bottom: 24px;
+}
+
+.ns-card h2 {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 20px 24px;
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ns-text-strong);
+    border-bottom: 1px solid var(--ns-border);
+    background: linear-gradient(180deg, #f8fbff 0%, #ffffff 100%);
+}
+
+.ns-card h2::before {
+    content: "";
+    width: 4px;
+    height: 20px;
+    border-radius: 999px;
+    background: linear-gradient(180deg, var(--ns-primary), var(--ns-primary-dark));
+}
+
+.ns-card > *:not(h2) {
+    padding: 20px 24px;
+}
+
+/* .ns-input = .nextsafar-form-input */
+.ns-input {
+    width: 100%;
+    padding: 0 14px;
+    border: 1px solid var(--ns-border-dark);
+    border-radius: var(--ns-radius-sm);
+    background: #fff;
+    color: var(--ns-text);
+    font-size: 13px;
+    font-family: var(--ns-font);
+    outline: none;
+    transition: all 0.2s ease;
+    height: 40px;
+}
+
+.ns-input:focus {
+    border-color: var(--ns-primary);
+    box-shadow: 0 0 0 3px rgba(67, 171, 255, 0.15);
+}
+
+.ns-input[dir="ltr"] {
+    text-align: left;
+    direction: ltr;
+}
+
+.ns-input-small {
+    max-width: 120px;
+    height: 36px;
+    text-align: center;
+}
+
+/* .ns-form-row — برای فرم‌های خطی */
+.ns-form-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+.ns-form-row:last-child {
+    margin-bottom: 0;
+}
+
+.ns-form-row label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ns-text);
+    min-width: 160px;
+    flex-shrink: 0;
+}
+
+.ns-form-row .ns-input {
+    flex: 1;
+    max-width: 400px;
+}
+
+@media (max-width: 782px) {
+    .ns-form-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ns-form-row label {
+        min-width: 0;
+        margin-bottom: 6px;
+    }
+    
+    .ns-form-row .ns-input {
+        max-width: none;
+    }
+}
+
+/* .ns-submit-row — دکمه ذخیره */
+.ns-submit-row {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ns-divider);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+📊 MINI STATS — آمار کوچک در داشبورد اخبار
+═══════════════════════════════════════════════════════════ */
+.ns-mini-stat {
+    background: var(--ns-bg-sec);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    padding: 12px 16px;
+    text-align: center;
+    transition: all var(--ns-tr);
+}
+
+.ns-mini-stat:hover {
+    border-color: var(--ns-primary);
+    transform: translateY(-1px);
+}
+
+.ns-mini-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--ns-primary-dark);
+    line-height: 1.2;
+    margin-bottom: 4px;
+    font-feature-settings: "tnum" on, "lnum" on;
+}
+
+.ns-mini-label {
+    font-size: 11px;
+    color: var(--ns-text-muted);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🧪 TEST ROW — تست اتصال API
+═══════════════════════════════════════════════════════════ */
+.ns-test-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    padding: 12px;
+    background: var(--ns-bg-sec);
+    border-radius: var(--ns-radius-sm);
+}
+
+.ns-test-btn {
+    min-height: 36px !important;
+    padding: 0 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+}
+
+.ns-test-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.ns-test-result {
+    font-size: 12px;
+    color: var(--ns-text-muted);
+    font-weight: 500;
+    padding: 4px 10px;
+    border-radius: var(--ns-radius-xs);
+    background: transparent;
+    transition: all var(--ns-tr);
+}
+
+.ns-test-result.is-ok {
+    color: var(--ns-success-text);
+    background: var(--ns-success-bg);
+    font-weight: 700;
+}
+
+.ns-test-result.is-err {
+    color: var(--ns-danger-text);
+    background: var(--ns-danger-bg);
+    font-weight: 700;
+}
+
+/* ═══════════════════════════════════════════════════════════
+📋 AI STATUS BOX — وضعیت هوش مصنوعی
+═══════════════════════════════════════════════════════════ */
+.ns-ai-active {
+    background: var(--ns-success-bg);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    border-radius: var(--ns-radius);
+    padding: 20px;
+    color: var(--ns-success-text);
+}
+
+.ns-ai-active p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.ns-ai-active p:last-child {
+    margin-bottom: 0;
+}
+
+.ns-ai-active strong {
+    font-weight: 700;
+    color: var(--ns-success-text);
+}
+
+/* ═══════════════════════════════════════════════════════════
+📊 TABLE OVERRIDES — جدول منابع RSS
+═══════════════════════════════════════════════════════════ */
+#sources-table-container .nextsafar-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--ns-surface);
+}
+
+#sources-table-container .nextsafar-table th {
+    padding: 12px 16px;
+    border-bottom: 2px solid var(--ns-border);
+    background: #f8fbff;
+    color: var(--ns-text-secondary);
+    font-size: 11px;
+    font-weight: 600;
+    text-align: right;
+    white-space: nowrap;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+#sources-table-container .nextsafar-table td {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--ns-border);
+    color: var(--ns-text);
+    font-size: 13px;
+    vertical-align: middle;
+}
+
+#sources-table-container .nextsafar-table tbody tr {
+    transition: background 0.15s ease;
+}
+
+#sources-table-container .nextsafar-table tbody tr:hover {
+    background: var(--ns-primary-light-3);
+}
+
+#sources-table-container .nextsafar-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🎨 BADGE SYSTEM — بج‌های یکپارچه
+═══════════════════════════════════════════════════════════ */
+.ns-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+.ns-badge-primary {
+    background: var(--ns-primary-light-2);
+    color: var(--ns-primary-dark);
+}
+
+.ns-badge-success {
+    background: var(--ns-success-bg);
+    color: var(--ns-success-text);
+}
+
+.ns-badge-warning {
+    background: var(--ns-warning-bg);
+    color: var(--ns-warning-text);
+}
+
+.ns-badge-danger {
+    background: var(--ns-danger-bg);
+    color: var(--ns-danger-text);
+}
+
+.ns-badge-info {
+    background: var(--ns-info-bg);
+    color: var(--ns-info-text);
+}
+
+.ns-badge-neutral {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+/* ═══════════════════════════════════════════════════════════
+🎯 STAT CARD VARIANTS — رنگ‌بندی کارت‌های آمار
+═══════════════════════════════════════════════════════════ */
+.ns-stat-card {
+    position: relative;
+    overflow: hidden;
+}
+
+.ns-stat-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--ns-primary);
+    border-radius: 0 var(--ns-radius) var(--ns-radius) 0;
+}
+
+.ns-stat-card.ns-stat-primary::before { background: var(--ns-primary); }
+.ns-stat-card.ns-stat-success::before { background: var(--ns-success); }
+.ns-stat-card.ns-stat-warning::before { background: var(--ns-warning); }
+.ns-stat-card.ns-stat-danger::before { background: var(--ns-danger); }
+.ns-stat-card.ns-stat-info::before { background: var(--ns-info); }
+.ns-stat-card.ns-stat-purple::before { background: #8b5cf6; }
+
+/* ═══════════════════════════════════════════════════════════
+📱 RESPONSIVE FIXES
+═══════════════════════════════════════════════════════════ */
+@media (max-width: 782px) {
+    .ns-card {
+        margin-bottom: 16px;
+    }
+    
+    .ns-card h2 {
+        padding: 16px 18px;
+        font-size: 14px;
+    }
+    
+    .ns-card > *:not(h2) {
+        padding: 16px 18px;
+    }
+    
+    .ns-test-row {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .ns-test-btn {
+        width: 100%;
+    }
+}

@@ -5,13 +5,6 @@ $negative = (isset($negative) && is_array($negative)) ? $negative : array();
 ?>
 
 <div class="wrap nextsafar-wrap">
-    <div class="nextsafar-page-header">
-        <div>
-            <h1>مدیریت فیلترها</h1>
-            <p>کلمات کلیدی مثبت و منفی برای امتیازدهی و فیلتر اخبار</p>
-        </div>
-    </div>
-
     <!-- ═══ افزودن کلمه ═══ -->
     <div class="nextsafar-panel">
         <div class="nextsafar-panel-header"><h2>افزودن کلمه کلیدی جدید</h2></div>

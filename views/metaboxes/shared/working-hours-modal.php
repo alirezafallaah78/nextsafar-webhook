@@ -1,11 +1,15 @@
 <?php if (!defined('ABSPATH')) exit; ?>
+
 <div id="working-hours-modal" style="display:none;">
     <div class="ns-modal-overlay"></div>
 
     <div class="ns-modal-content">
         <div class="ns-modal-header">
-            <h3>⏰ تنظیم ساعات کاری</h3>
-            <button type="button" class="close-modal">✕</button>
+            <h3>
+                <svg class="ns-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                تنظیم ساعات کاری
+            </h3>
+            <button type="button" class="close-modal">×</button>
         </div>
 
         <div class="ns-modal-body">
@@ -19,7 +23,7 @@
                 foreach ($days as $i => $day) :
                 ?>
                     <tr>
-                        <td><?= $day_names[$i]; ?></td>
+                        <td><strong><?= $day_names[$i]; ?></strong></td>
                         <td><input type="time" class="wh-start" data-day="<?= $day; ?>"></td>
                         <td>تا</td>
                         <td><input type="time" class="wh-end" data-day="<?= $day; ?>"></td>
@@ -31,8 +35,8 @@
         </div>
 
         <div class="ns-modal-footer">
-            <button type="button" class="button" id="save-working-hours">ذخیره</button>
-            <button type="button" class="button close-modal">انصراف</button>
+            <button type="button" class="nextsafar-primary-button" id="save-working-hours">ذخیره</button>
+            <button type="button" class="nextsafar-secondary-button close-modal">انصراف</button>
         </div>
     </div>
 </div>

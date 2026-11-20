@@ -21,9 +21,14 @@ $source   = get_post_meta($post->ID, '_country_flag_source', true);
     <!-- Flag preview -->
     <div class="ns-flag-preview" id="ns-flag-preview">
         <?php if ($flag_url) : ?>
-            <img src="<?= esc_url($flag_url); ?>" alt="پرچم" style="max-width: 100%; border-radius: 6px;">
+            <img src="<?= esc_url($flag_url); ?>" alt="پرچم">
         <?php else : ?>
-            <div class="ns-flag-placeholder">🏳️<br>پرچمی انتخاب نشده</div>
+            <div class="ns-flag-placeholder">
+                <svg class="ns-icon" viewBox="0 0 24 24" style="width:40px;height:40px;margin-bottom:8px;color:var(--ns-text-muted);">
+                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/>
+                </svg>
+                <br>پرچمی انتخاب نشده
+            </div>
         <?php endif; ?>
     </div>
 
@@ -32,36 +37,19 @@ $source   = get_post_meta($post->ID, '_country_flag_source', true);
     <input type="hidden" name="country_iso" id="ns-country-iso" value="<?= esc_attr($iso_code); ?>">
     <input type="hidden" name="country_flag_source" id="ns-country-flag-source" value="<?= esc_attr($source); ?>">
 
-    <!-- دکمه‌ها -->
+    <!-- Buttons -->
     <div class="ns-flag-buttons">
-        <button type="button" id="ns-flag-upload" class="button button-primary" style="width:100%;">
-            📁 آپلود پرچم دستی
+        <button type="button" id="ns-flag-upload" class="nextsafar-primary-button">
+            <svg class="ns-icon ns-icon-sm" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            آپلود پرچم دستی
         </button>
-        <button type="button" id="ns-flag-remove" class="button-link-delete" style="width:100%; margin-top:6px; text-align:center;">
-            🗑️ حذف پرچم
+        <button type="button" id="ns-flag-remove" class="nextsafar-secondary-button">
+            <svg class="ns-icon ns-icon-sm" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            حذف پرچم
         </button>
     </div>
-</div>
 
-<style>
-.ns-flag-wrapper { padding: 5px; }
-.ns-flag-status { margin-bottom: 10px; text-align: center; }
-.ns-flag-preview {
-    border: 2px dashed #ddd;
-    border-radius: 8px;
-    padding: 15px;
-    text-align: center;
-    margin-bottom: 12px;
-    min-height: 80px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #fafafa;
-}
-.ns-flag-preview img { max-height: 80px; }
-.ns-flag-placeholder { color: #999; font-size: 12px; }
-.ns-badge { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500; }
-.ns-badge-manual { background: #d4edda; color: #155724; }
-.ns-badge-api { background: #d1ecf1; color: #0c5460; }
-.ns-badge-empty { background: #fff3cd; color: #856404; }
-</style>
+    <p class="ns-flag-help">
+        💡 تصویر پرچم یا لوگوی کشور. در صورت انتخاب دستی، در sync بعدی API بازنویسی نمی‌شود.
+    </p>
+</div>

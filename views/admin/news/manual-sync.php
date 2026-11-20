@@ -1,13 +1,6 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 
 <div class="wrap nextsafar-wrap">
-    <div class="nextsafar-page-header">
-        <div>
-            <h1>تولید دستی اخبار</h1>
-            <p>دریافت و پردازش دستی اخبار از منابع RSS و API</p>
-        </div>
-    </div>
-
     <div class="nextsafar-panel">
         <div class="nextsafar-panel-header"><h2>تنظیمات سینک</h2></div>
         <div class="nextsafar-panel-body">

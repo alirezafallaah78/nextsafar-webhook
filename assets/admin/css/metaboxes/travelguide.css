@@ -1,89 +1,62 @@
-/* ==========================================================================
-   NextSafar TravelGuide Metabox Styles
-   ========================================================================== */
+/* =========================================================
+🗺️ TravelGuide Metabox - استایل‌های خاص راهنمای سفر
+========================================================= */
 
-.nextsafar-travelguide-metabox {
-  padding: 15px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+/* ═══ Guide Sections ═══ */
+.ns-guide-section-item {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 16px;
+    background: var(--ns-bg-sec);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius);
+    margin-bottom: 12px;
 }
 
-.ns-section {
-  background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 6px;
-  padding: 20px;
-  margin-bottom: 20px;
+.ns-guide-section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
-.ns-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1d2327;
-  border-bottom: 2px solid #2271b1;
-  padding-bottom: 10px;
-  margin: 0 0 20px 0;
+.ns-guide-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--ns-text-strong);
 }
 
-/* ==========================================================================
-   Grid System
-   ========================================================================== */
-
-.ns-grid {
-  display: grid;
-  gap: 15px;
+/* ═══ Tips List ═══ */
+.ns-tip-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px;
+    background: var(--ns-surface);
+    border: 1px solid var(--ns-border);
+    border-radius: var(--ns-radius-sm);
+    margin-bottom: 8px;
 }
 
-.ns-grid-2 {
-  grid-template-columns: repeat(2, 1fr);
+.ns-tip-icon {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--ns-info-bg);
+    color: var(--ns-info-text);
+    border-radius: 50%;
+    font-size: 12px;
+    flex-shrink: 0;
 }
 
-.ns-grid-3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-/* ==========================================================================
-   Form Fields
-   ========================================================================== */
-
-.ns-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.ns-field label {
-  font-size: 13px;
-  font-weight: 500;
-  color: #555;
-}
-
-.ns-input {
-  padding: 8px 10px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 100%;
-}
-
-.ns-input:focus {
-  border-color: #2271b1;
-  outline: none;
-  box-shadow: 0 0 0 1px #2271b1;
-}
-
-/* ==========================================================================
-   Responsive
-   ========================================================================== */
-
-@media (max-width: 1024px) {
-  .ns-grid-3 {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
+/* ═══ Responsive ═══ */
 @media (max-width: 768px) {
-  .ns-grid-2,
-  .ns-grid-3 {
-    grid-template-columns: 1fr;
-  }
+    .ns-guide-section-item {
+        padding: 12px;
+    }
 }

@@ -84,7 +84,6 @@
       const icons = {
         post: "📝",
         page: "📄",
-        tour: "✈",
         visa: "🛂",
         attachment: "🖼",
         category: "▧",

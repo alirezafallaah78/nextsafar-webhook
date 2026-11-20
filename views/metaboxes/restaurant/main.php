@@ -1,4 +1,5 @@
-<?php if (!defined('ABSPATH')) exit;
+<?php
+if (!defined('ABSPATH')) exit;
 
 $text_fields = [
     'restaurant_mail'         => 'ایمیل',
@@ -10,20 +11,22 @@ $text_fields = [
 ];
 ?>
 <div class="nextsafar-restaurant-metabox">
-
-<div class="ns-section">
-    <h3 class="ns-section-title">📋 اطلاعات تکمیلی رستوران</h3>
-    <div class="ns-grid ns-grid-2">
-        <?php foreach ($text_fields as $id => $label) :
-            $value = get_post_meta($post->ID, '_' . $id, true); ?>
-        <div class="ns-field">
-            <label for="<?= esc_attr($id); ?>"><?= esc_html($label); ?>:</label>
-            <input class="ns-input" type="text" id="<?= esc_attr($id); ?>"
-                   name="<?= esc_attr($id); ?>" value="<?= esc_attr($value); ?>">
+    <div class="ns-section">
+        <h3 class="ns-section-title">
+            <svg class="ns-icon" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 0 1 0 8h-1M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8zM6 1v3M10 1v3M14 1v3"/></svg>
+            اطلاعات تکمیلی رستوران
+        </h3>
+        <div class="ns-grid ns-grid-2">
+            <?php foreach ($text_fields as $id => $label) :
+                $value = get_post_meta($post->ID, '_' . $id, true);
+            ?>
+                <div class="ns-field">
+                    <label for="<?= esc_attr($id); ?>"><?= esc_html($label); ?>:</label>
+                    <input class="ns-input" type="text" id="<?= esc_attr($id); ?>"
+                           name="<?= esc_attr($id); ?>" value="<?= esc_attr($value); ?>">
+                </div>
+            <?php endforeach; ?>
         </div>
-        <?php endforeach; ?>
+        <p class="ns-hint">ℹ️ نام انگلیسی، شهر/کشور، آدرس، مختصات، تماس، وب‌سایت، امتیاز، نوع و سطح قیمت در «اطلاعات مکانی و سینک».</p>
     </div>
-    <p class="description">ℹ️ نام انگلیسی، شهر/کشور، آدرس، مختصات، تماس، وب‌سایت، امتیاز، نوع و سطح قیمت در «📍 اطلاعات مکانی و سینک».</p>
-</div>
-
 </div>

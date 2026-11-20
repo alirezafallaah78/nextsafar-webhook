@@ -12,8 +12,8 @@ class GalleryMetaBox {
      */
     public static function get_supported_post_types() {
         return apply_filters('nextsafar_gallery_post_types', [
-            'hotel', 'destination', 'flight', 'restaurant', 'tour',
-            'visa', 'airport', 'hospital', 'travelnews', 'post',
+            'hotel', 'destination', 'flight', 'restaurant',
+            'airport', 'hospital', 'travelnews', 'post',
         ]);
     }
 

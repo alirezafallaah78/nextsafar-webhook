@@ -1,135 +1,103 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 
 <div class="wrap nextsafar-wrap">
-    <div class="nextsafar-page-header">
-        <div>
-            <h1>آنالیز و پرووایدرها</h1>
-            <p>آمار کلی سیستم اخبار، وضعیت منابع و عملکرد هوش مصنوعی</p>
-        </div>
-    </div>
-
     <!-- ═══ آمار کلی ═══ -->
     <div class="ns-dashboard-grid">
-
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-primary">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/>
-                    <path d="M18 14h-8"/><path d="M15 18h-5"/><path d="M10 6h8v4h-8V6Z"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><path d="M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2"/><path d="M18 14h-8M15 18h-5M10 6h8v4h-8V6Z"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($stats['total_posts'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($stats['total_posts'] ?? 0); ?></div>
                 <div class="ns-stat-label">کل اخبار</div>
             </div>
         </div>
 
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-success">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M8 2v4"/><path d="M16 2v4"/>
-                    <rect x="3" y="4" width="18" height="18" rx="2"/>
-                    <path d="M3 10h18"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($stats['today_posts'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($stats['today_posts'] ?? 0); ?></div>
                 <div class="ns-stat-label">امروز</div>
             </div>
         </div>
 
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-info">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M21.801 10A10 10 0 1 1 17 3.335"/>
-                    <path d="m9 11 3 3L22 4"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($filterStats['total_published'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($filterStats['total_published'] ?? 0); ?></div>
                 <div class="ns-stat-label">منتشر شده</div>
             </div>
         </div>
 
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-warning">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/>
-                    <path d="M14 2v4a2 2 0 0 0 2 2h4"/>
-                    <path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($filterStats['total_draft'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($filterStats['total_draft'] ?? 0); ?></div>
                 <div class="ns-stat-label">پیش‌نویس</div>
             </div>
         </div>
 
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-danger">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M3 6h18"/>
-                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/>
-                    <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                    <path d="M10 11v6"/><path d="M14 11v6"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($filterStats['total_deleted'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($filterStats['total_deleted'] ?? 0); ?></div>
                 <div class="ns-stat-label">فیلتر شده</div>
             </div>
         </div>
 
-        <div class="ns-stat-card">
+        <div class="ns-stat-card ns-stat-purple">
             <div class="ns-stat-icon">
-                <svg class="ns-icon" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="m17 2 4 4-4 4"/>
-                    <path d="M3 11v-1a4 4 0 0 1 4-4h14"/>
-                    <path d="m7 22-4-4 4-4"/>
-                    <path d="M21 13v1a4 4 0 0 1-4 4H3"/>
-                </svg>
+                <svg class="ns-icon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             </div>
             <div class="ns-stat-content">
-                <div class="ns-stat-value"><?php echo number_format($stats['total_duplicates'] ?? 0); ?></div>
+                <div class="ns-stat-value"><?= number_format($stats['total_duplicates'] ?? 0); ?></div>
                 <div class="ns-stat-label">تکراری حذف شده</div>
             </div>
         </div>
     </div>
 
-    <!-- ═══ وضعیت هوش مصنوعی ═══ -->
+    <!-- ═══ وضعیت AI ═══ -->
     <div class="nextsafar-panel">
         <div class="nextsafar-panel-header">
             <h2>وضعیت هوش مصنوعی (Gemini)</h2>
         </div>
         <div class="nextsafar-panel-body">
-            <?php if ($aiStatus['is_disabled'] ?? false) : ?>
+            <?php if ($aiStatus['is_disabled'] ?? false): ?>
                 <div class="ns-ai-disabled">
-                    <strong>هوش مصنوعی در حالت انتظار (Cooldown) قرار دارد</strong>
-                    <p><?php echo esc_html($aiStatus['cooldown_remaining'] ?? ''); ?></p>
-                    <button type="button" class="nextsafar-secondary-button" id="reset-ai-btn">ریست وضعیت</button>
+                    <strong>AI در حالت Cooldown</strong>
+                    <p><?= esc_html($aiStatus['cooldown_remaining'] ?? ''); ?></p>
+                    <button type="button" class="nextsafar-secondary-button" id="reset-ai-btn">
+                        <svg class="ns-icon ns-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                        ریست وضعیت AI
+                    </button>
                 </div>
-            <?php else : ?>
-                <div class="ns-stats-row">
-                    <div class="ns-stat-box">
-                        <div class="ns-stat-box-value"><?php echo (int) ($aiStatus['fail_count'] ?? 0); ?></div>
-                        <div class="ns-stat-box-label">خطاهای متوالی</div>
-                    </div>
-                    <div class="ns-stat-box">
-                        <div class="ns-stat-box-value"><?php echo (int) ($aiStatus['max_fails'] ?? 5); ?></div>
-                        <div class="ns-stat-box-label">حداکثر مجاز</div>
-                    </div>
-                    <div class="ns-stat-box">
-                        <div class="ns-stat-box-value"><?php echo number_format($stats['ai_total_calls'] ?? 0); ?></div>
-                        <div class="ns-stat-box-label">کل فراخوانی‌ها</div>
-                    </div>
-                    <div class="ns-stat-box">
-                        <div class="ns-stat-box-value"><?php echo number_format($stats['ai_total_tokens'] ?? 0); ?></div>
-                        <div class="ns-stat-box-label">توکن مصرفی</div>
-                    </div>
-                    <div class="ns-stat-box">
-                        <div class="ns-stat-box-value">$<?php echo number_format($stats['ai_total_cost_usd'] ?? 0, 4); ?></div>
-                        <div class="ns-stat-box-label">هزینه کل</div>
-                    </div>
+            <?php else: ?>
+                <div class="ns-ai-active">
+                    <p>
+                        تعداد خطاهای متوالی: 
+                        <strong><?= $aiStatus['fail_count'] ?? 0; ?></strong> 
+                        از <?= $aiStatus['max_fails'] ?? 5; ?>
+                    </p>
+                    <p>
+                        کل فراخوانی‌های AI: 
+                        <strong><?= number_format($stats['ai_total_calls'] ?? 0); ?></strong>
+                    </p>
+                    <p>
+                        کل توکن مصرفی: 
+                        <strong><?= number_format($stats['ai_total_tokens'] ?? 0); ?></strong>
+                    </p>
+                    <p>
+                        هزینه کل: 
+                        <strong>$<?= number_format($stats['ai_total_cost_usd'] ?? 0, 4); ?></strong>
+                    </p>
                 </div>
             <?php endif; ?>
         </div>
@@ -139,31 +107,36 @@
     <div class="nextsafar-panel">
         <div class="nextsafar-panel-header">
             <h2>وضعیت منابع RSS و API</h2>
+            <div style="display: flex; gap: 8px;">
+                <button type="button" class="nextsafar-secondary-button" id="refresh-sources-btn">
+                    <svg class="ns-icon ns-icon-sm" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+                    بارگذاری مجدد
+                </button>
+                <button type="button" class="nextsafar-danger-button" id="reset-sources-btn">
+                    <svg class="ns-icon ns-icon-sm" viewBox="0 0 24 24"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+                    بازنشانی
+                </button>
+            </div>
         </div>
         <div class="nextsafar-panel-body">
             <div class="ns-stats-row" style="margin-bottom: 20px;">
-                <div class="ns-stat-box">
-                    <div class="ns-stat-box-value"><?php echo number_format($stats['total_rss_fetched'] ?? 0); ?></div>
-                    <div class="ns-stat-box-label">کل اخبار RSS</div>
+                <div class="ns-mini-stat">
+                    <div class="ns-mini-value"><?= number_format($stats['total_rss_fetched'] ?? 0); ?></div>
+                    <div class="ns-mini-label">کل اخبار RSS</div>
                 </div>
-                <div class="ns-stat-box">
-                    <div class="ns-stat-box-value"><?php echo number_format($stats['total_api_fetched'] ?? 0); ?></div>
-                    <div class="ns-stat-box-label">کل اخبار API</div>
+                <div class="ns-mini-stat">
+                    <div class="ns-mini-value"><?= number_format($stats['total_api_fetched'] ?? 0); ?></div>
+                    <div class="ns-mini-label">کل اخبار API</div>
                 </div>
-                <div class="ns-stat-box">
-                    <div class="ns-stat-box-value"><?php echo count($sources); ?></div>
-                    <div class="ns-stat-box-label">تعداد منابع</div>
+                <div class="ns-mini-stat">
+                    <div class="ns-mini-value"><?= count($sources); ?></div>
+                    <div class="ns-mini-label">تعداد منابع</div>
                 </div>
-            </div>
-
-            <div style="margin-bottom: 16px; display: flex; gap: 10px; flex-wrap: wrap;">
-                <button type="button" class="nextsafar-secondary-button" id="refresh-sources-btn">بارگذاری مجدد</button>
-                <button type="button" class="nextsafar-secondary-button" id="reset-sources-btn">بازنشانی پیش‌فرض</button>
             </div>
 
             <div id="sources-table-container">
-                <?php if (!empty($sources)) : ?>
-                    <table class="wp-list-table widefat striped">
+                <?php if (!empty($sources)): ?>
+                    <table class="nextsafar-table">
                         <thead>
                             <tr>
                                 <th>نام</th>
@@ -175,26 +148,26 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <?php foreach ($sources as $source) : ?>
+                            <?php foreach ($sources as $source): ?>
                                 <tr>
-                                    <td><strong><?php echo esc_html($source['name']); ?></strong></td>
-                                    <td><span class="nextsafar-status"><?php echo esc_html(strtoupper($source['type'])); ?></span></td>
-                                    <td><?php echo esc_html($source['group_name']); ?></td>
-                                    <td><?php echo number_format($source['total_fetched'] ?? 0); ?></td>
-                                    <td><?php echo number_format($source['total_duplicates'] ?? 0); ?></td>
+                                    <td><strong><?= esc_html($source['name']); ?></strong></td>
+                                    <td><span class="ns-badge ns-badge-neutral"><?= strtoupper(esc_html($source['type'])); ?></span></td>
+                                    <td><?= esc_html($source['group_name']); ?></td>
+                                    <td><?= number_format($source['total_fetched'] ?? 0); ?></td>
+                                    <td><?= number_format($source['total_duplicates'] ?? 0); ?></td>
                                     <td>
-                                        <?php if ($source['is_active']) : ?>
-                                            <span class="nextsafar-status nextsafar-status-publish">فعال</span>
-                                        <?php else : ?>
-                                            <span class="nextsafar-status nextsafar-status-trash">غیرفعال</span>
+                                        <?php if ($source['is_active']): ?>
+                                            <span class="ns-badge ns-badge-success">فعال</span>
+                                        <?php else: ?>
+                                            <span class="ns-badge ns-badge-danger">غیرفعال</span>
                                         <?php endif; ?>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
                         </tbody>
                     </table>
-                <?php else : ?>
-                    <p class="description">منبعی ثبت نشده است.</p>
+                <?php else: ?>
+                    <p class="ns-text-muted">منبعی ثبت نشده</p>
                 <?php endif; ?>
             </div>
         </div>

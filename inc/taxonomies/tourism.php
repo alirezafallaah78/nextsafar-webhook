@@ -46,8 +46,8 @@ class Tourism {
             'hospital',
             'destination',
             'travelguide',
+            'travelnews',
             'post',
-            'visa',
         ];
     }
 }

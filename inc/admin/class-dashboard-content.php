@@ -31,8 +31,22 @@ class NextSafar_Dashboard_Content {
     }
 
     public static function maybe_flush( $post_id ) {
+        // ❌ رد کردن auto-draft
         $post = get_post( $post_id );
-        if ( $post && in_array( $post->post_type, self::all_types(), true ) ) {
+        if ( ! $post ) {
+            return;
+        }
+        
+        if ( 'auto-draft' === $post->post_status ) {
+            return;
+        }
+        
+        // ❌ رد کردن revision
+        if ( wp_is_post_revision( $post_id ) || wp_is_post_autosave( $post_id ) ) {
+            return;
+        }
+        
+        if ( in_array( $post->post_type, self::all_types(), true ) ) {
             self::flush();
         }
     }

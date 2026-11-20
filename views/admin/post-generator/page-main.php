@@ -1,13 +1,6 @@
 <?php if (!defined('ABSPATH')) exit; ?>
 
 <div class="wrap nextsafar-wrap">
-    <div class="nextsafar-page-header">
-        <div>
-            <h1>تولید پست هوشمند</h1>
-            <p>تولید خودکار پست برای هتل، رستوران، مقصد، بیمارستان و فرودگاه</p>
-        </div>
-    </div>
-
     <div class="nextsafar-panel">
         <div class="nextsafar-panel-header"><h2>تنظیمات جستجو</h2></div>
         <div class="nextsafar-panel-body">
